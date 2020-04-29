@@ -38,7 +38,6 @@ public class Student {
                 + "2○ List My Courses\n"
                 + "3○ View a course\n"
                 + "4○ Log out\n");
-//                + "4○ Grades Report\n"
 
         makeChoice();
     }
@@ -98,10 +97,11 @@ public class Student {
 
     private void listMyCourses() {
         List<String> courses = new ArrayList();
-        String query = "select * from course_student;";
+        String query = "select * from course_student where sid = ?;";
         try {
             PreparedStatement ps;
             ps = MyConnection.con().prepareStatement(query);
+            ps.setString(1, id);
             ResultSet rs = ps.executeQuery();
             for (int i = 1; rs.next(); i++) {
                 courses.add(rs.getString(i));
