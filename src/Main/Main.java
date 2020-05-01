@@ -1,12 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package Main;
 
 import Persons.Doctor;
 import Persons.Student;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 /**
@@ -18,18 +14,12 @@ public class Main {
     static Scanner in;
 
     public static void main(String[] args) {
-
-    }
-
-    public static void showMainMenue() {
         in = new Scanner(System.in);
-        System.out.println("1○ Sign up\n"
-                + "2○ Sign in\n"
-                + "2○ Exit\n");
-        makeChoice();
-    }
+        System.out.print("----------------1○ Sign up----------------\n"
+                + "----------------2○ Sign in----------------\n"
+                + "----------------3○ Exit----------------\n");
+        System.out.println("----------------Please enter a choice---------------");
 
-    private static void makeChoice() {
         try {
             int choice = in.nextInt();
             if (choice == 1) {
@@ -37,13 +27,14 @@ public class Main {
             } else if (choice == 2) {
                 signIn();
             } else if (choice == 3) {
-                return;
-            }
-        } catch (NumberFormatException e) {
-            System.out.println("----------------Please enter a correct choice---------------");
-        }
-        makeChoice();
 
+            } else {
+                System.out.println("----------------Please enter a correct choice---------------");
+            }
+        } catch (InputMismatchException e) {
+            System.out.println("----------------Please enter a correct choice---------------");
+            main(args);
+        }
     }
 
     private static void signUp() {
@@ -60,13 +51,24 @@ public class Main {
                 System.out.println("----------------Invalid Choice---------------");
                 signUp();
             }
-        } catch (NumberFormatException e) {
+        } catch (InputMismatchException e) {
             System.out.println("----------------Please enter a correct choice---------------");
         }
     }
 
     private static void signIn() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        System.out.println("---------------- Please enter the username ---------------");
+        String username = in.nextLine();
+        System.out.println("---------------- Please enter the password ---------------");
+        String password = in.nextLine();
+
+        if (!checkUsername(username)) {
+
+        } else if (!checkPassword(username,password)) {
+        
+        } else {
+            
+        }
     }
 
 }

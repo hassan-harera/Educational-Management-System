@@ -26,9 +26,23 @@ registered
  */
 public class Student {
 
-    private String id, username, password, name, email;
+    private String username, password;
+    public String name;
+    public int  sid, midGrade, finalGrade, yearDoingGrade ,bonusGrade, totalGrade;
     Scanner in;
 
+    public Student(String name, int sid, int midGrade, int finalGrade, int yearDoingGrade, int bonusGrade, int totalGrade) {
+        this.name = name;
+        this.sid = sid;
+        this.midGrade = midGrade;
+        this.finalGrade = finalGrade;
+        this.yearDoingGrade = yearDoingGrade;
+        this.bonusGrade = bonusGrade;
+        this.totalGrade = totalGrade;
+    }
+
+    
+    
     public Student() {
         in = new Scanner(System.in);
     }
@@ -55,7 +69,7 @@ public class Student {
                 logout();
                 return;
             }
-        } catch (NumberFormatException e) {
+        } catch (InputMismatchException e) {
             System.out.println("----------------Please enter a correct choice---------------");
         }
         makeChoice();
@@ -87,7 +101,7 @@ public class Student {
                         registerInCourse(choice);
                     }
                     break;
-                } catch (NumberFormatException e) {
+                } catch (InputMismatchException e) {
                     System.out.println("----------------Please enter a correct choice---------------");
                     registerInCourse();
                 }
@@ -122,7 +136,7 @@ public class Student {
                         viewCourse(choice);
                     }
                     break;
-                } catch (NumberFormatException e) {
+                } catch (InputMismatchException e) {
                     System.out.println("----------------Please enter a correct choice---------------");
                     registerInCourse();
                 }

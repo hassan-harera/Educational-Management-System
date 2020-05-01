@@ -16,10 +16,7 @@ public class MyEncryption {
                 encrpted += (int) str.charAt(i);
             }
         }
-        
+
         return encrpted;
-    }
-    public static void main(String[] args) {
-        System.out.println(encryptPassword("hassangmailharera+-*"));
     }
 }
