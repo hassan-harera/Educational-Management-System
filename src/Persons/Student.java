@@ -28,12 +28,12 @@ public class Student {
 
     private String username, password;
     public String name;
-    public int  sid, midGrade, finalGrade, yearDoingGrade ,bonusGrade, totalGrade;
+    public int  id, midGrade, finalGrade, yearDoingGrade ,bonusGrade, totalGrade;
     Scanner in;
 
-    public Student(String name, int sid, int midGrade, int finalGrade, int yearDoingGrade, int bonusGrade, int totalGrade) {
+    public Student(String name, int id, int midGrade, int finalGrade, int yearDoingGrade, int bonusGrade, int totalGrade) {
         this.name = name;
-        this.sid = sid;
+        this.id = id;
         this.midGrade = midGrade;
         this.finalGrade = finalGrade;
         this.yearDoingGrade = yearDoingGrade;

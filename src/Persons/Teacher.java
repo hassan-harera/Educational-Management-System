@@ -26,13 +26,13 @@ DOCTORS
 ● Please, think what may be else missing….and try to imagine a good requreiments for
 each of the above menu items
  */
-public class Doctor {
+public class Teacher {
 
     private String id, username, password, name, email;
     private int did;
     Scanner in;
 
-    public Doctor() {
+    public Teacher() {
         in = new Scanner(System.in);
     }
 
@@ -370,25 +370,31 @@ public class Doctor {
     public void signUp() {
 
         System.out.println("----------------Please enter username---------------");
-        String username = in.nextLine();
-
-        try {
-            if (!User.checkUsername(username)) {
-                System.out.println("----------------This username is already found enter another or enter 0 to cancel---------------");
+        String cname = in.nextLine();
+        if (!checkCourseName(cname)) {
+            System.out.println("----------------This course name is already found---------------");
+            System.out.println("----------------To try another name enter 1---------------");
+            System.out.println("----------------To cancel enter 0---------------");
+            int choice = in.nextInt();
+            if (choice != 0) {
+                createCourse();
+            }
+        } else {
+            System.out.println("----------------Please enter the course code---------------");
+            String ccode = in.nextLine();
+            if (!checkCourseCode(ccode)) {
+                System.out.println("----------------This course code is already found---------------");
+                System.out.println("----------------To try another code enter 1---------------");
+                System.out.println("----------------To cancel enter 0---------------");
                 int choice = in.nextInt();
                 if (choice != 0) {
-                    signUp();
+                    createCourse();
                 }
             } else {
-                System.out.println("----------------Please enter password---------------");
-                String password = in.nextLine();
-                System.out.println("----------------Please enter password---------------");
-                String name = in.nextLine();
-                User.insertDoctor(username, password, name);
+                if (insertCourse(cname, ccode)) {
+                    System.out.println("----------------Successfully created---------------");
+                }
             }
-        } catch (InputMismatchException e) {
-            System.out.println("----------------Please enter a correct input---------------");
-            signUp();
         }
     }
 }

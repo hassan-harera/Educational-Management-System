@@ -2,6 +2,8 @@ package Main;
 
 import Persons.Doctor;
 import Persons.Student;
+import Persons.Teacher;
+import Persons.User;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -15,10 +17,10 @@ public class Main {
 
     public static void main(String[] args) {
         in = new Scanner(System.in);
-        System.out.print("----------------1○ Sign up----------------\n"
-                + "----------------2○ Sign in----------------\n"
-                + "----------------3○ Exit----------------\n");
-        System.out.println("----------------Please enter a choice---------------");
+        System.out.print("----------------1 Sign up----------------\n"
+                + "----------------2 Sign in----------------\n"
+                + "----------------3 Exit----------------\n");
+        System.out.println("----------------Please enter a input---------------");
 
         try {
             int choice = in.nextInt();
@@ -27,14 +29,14 @@ public class Main {
             } else if (choice == 2) {
                 signIn();
             } else if (choice == 3) {
-
+                return;
             } else {
-                System.out.println("----------------Please enter a correct choice---------------");
+                System.out.println("----------------Please enter a correct input---------------");
             }
         } catch (InputMismatchException e) {
-            System.out.println("----------------Please enter a correct choice---------------");
-            main(args);
+            System.out.println("----------------Please enter a correct input---------------");
         }
+        main(args);
     }
 
     private static void signUp() {
@@ -52,7 +54,8 @@ public class Main {
                 signUp();
             }
         } catch (InputMismatchException e) {
-            System.out.println("----------------Please enter a correct choice---------------");
+            System.out.println("----------------Please enter a correct input---------------");
+            signUp();
         }
     }
 
@@ -62,13 +65,34 @@ public class Main {
         System.out.println("---------------- Please enter the password ---------------");
         String password = in.nextLine();
 
-        if (!checkUsername(username)) {
+        try {
 
-        } else if (!checkPassword(username,password)) {
-        
-        } else {
-            
+            if (!User.checkUsername(username)) {
+                System.out.println("---------------- Username or password is not correct try another or enter 0 to cancel---------------");
+                int choice = in.nextInt();
+                if (choice != 0) {
+                    signIn();
+                }
+            } else if (!User.checkPassword(username, password)) {
+                System.out.println("---------------- Username or password is not correct try another or enter 0 to cancel---------------");
+                int choice = in.nextInt();
+                if (choice != 0) {
+                    signIn();
+                }
+            } else {
+                Boolean isdoctor = User.isDoctor(username);
+                Boolean isteacher = User.isTeacher(username);
+                if (isdoctor) {
+                    new Doctor().showMainMenue();
+                } else if (isteacher) {
+                    new Teacher().showMainMenue();
+                } else {
+                    new Student().showMainMenue();
+                }
+            }
+        } catch (InputMismatchException e) {
+            System.out.println("----------------Please enter a correct input---------------");
+            signIn();
         }
     }
-
 }
