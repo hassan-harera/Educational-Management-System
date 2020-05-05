@@ -40,7 +40,7 @@ public class Assignment {
             System.out.println(ex.getMessage());
         }
 
-        query = "select  D.dname from course C JOIN doctor D ON C.did = D.did where ccode = ?;";
+        query = "select  D.name from course C JOIN doctor D ON C.did = D.did where ccode = ?;";
         try {
             PreparedStatement ps;
             ps = MyConnection.con().prepareStatement(query);
@@ -53,7 +53,7 @@ public class Assignment {
             System.out.println(ex.getMessage());
         }
 
-        query = "select  T.tname from teacher T JOIN course_teacher C ON C.tid = T.tid where ccode = ?;";
+        query = "select  T.name from teacher T JOIN course_teacher C ON C.tid = T.tid where ccode = ?;";
         try {
             PreparedStatement ps;
             ps = MyConnection.con().prepareStatement(query);

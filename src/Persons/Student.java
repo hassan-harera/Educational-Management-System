@@ -1,8 +1,10 @@
 package Persons;
 
 import DataBase.MyConnection;
+import Encryption.MyEncryption;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -28,7 +30,7 @@ public class Student {
 
     private String username, password;
     public String name;
-    public int  id, midGrade, finalGrade, yearDoingGrade ,bonusGrade, totalGrade;
+    public int id, midGrade, finalGrade, yearDoingGrade, bonusGrade, totalGrade;
     Scanner in;
 
     public Student(String name, int id, int midGrade, int finalGrade, int yearDoingGrade, int bonusGrade, int totalGrade) {
@@ -41,8 +43,6 @@ public class Student {
         this.totalGrade = totalGrade;
     }
 
-    
-    
     public Student() {
         in = new Scanner(System.in);
     }
@@ -52,11 +52,7 @@ public class Student {
                 + "2○ List My Courses\n"
                 + "3○ View a course\n"
                 + "4○ Log out\n");
-
-        makeChoice();
-    }
-
-    private void makeChoice() {
+        
         try {
             int choice = in.nextInt();
             if (choice == 1) {
@@ -66,18 +62,19 @@ public class Student {
             } else if (choice == 3) {
                 viewACourse();
             } else if (choice == 4) {
-                logout();
                 return;
             }
         } catch (InputMismatchException e) {
             System.out.println("----------------Please enter a correct choice---------------");
         }
-        makeChoice();
+
+        showMainMenue();
+
     }
 
     private void registerInCourse() {
         List<String> courses = new ArrayList();
-        String query = "select * from courses;";
+        String query = "select * from course;";
         try {
             PreparedStatement ps;
             ps = MyConnection.con().prepareStatement(query);
@@ -111,7 +108,7 @@ public class Student {
 
     private void listMyCourses() {
         List<String> courses = new ArrayList();
-        String query = "select * from course_student where sid = ?;";
+        String query = "select * from student_course where sid = ?;";
         try {
             PreparedStatement ps;
             ps = MyConnection.con().prepareStatement(query);
@@ -148,10 +145,6 @@ public class Student {
 
     }
 
-    private void logout() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
     private void chooseCourse() {
 
     }
@@ -166,12 +159,32 @@ public class Student {
 
     private void viewCourse(int choice) {
 
-
-
     }
 
     public void signUp() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        System.out.println("----------------Please enter username---------------");
+        String username = in.nextLine();
+
+        try {
+            if (User.checkUsername(username)) {
+                System.out.println("----------------This username is already found enter another or enter 0 to cancel---------------");
+                int choice = in.nextInt();
+                if (choice != 0) {
+                    signUp();
+                }
+            } else {
+                System.out.println("----------------Please enter password---------------");
+                String password = in.nextLine();
+                System.out.println("----------------Please enter your name---------------");
+                String name = in.nextLine();
+                String encrPassword = MyEncryption.encryptPassword(password);
+                User.insertStudent(username, encrPassword, name);
+            }
+        } catch (InputMismatchException e) {
+            System.out.println("----------------Please enter a correct input---------------");
+            signUp();
+        }
+
     }
 
 }

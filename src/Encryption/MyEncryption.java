@@ -11,12 +11,13 @@ public class MyEncryption {
 
         for (int i = 0; i < str.length(); i++) {
             if (i != str.length() - 1) {
-                encrpted += (int) str.charAt(i) + "~" + len;
+                encrpted += (int) str.charAt(i) - 'A' + "~";
             } else {
-                encrpted += (int) str.charAt(i);
+                encrpted += (int) str.charAt(i) + len;
             }
         }
 
         return encrpted;
     }
+    
 }

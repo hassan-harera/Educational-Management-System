@@ -1,6 +1,7 @@
 package Persons;
 
 import DataBase.MyConnection;
+import Encryption.MyEncryption;
 import Items.Course;
 import java.sql.*;
 import java.util.ArrayList;
@@ -368,33 +369,28 @@ public class Teacher {
     }
 
     public void signUp() {
-
         System.out.println("----------------Please enter username---------------");
-        String cname = in.nextLine();
-        if (!checkCourseName(cname)) {
-            System.out.println("----------------This course name is already found---------------");
-            System.out.println("----------------To try another name enter 1---------------");
-            System.out.println("----------------To cancel enter 0---------------");
-            int choice = in.nextInt();
-            if (choice != 0) {
-                createCourse();
-            }
-        } else {
-            System.out.println("----------------Please enter the course code---------------");
-            String ccode = in.nextLine();
-            if (!checkCourseCode(ccode)) {
-                System.out.println("----------------This course code is already found---------------");
-                System.out.println("----------------To try another code enter 1---------------");
-                System.out.println("----------------To cancel enter 0---------------");
+        String username = in.nextLine();
+
+        try {
+            if (User.checkUsername(username)) {
+                System.out.println("----------------This username is already found enter another or enter 0 to cancel---------------");
                 int choice = in.nextInt();
                 if (choice != 0) {
-                    createCourse();
+                    signUp();
                 }
             } else {
-                if (insertCourse(cname, ccode)) {
-                    System.out.println("----------------Successfully created---------------");
-                }
+                System.out.println("----------------Please enter password---------------");
+                String password = in.nextLine();
+                System.out.println("----------------Please enter your name---------------");
+                String name = in.nextLine();
+                String encrPassword = MyEncryption.encryptPassword(password);
+                User.insertTeacher(username, encrPassword, name);
             }
+        } catch (InputMismatchException e) {
+            System.out.println("----------------Please enter a correct input---------------");
+            signUp();
         }
+
     }
 }

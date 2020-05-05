@@ -1,6 +1,7 @@
 package Persons;
 
 import DataBase.MyConnection;
+import Encryption.MyEncryption;
 import Items.Course;
 import java.sql.*;
 import java.util.ArrayList;
@@ -30,17 +31,14 @@ public class Doctor {
 
     private String id, username, password, name, email;
     private int did;
-    Scanner in;
-
-    public Doctor() {
-        in = new Scanner(System.in);
-    }
 
     public void showMainMenue() {
+        Scanner in = new Scanner(System.in);
+
         System.out.println("1○ List My courses\n"
                 + "2○ Create a course\n"
                 + "3○ View a Course\n"
-                + "4○ Log out\n");
+                + "4○ Log out");
 
         System.out.println("----------------Please enter a input---------------");
         try {
@@ -95,7 +93,7 @@ public class Doctor {
 //    }
     private void listAllCourses() {
         List<String> courses = new ArrayList();
-        String query = "select  C.cname, C.ccode, D.dname from course C JOIN doctor D ON C.did = D.did;";
+        String query = "select  C.cname, C.ccode, D.name from course C JOIN doctor D ON C.did = D.did;";
         try {
             PreparedStatement ps;
             ps = MyConnection.con().prepareStatement(query);
@@ -131,6 +129,8 @@ public class Doctor {
     }
 
     private void viewCourse() {
+        Scanner in = new Scanner(System.in);
+
         List<String> css = listCourses();
         if (css.isEmpty()) {
             System.out.println("---------------- There is no courses was created to view ---------------");
@@ -176,6 +176,8 @@ public class Doctor {
     }
 
     private void createCourse() {
+        Scanner in = new Scanner(System.in);
+
         System.out.println("----------------Please enter the course name---------------");
         String cname = in.nextLine();
         if (!checkCourseName(cname)) {
@@ -222,7 +224,7 @@ public class Doctor {
     }
 
     private boolean checkCourseCode(String ccode) {
-        String query = "select ccode from courses where ccode = ?;";
+        String query = "select code from course where code = ?;";
         try {
             PreparedStatement ps;
             ps = MyConnection.con().prepareStatement(query);
@@ -238,7 +240,7 @@ public class Doctor {
     }
 
     private Boolean insertCourse(String cname, String ccode) {
-        String query = "insert (cname,ccode,did) into courses values (?,?,?);";
+        String query = "insert (name,code,did) into course values (?,?,?);";
         try {
             PreparedStatement ps;
             ps = MyConnection.con().prepareStatement(query);
@@ -296,7 +298,7 @@ public class Doctor {
             System.out.println(ex.getMessage());
         }
 
-        query = "select  cname from course where ccode = ?;";
+        query = "select name from course where code = ?;";
         try {
             PreparedStatement ps;
             ps = MyConnection.con().prepareStatement(query);
@@ -325,6 +327,7 @@ public class Doctor {
 
     private void courseMenue(int ccode) {
 //○ "List Assignments", "Create Assignment", "View Assignment", "Back"
+        Scanner in = new Scanner(System.in);
 
         System.out.println("1○ View grade report\n"
                 + "2○ List assignments\n"
@@ -368,12 +371,13 @@ public class Doctor {
     }
 
     public void signUp() {
+        Scanner in = new Scanner(System.in);
 
         System.out.println("----------------Please enter username---------------");
         String username = in.nextLine();
 
         try {
-            if (!User.checkUsername(username)) {
+            if (User.checkUsername(username)) {
                 System.out.println("----------------This username is already found enter another or enter 0 to cancel---------------");
                 int choice = in.nextInt();
                 if (choice != 0) {
@@ -382,9 +386,10 @@ public class Doctor {
             } else {
                 System.out.println("----------------Please enter password---------------");
                 String password = in.nextLine();
-                System.out.println("----------------Please enter password---------------");
+                System.out.println("----------------Please enter your name---------------");
                 String name = in.nextLine();
-                User.insertDoctor(username, password, name);
+                String encrPassword = MyEncryption.encryptPassword(password);
+                User.insertDoctor(username, encrPassword, name);
             }
         } catch (InputMismatchException e) {
             System.out.println("----------------Please enter a correct input---------------");
