@@ -3,6 +3,7 @@ package Items;
 import DataBase.MyConnection;
 import Persons.Student;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -18,7 +19,7 @@ import java.util.Scanner;
  */
 public class Course {
 
-    private String name,dname;
+    private String name, dname;
     private int code;
     private Connection con;
     private BufferedReader in;
@@ -104,31 +105,10 @@ public class Course {
         System.out.println("");
     }
 
-//    private void makeChoice() {
-//        System.out.println("----------------Please enter a input---------------");
-//        try {
-//            int choice = in.nextInt();
-//            if (choice == 1) {
-//                doctorGradeReport();
-//            } else if (choice == 2) {
-//                doctorAssignments();
-//            } else if (choice == 3) {
-//                CreateAssignment();
-//            } else if (choice == 4) {
-//
-//            } else if (choice == 5) {
-//
-//            } else {
-//                System.out.println("----------------Please enter a correct choice---------------");
-//            }
-//        } catch (InputMismatchException e) {
-//            System.out.println("----------------Please enter correct input---------------");
-//        }
-//    }
     public void gradeReport() {
         List<Student> students = new ArrayList<>();
 
-        String query = "select  S.name, S.id, C.mid_grade, C.final_grade, C.total_grade , C.bonus_grade, C.year_grade form student S JOIN student_course C ON S.id = C.sid where ccode = ?;";
+        String query = "SELECT  S.name, S.id, C.midmark, C.finalmark, C.totalmark , C.bonus, C.yearmark FROM student_course C JOIN student S ON S.id = C.sid where C.ccode = ?;";
         try {
             PreparedStatement ps;
             ps = MyConnection.con().prepareStatement(query);
@@ -151,7 +131,10 @@ public class Course {
                         + "Total grid: " + students.get(i).totalGrade);
             }
             gradeActions();
+        } else {
+            System.out.println("---------------------------------NO students was registerd in this course------------------------------");
         }
+
     }
 
     private void doctorAssignments() {
@@ -177,43 +160,58 @@ public class Course {
         }
     }
 
-    public void createAssignment() {
+    public void createAssignment() throws IOException {
         System.out.println("----------------Please enter assignment code---------------");
-        try {
-            int code = in.nextInt();
-            if (!checkAssignmentCode(code)) {
-                System.out.println("----------------This code was already found try another or enter 0 to go back---------------");
-                int choice = in.nextInt();
-                if (choice != 0) {
-                    createAssignment();
+        String code, name, grade, questions;
+        int cod, grad;
+
+        while (true) {
+            try {
+                code = in.readLine();
+                cod = Integer.parseInt(code);
+                if (code.equals("0")) {
+                    return;
+                } else if (!checkAssignmentCode(cod)) {
+                    System.out.println("----------------This Assignment code is already exists enter another code or 0 to go back---------------");
+                } else {
+                    break;
                 }
-            } else {
-                System.out.println("----------------Please enter assignment name---------------");
-                String name = in.nextLine();
-
-                System.out.println("----------------Please enter the assignment questions manually---------------");
-                String questions = in.nextLine();
-
-                System.out.println("----------------Please enter assignment grade---------------");
-                int grade = in.nextInt();
-
-                String query = "insert  into assignment (ccode,code,grade,name,question) values (?,?,?,?,?);";
-                try {
-                    PreparedStatement ps;
-                    ps = MyConnection.con().prepareStatement(query);
-                    ps.setInt(1, code);
-                    ps.setInt(2, code);
-                    ps.setInt(3, grade);
-                    ps.setString(4, name);
-                    ps.setString(5, questions);
-                    ps.execute();
-                } catch (SQLException ex) {
-                    System.out.println(ex.getMessage());
-                }
+            } catch (NumberFormatException e) {
+                System.out.println("----------------Please enter The assignment code in number---------------");
             }
-        } catch (InputMismatchException e) {
-            System.out.println("----------------Please enter correct input---------------");
-            createAssignment();
+        }
+
+        System.out.println("----------------Please enter assignment name---------------");
+        name = in.readLine();
+
+        System.out.println("----------------Please enter the assignment questions manually---------------");
+        questions = in.readLine();
+
+        System.out.println("----------------Please enter assignment grade---------------");
+
+        while (true) {
+            try {
+                grade = in.readLine();
+                grad = Integer.parseInt(grade);
+                break;
+            } catch (NumberFormatException e) {
+                System.out.println("----------------Please enter The assignment grade in number---------------");
+            }
+        }
+
+        String query = "insert  into assignment (ccode,code,grade,name,question) values (?,?,?,?,?);";
+        try {
+            PreparedStatement ps;
+            ps = MyConnection.con().prepareStatement(query);
+            ps.setInt(1, this.code);
+            ps.setInt(2, cod);
+            ps.setInt(3, grad);
+            ps.setString(4, name);
+            ps.setString(5, questions);
+            ps.execute();
+            System.out.println("---------------------------------SUCCESSFULLY CREATED---------------");
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
         }
     }
 
@@ -223,7 +221,7 @@ public class Course {
         System.out.println("----------------To go back enter 0---------------");
 
         try {
-            int choice = in.nextInt();
+            int choice = in.readLine();
             if (choice != 0) {
                 if (choice == 1) {
                     putBonusForAll();
@@ -241,7 +239,7 @@ public class Course {
     private void putBonusForAll() {
         System.out.println("---------------- Please put bonus value ---------------");
         try {
-            int bonus = in.nextInt();
+            int bonus = in.readLine();
             String query = "update student_course set bonus (bonus+?) where ccod = ?;";
             try {
                 PreparedStatement ps;
@@ -261,9 +259,9 @@ public class Course {
 
         try {
             System.out.println("---------------- Please enter student id ---------------");
-            int sid = in.nextInt();
+            int sid = in.readLine();
             System.out.println("---------------- Please put bonus value ---------------");
-            int bonus = in.nextInt();
+            int bonus = in.readLine();
             String query = "update student_course set bonus (bonus+?) where ccod = ? and sid = ?;";
             try {
                 PreparedStatement ps;
@@ -281,53 +279,54 @@ public class Course {
     }
 
     public List<Assignment> listAssignments() {
-        List<Assignment> assis = new ArrayList<>();
+        List<Assignment> assignments = new ArrayList();
 
-        String query = "select  A.name, A.grade, A.code , S.COUNT(sid) from assignment A JOIN assignment_student S ON A.code = S.acode where ccode = ?;";
+        String query = "select * from assignment where ccode = ?;";
 
         try {
             PreparedStatement ps;
             ps = MyConnection.con().prepareStatement(query);
-            ps.setString(1, code + "");
+            ps.setInt(1, code);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                assis.add(new Assignment(rs.getInt("code"), rs.getInt("grade"), rs.getInt("COUNT(sid)"), rs.getString("name")));
+                assignments.add(new Assignment(rs.getInt("code"), rs.getInt("grade"), rs.getString("name")));
             }
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
         }
-        if (!assis.isEmpty()) {
-            for (int i = 0; !assis.isEmpty(); i++) {
-                System.out.println("---------------- Assignment name : " + assis.get(i).name + " , "
-                        + "Assignment code : " + assis.get(i).code + " , "
-                        + "Assignment grade : " + assis.get(i).grade + " , "
-                        + "number of submission : " + assis.get(i).solved + "---------------- ");
+        if (!assignments.isEmpty()) {
+            for (Assignment a : assignments) {
+                System.out.println("---------------- Assignment name : " + a.name + " , "
+                        + "Assignment code : " + a.code + " , "
+                        + "Assignment grade : " + a.grade);
             }
         } else {
             System.out.println("---------------- There is no assignments to view ---------------");
         }
-        return assis;
+        return assignments;
     }
 
-    public void viewAssignment() {
-        List<Assignment> assis = listAssignments();
-        if (assis.isEmpty()) {
+    public void viewAssignment() throws IOException {
+        List<Assignment> assignments = listAssignments();
+        if (assignments.isEmpty()) {
             System.out.println("---------------- There is no assignments was created to view ---------------");
         } else {
             System.out.println("---------------- Enter the assignment code to view or 0 to cancel ---------------");
-            try {
-                int code = in.nextInt();
-                if (code != 0) {
-                    if (assis.contains(code + "")) {
-                        new Course(code).viewCourse();
+            while (true) {
+                try {
+                    String code = in.readLine();
+                    int cod = Integer.parseInt(code);
+                    if (code.equals("0")) {
+                        return;
+                    } else if (!checkAssignmentCode(cod)) {
+                        new Assignment(cod).viewAssignment();
+                        break;
                     } else {
-                        System.out.println("---------------- This course code is not found try again ---------------");
-                        viewCourse();
+                        System.out.println("---------------- This course code is not existed enter another or 0 to cancel ---------------");
                     }
+                } catch (InputMismatchException e) {
+                    System.out.println("----------------Please enter correct input---------------");
                 }
-            } catch (InputMismatchException e) {
-                System.out.println("----------------Please enter correct input---------------");
-                viewCourse();
             }
         }
     }
@@ -341,7 +340,7 @@ public class Course {
             while (true) {
                 System.out.println("---------------- Enter the student id to add or 0 to cancel ---------------");
                 try {
-                    int id = in.nextInt();
+                    int id = in.readLine();
                     if (id != 0) {
                         if (students.contains(id)) {
                             insertStudent(id);
@@ -369,7 +368,7 @@ public class Course {
             while (true) {
                 System.out.println("---------------- Enter the student id to remove or 0 to cancel ---------------");
                 try {
-                    int id = in.nextInt();
+                    int id = in.readLine();
                     if (id != 0) {
                         if (students.contains(id)) {
                             removeStudent(id);
@@ -396,7 +395,7 @@ public class Course {
             while (true) {
                 System.out.println("---------------- Enter the techer id to add or 0 to cancel ---------------");
                 try {
-                    int id = in.nextInt();
+                    int id = in.readLine();
                     if (id != 0) {
                         if (teacher.contains(id)) {
                             insertTeacher(id);
@@ -421,7 +420,7 @@ public class Course {
         } else {
             System.out.println("---------------- Enter the teacher id to remove or 0 to cancel ---------------");
             try {
-                int id = in.nextInt();
+                int id = in.readLine();
                 if (id != 0) {
                     if (teachers.contains(id)) {
                         removeTeacher(id);
@@ -439,7 +438,7 @@ public class Course {
 
     private boolean checkAssignmentCode(int acode) {
         PreparedStatement ps = null;
-        String query = "select acode from course_assignment where acode = ?;";
+        String query = "select code from assignment where code = ?;";
         try {
             ps = MyConnection.con().prepareStatement(query);
             ps.setInt(1, acode);

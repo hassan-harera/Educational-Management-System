@@ -1,28 +1,27 @@
 package Items;
 
 import DataBase.MyConnection;
-import Persons.Student;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.InputMismatchException;
-import java.util.List;
-import java.util.Scanner;
+
 
 public class Assignment {
 
-    public int code, grade, solved, ccode;
-    public String name,question;
+    public int code, grade, solved,ccode,totalStudents;
+    public String name, question,dname,cname;
 
-    public Assignment(int code, int grade, int solved, String name) {
+    public Assignment(int code, int grade, String name) {
         this.code = code;
         this.grade = grade;
-        this.solved = solved;
         this.name = name;
     }
 
-    public void viewAssignment(int code) {
+    public Assignment(int code) {
+        this.code = code;
+    }
+
+    public void viewAssignment() {
 
         String query = "select * from assignment where code = ?;";
         try {
@@ -34,65 +33,60 @@ public class Assignment {
                 ccode = rs.getInt("ccode");
                 grade = rs.getInt("grade");
                 name = rs.getString("name");
-                question= rs.getString("question");
+                question = rs.getString("question");
             }
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
         }
 
-        query = "select  D.name from course C JOIN doctor D ON C.did = D.did where ccode = ?;";
+        query = "select  D.name,C.name,C.code from course C JOIN doctor D ON C.did = D.id JOIN assignment A ON A.ccode = C.code where A.code = ?;";
         try {
             PreparedStatement ps;
             ps = MyConnection.con().prepareStatement(query);
-            ps.setString(1, ccode + "");
+            ps.setInt(1, code);
             ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                dname = rs.getString("dname");
+            if (rs.next()) {
+                dname = rs.getString("D.name");
+                cname = rs.getString("C.name");
+                ccode = rs.getInt("C.code");
             }
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
         }
 
-        query = "select  T.name from teacher T JOIN course_teacher C ON C.tid = T.tid where ccode = ?;";
+        query = "select COUNT(sid) from assignment_student where acode = ?;";
         try {
             PreparedStatement ps;
             ps = MyConnection.con().prepareStatement(query);
-            ps.setString(1, ccode + "");
+            ps.setInt(1, code);
             ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                courseTeachers.add("tname");
+            if(rs.next()) {
+                solved = rs.getInt("COUNT(sid)");
             }
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
         }
 
-        query = "select  cname from course where ccode = ?;";
+        query = "select COUNT(sid) from student_course where ccode = ?;";
         try {
             PreparedStatement ps;
             ps = MyConnection.con().prepareStatement(query);
-            ps.setString(1, ccode + "");
+            ps.setInt(1, ccode);
             ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                courseTeachers.add("tname");
+            if (rs.next()) {
+                totalStudents = rs.getInt("COUNT(sid)");
             }
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
         }
 
-        System.out.println("---------------- Course name : " + cname + " ---------------");
-        System.out.println("---------------- Course ccode : " + ccode + " ---------------");
-        System.out.println("---------------- Course doctor : " + dname + " ---------------");
-        System.out.println("---------------- Course teachers : ");
-        for (String ct : courseTeachers) {
-            System.out.print(ct + "--");
-        }
-        System.out.println("");
-        System.out.println("---------------- Course students : ");
-        for (String cs : courseStudents) {
-            System.out.print(cs + "--");
-        }
-        System.out.println("");
-
+        System.out.println("---------------- Assignment name : " + name + " ---------------");
+        System.out.println("---------------- Assignment code : " + code + " ---------------");
+        System.out.println("---------------- Assignment grade : " + grade + " ---------------");
+        System.out.println("---------------- Course : " + cname + " ---------------");
+        System.out.println("---------------- Doctor : " + dname + " ---------------");
+        System.out.println("---------------- Assignment content: " + question + " ---------------");
+        System.out.println("---------------- Number of submissions : " + solved + " ---------------");
+        System.out.println("---------------- Number of scheduled students : " + totalStudents + " ---------------");
     }
-
 }

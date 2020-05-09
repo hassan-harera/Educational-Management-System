@@ -142,35 +142,22 @@ public class Doctor {
 
     private void createCourse() throws IOException {
         System.out.println("---------------------------------Please enter the course name---------------");
-        String cname = in.readLine();
-        if (!checkCourseName(cname)) {
-            System.out.println("---------------------------------This course name is already found---------------");
-            System.out.println("---------------------------------To try another name enter 1---------------");
-            System.out.println("---------------------------------To cancel enter 0---------------");
-            int choice = Integer.parseInt(in.readLine());
-            if (choice != 0) {
-                createCourse();
+        String cname;
+
+        while (true) {
+            cname = in.readLine();
+            if (username.equals("0")) {
+                return;
+            } else if (!checkCourseName(cname)) {
+                System.out.println("---------------------------------This course name is already found enter another or enter 0 to cancel---------------");
+            } else {
+                insertCourse(cname);
+                break;
             }
-        } else {
-            insertCourse(cname);
-            System.out.println("---------------------------------Successfully created---------------");
         }
+        System.out.println("---------------------------------Successfully created---------------");
     }
 
-    /*
-                } else {
-            System.out.println("---------------------------------Please enter the course code---------------");
-            int code = in.readLine();
-            if (!checkCourseCode(code)) {
-                System.out.println("---------------------------------This course code is already found---------------");
-                System.out.println("---------------------------------To try another code enter 1---------------");
-                System.out.println("---------------------------------To cancel enter 0---------------");
-                String choice = in.readLine();
-                if (choice != 0) {
-                    createCourse();
-                }
-            } 
-     */
     private boolean checkCourseName(String cname) {
         String query = "select name from course where name = ?;";
         try {
