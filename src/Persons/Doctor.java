@@ -2,6 +2,7 @@ package Persons;
 
 import DataBase.MyConnection;
 import Encryption.MyEncryption;
+import Items.Assignment;
 import Items.Course;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -214,9 +215,9 @@ public class Doctor {
                 + "4○ View assignment\n"
                 + "5○ Add stduent\n"
                 + "6○ Remove stduent\n"
-                + "7○ Add teacher\n"
-                + "8○ Remove teacher\n"
-                + "9○ Back\n");
+                + "7○ Add TA\n"
+                + "8○ Remove TA\n"
+                + "9○ Back");
 
         System.out.println("---------------------------------Please enter a choice------------------------------");
         Course c = new Course(code);
@@ -229,15 +230,16 @@ public class Doctor {
         } else if (choice.equals("3")) {
             c.createAssignment();
         } else if (choice.equals("4")) {
-            c.viewAssignment();
+            int Acode = c.viewAssignment();
+            courseAssignment(Acode);
         } else if (choice.equals("5")) {
             c.addStudent();
         } else if (choice.equals("6")) {
             c.removeStduent();
         } else if (choice.equals("7")) {
-            c.addTeacher();
+            c.addTA();
         } else if (choice.equals("8")) {
-            c.removeTeacher();
+            c.removeTA();
         } else if (choice.equals("9")) {
             return;
         } else {
@@ -289,5 +291,35 @@ public class Doctor {
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
         }
+    }
+
+    private void courseAssignment(int code) throws IOException {
+        System.out.println("----------------------------------------------------------------------------------------------------------");
+        System.out.println("----------------------------------------------- ASSIGNMENT MENUE ---------------------------------------------");
+        System.out.println("----------------------------------------------------------------------------------------------------------");
+        System.out.println("1○ View assignment report\n"
+                + "2○ List submissions\n"
+                + "3○ Edit questions\n"
+                + "4○ View assignment\n"
+                + "5○ Back");
+
+        System.out.println("---------------------------------Please enter a choice------------------------------");
+        Assignment a = new Assignment(code);
+        String choice = in.readLine();
+
+        if (choice.equals("1")) {
+            a.report();
+        } else if (choice.equals("2")) {
+            a.listSubmissions();
+        } else if (choice.equals("3")) {
+            a.editQuestions();
+        } else if (choice.equals("4")) {
+            a.viewAssignment();
+        } else if (choice.equals("5")) {
+            return;
+        } else {
+            System.out.println("---------------------------------Please enter a correct choice---------------");
+        }
+        courseAssignment(code);
     }
 }

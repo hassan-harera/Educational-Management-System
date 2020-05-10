@@ -391,6 +391,15 @@ public class Teacher {
             System.out.println("----------------Please enter a correct input---------------");
             signUp();
         }
-
     }
+
+    public boolean equals(Student s) {
+        if(id == s.id && s.name.equals(name)){
+            return true;
+        }
+        return false;
+    }
+    
+    
+    
 }

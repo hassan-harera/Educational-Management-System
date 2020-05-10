@@ -11,7 +11,6 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.List;
-import java.util.Scanner;
 
 /**
  *
@@ -32,7 +31,7 @@ public class Course {
 
     public void viewCourse() {
         List<String> courseStudents = new ArrayList<>();
-        List<String> courseTeachers = new ArrayList<>();
+        List<String> courseTAs = new ArrayList<>();
 
         String query = "select  S.name from student_course C JOIN student S ON S.id = C.sid where C.ccode = ?;";
         try {
@@ -60,14 +59,14 @@ public class Course {
             System.out.println(ex.getMessage());
         }
 
-        query = "select T.name from teacher T JOIN teacher_course C ON C.tid = T.id where ccode = ?;";
+        query = "select T.name from TA T JOIN TA_course C ON C.tid = T.id where ccode = ?;";
         try {
             PreparedStatement ps;
             ps = MyConnection.con().prepareStatement(query);
             ps.setInt(1, code);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                courseTeachers.add("tname");
+                courseTAs.add("tname");
             }
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
@@ -89,9 +88,9 @@ public class Course {
         System.out.println("---------------- Course name : " + name + " ---------------");
         System.out.println("---------------- Course code : " + code + " ---------------");
         System.out.println("---------------- Course doctor : " + dname + " ---------------");
-        if (!courseTeachers.isEmpty()) {
-            System.out.println("---------------- Course teachers : ");
-            for (String ct : courseTeachers) {
+        if (!courseTAs.isEmpty()) {
+            System.out.println("---------------- Course TAs : ");
+            for (String ct : courseTAs) {
                 System.out.print(ct + "--");
             }
         }
@@ -306,7 +305,7 @@ public class Course {
         return assignments;
     }
 
-    public void viewAssignment() throws IOException {
+    public int viewAssignment() throws IOException {
         List<Assignment> assignments = listAssignments();
         if (assignments.isEmpty()) {
             System.out.println("---------------- There is no assignments was created to view ---------------");
@@ -317,10 +316,10 @@ public class Course {
                     String code = in.readLine();
                     int cod = Integer.parseInt(code);
                     if (code.equals("0")) {
-                        return;
+                        return -1;
                     } else if (!checkAssignmentCode(cod)) {
                         new Assignment(cod).viewAssignment();
-                        break;
+                        return cod;
                     } else {
                         System.out.println("---------------- This course code is not existed enter another or 0 to cancel ---------------");
                     }
@@ -329,109 +328,108 @@ public class Course {
                 }
             }
         }
+        return -1;
     }
 
-    public void addStudent() {
+    public void addStudent() throws IOException {
         List<Integer> students = listAllStudents();
 
         if (students.isEmpty()) {
             System.out.println("---------------- There is no students in the site to add ---------------");
         } else {
+            System.out.println("---------------- Enter the student id ---------------");
             while (true) {
-                System.out.println("---------------- Enter the student id to add or 0 to cancel ---------------");
                 try {
-                    int id = in.readLine();
-                    if (id != 0) {
-                        if (students.contains(id)) {
-                            insertStudent(id);
-                        } else {
-                            System.out.println("---------------- This id is incorrect ---------------");
-                            addStudent();
-                        }
+                    String id = in.readLine();
+                    int Id = Integer.parseInt(id);
+                    if (id.equals("0")) {
+                        return;
+                    } else if (!students.contains(Id)) {
+                        System.out.println("---------------- This id is incorrect enter another id or 0 to cancel ---------------");
+                    } else {
+                        insertStudent(Id);
+                        break;
                     }
-                    break;
-                } catch (InputMismatchException e) {
-                    System.out.println("----------------Please enter correct input---------------");
-                    viewCourse();
+                } catch (NumberFormatException e) {
+                    System.out.println("---------------- The id must me number ---------------");
                 }
             }
         }
-
     }
 
-    public void removeStduent() {
+    public void removeStduent() throws IOException {
         List<Integer> students = listStudents();
 
         if (students.isEmpty()) {
-            System.out.println("---------------- There is no students registerd in the course ---------------");
+            System.out.println("---------------- There is no students registered in this course ---------------");
         } else {
+            System.out.println("---------------- Enter the student id that you want to remove ---------------");
             while (true) {
-                System.out.println("---------------- Enter the student id to remove or 0 to cancel ---------------");
                 try {
-                    int id = in.readLine();
-                    if (id != 0) {
-                        if (students.contains(id)) {
-                            removeStudent(id);
-                        } else {
-                            System.out.println("---------------- This id is incorrect ---------------");
-                            addStudent();
-                        }
-                    }
-                    break;
-                } catch (InputMismatchException e) {
-                    System.out.println("----------------Please enter correct input---------------");
-                    viewCourse();
-                }
-            }
-        }
-    }
-
-    public void addTeacher() {
-        List<Integer> teacher = listAllTeachers();
-
-        if (teacher.isEmpty()) {
-            System.out.println("---------------- There is no teachers in the site to add ---------------");
-        } else {
-            while (true) {
-                System.out.println("---------------- Enter the techer id to add or 0 to cancel ---------------");
-                try {
-                    int id = in.readLine();
-                    if (id != 0) {
-                        if (teacher.contains(id)) {
-                            insertTeacher(id);
-                        } else {
-                            System.out.println("---------------- This id is incorrect ---------------");
-                            addTeacher();
-                        }
-                    }
-                    break;
-                } catch (InputMismatchException e) {
-                    System.out.println("----------------Please enter correct input---------------");
-                }
-            }
-        }
-    }
-
-    public void removeTeacher() {
-        List<Integer> teachers = listTeachers();
-
-        if (teachers.isEmpty()) {
-            System.out.println("---------------- There is no teachers are teaching in the course ---------------");
-        } else {
-            System.out.println("---------------- Enter the teacher id to remove or 0 to cancel ---------------");
-            try {
-                int id = in.readLine();
-                if (id != 0) {
-                    if (teachers.contains(id)) {
-                        removeTeacher(id);
+                    String id = in.readLine();
+                    int Id = Integer.parseInt(id);
+                    if (id.equals("0")) {
+                        return;
+                    } else if (!students.contains(Id)) {
+                        System.out.println("---------------- This id is incorrect enter another id or 0 to cancel ---------------");
                     } else {
-                        System.out.println("---------------- This id is incorrect ---------------");
-                        removeTeacher();
+                        removeStudent(Id);
+                        break;
                     }
+                } catch (NumberFormatException e) {
+                    System.out.println("---------------- The id must me number ---------------");
                 }
-            } catch (InputMismatchException e) {
-                System.out.println("----------------Please enter correct input---------------");
-                removeTeacher();
+            }
+        }
+    }
+
+    public void addTA() throws IOException {
+        List<Integer> TAs = listAllTAs();
+
+        if (TAs.isEmpty()) {
+            System.out.println("---------------- There is no TAs in the site to add ---------------");
+        } else {
+            while (true) {
+                try {
+                    String id = in.readLine();
+                    int Id = Integer.parseInt(id);
+                    if (id.equals("0")) {
+                        return;
+                    } else if (!TAs.contains(Id)) {
+                        System.out.println("---------------- This id is incorrect enter another id or 0 to cancel ---------------");
+                    } else {
+                        insertTA(Id);
+                        break;
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("---------------- The id must me number ---------------");
+                }
+            }
+        }
+    }
+
+    public void removeTA() throws IOException {
+        List<Integer> TAs = listTAs();
+
+        if (TAs.isEmpty()) {
+            System.out.println("---------------- There is no TAs are teaching in the course ---------------");
+        } else {
+            System.out.println("---------------- Enter the TA id to that you want to remove ---------------");
+            while (true) {
+                try {
+                    String id = in.readLine();
+                    int Id = Integer.parseInt(id);
+                    if (id.equals("0")) {
+                        return;
+                    } else if (!TAs.contains(Id)) {
+                        System.out.println("---------------- This id is incorrect enter another id or 0 to cancel ---------------");
+                    } else {
+                        removeTA(Id);
+                        break;
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("---------------- The id must me number ---------------");
+                }
             }
         }
     }
@@ -454,7 +452,7 @@ public class Course {
     private List<Integer> listAllStudents() {
         List<Integer> students = new ArrayList();
 
-        String query = "select (name,id) from student;";
+        String query = "select name,id from student;";
         try {
             PreparedStatement ps;
             ps = con.prepareStatement(query);
@@ -492,8 +490,8 @@ public class Course {
         try {
             PreparedStatement ps;
             ps = con.prepareStatement(query);
-            ResultSet rs = ps.executeQuery();
             ps.setInt(1, code);
+            ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 int s = rs.getInt("id");
                 System.out.println("---------------- Student id: " + s + "id"
@@ -519,28 +517,28 @@ public class Course {
         }
     }
 
-    private List<Integer> listAllTeachers() {
-        List<Integer> teachers = new ArrayList();
+    private List<Integer> listAllTAs() {
+        List<Integer> TAs = new ArrayList();
 
-        String query = "select (name,id) from teacher;";
+        String query = "select name,id from TA;";
         try {
             PreparedStatement ps;
             ps = con.prepareStatement(query);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 int t = rs.getInt("id");
-                System.out.println("---------------- teacher id: " + t + " , "
-                        + "teacher name: " + rs.getString("name") + " ---------------");
-                teachers.add(t);
+                System.out.println("---------------- TA id: " + t + " , "
+                        + "TA name: " + rs.getString("name") + " ---------------");
+                TAs.add(t);
             }
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
         }
-        return teachers;
+        return TAs;
     }
 
-    private void insertTeacher(int id) {
-        String query = "insert into teacher_course (tid,ccode) values(?,?);";
+    private void insertTA(int id) {
+        String query = "insert into TA_course (tid,ccode) values(?,?);";
         try {
             PreparedStatement ps;
             ps = con.prepareStatement(query);
@@ -552,29 +550,29 @@ public class Course {
         }
     }
 
-    private List<Integer> listTeachers() {
-        List<Integer> teachers = new ArrayList();
+    private List<Integer> listTAs() {
+        List<Integer> TAs = new ArrayList();
 
-        String query = "select T.id, T.name from teacher_course C join teacher T on C.tid = T.id where C.ccode = ?;";
+        String query = "select T.id, T.name from TA_course C join TA T on C.tid = T.id where C.ccode = ?;";
         try {
             PreparedStatement ps;
             ps = con.prepareStatement(query);
-            ResultSet rs = ps.executeQuery();
             ps.setInt(1, code);
+            ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 int s = rs.getInt("id");
-                System.out.println("---------------- Teacher id: " + s + "id"
-                        + " , Teacher name: " + rs.getString("name") + " ---------------");
-                teachers.add(s);
+                System.out.println("---------------- TA id: " + s + "id"
+                        + " , TA name: " + rs.getString("name") + " ---------------");
+                TAs.add(s);
             }
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
         }
-        return teachers;
+        return TAs;
     }
 
-    private void removeTeacher(int id) {
-        String query = "delete from teacher_course where ccode = ? and tid = ?";
+    private void removeTA(int id) {
+        String query = "delete from TA_course where ccode = ? and tid = ?";
         try {
             PreparedStatement ps;
             ps = con.prepareStatement(query);

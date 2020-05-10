@@ -1,15 +1,19 @@
 package Items;
 
 import DataBase.MyConnection;
+import Persons.Student;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Assignment {
 
-    public int code, grade, solved,ccode,totalStudents;
-    public String name, question,dname,cname;
+    public int code, grade, solved, ccode, totalStudents;
+    public String name, question, dname, cname;
 
     public Assignment(int code, int grade, String name) {
         this.code = code;
@@ -60,7 +64,7 @@ public class Assignment {
             ps = MyConnection.con().prepareStatement(query);
             ps.setInt(1, code);
             ResultSet rs = ps.executeQuery();
-            if(rs.next()) {
+            if (rs.next()) {
                 solved = rs.getInt("COUNT(sid)");
             }
         } catch (SQLException ex) {
@@ -88,5 +92,62 @@ public class Assignment {
         System.out.println("---------------- Assignment content: " + question + " ---------------");
         System.out.println("---------------- Number of submissions : " + solved + " ---------------");
         System.out.println("---------------- Number of scheduled students : " + totalStudents + " ---------------");
+    }
+
+    public void report() {
+        System.out.println("---------------- Number of students that solved the assignment : " + solved + " ---------------");
+        System.out.println("---------------- Number of students that didn't solve the assignment : " + (totalStudents - solved) + " ---------------");
+
+        List<Student> studentsSolved = new ArrayList();
+        Map<Integer, Integer> mapId = new HashMap();
+        String query = "select S.name,A.sid,A.grade from student S JOIN assignment_student A ON A.sid = S.id where A.acode = ?;";
+        try {
+            PreparedStatement ps;
+            ps = MyConnection.con().prepareStatement(query);
+            ps.setInt(1, code);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                String name = rs.getString("S.name");
+                int grade = rs.getInt("A.grade");
+                int sid = rs.getInt("A.sid");
+                studentsSolved.add(new Student(name, sid, grade));
+            }
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
+
+        List<Student> studentsNotSolved = new ArrayList();
+        query = "select S.name, A.sid from student S JOIN student_course A ON A.sid = S.id where A.ccode = ?;";
+        try {
+            PreparedStatement ps;
+            ps = MyConnection.con().prepareStatement(query);
+            ps.setInt(1, ccode);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                String name = rs.getString("S.name");
+                int sid = rs.getInt("A.sid");
+                if (!mapId.containsKey(sid)) {
+                    Student s = new Student(name, sid);
+                    studentsNotSolved.add(s);
+                }
+            }
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
+        for (Student student : studentsSolved) {
+            System.out.println("---------------- student id : " + student.id + " , " + " student name : " + student.name + " , " + " student status : solve , " + " student grade : " + (student.assignmentGrade == -1 ? "N/A" : student.assignmentGrade) + " ---------------");
+        }
+        for (Student student : studentsNotSolved) {
+            System.out.println("---------------- student id : " + student.id + " , " + " student name : " + student.name + " , " + " student status : not solve ---------------");
+        }
+
+    }
+
+    public void listSubmissions() {
+
+    }
+
+    public void editQuestions() {
+
     }
 }

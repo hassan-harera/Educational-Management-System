@@ -8,29 +8,11 @@ import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
-/*
-● Have details such as ID, username, password, full name, email
-○ email must be validated against wrong formats
-● Student main menu should allow him to:
-○ Register in course
-○ List My Courses
-○ View a course
-○ Grades Report
-○ Log out
-● When student choose Register in a course, he got list of courses where he is not
-registered
-○ Then, user make a choice to be registerd in the course.
-● When student choose View a course
-○ He got a course summary for him
-■ Course name, code
-■ List Assignments report (see which submitted, which not, any grading)
-○ A menu allows him to
- */
-public class Student {
+public class Student implements Comparable<Student> {
 
     private String username, password;
     public String name;
-    public int id, midGrade, finalGrade, yearDoingGrade, bonusGrade, totalGrade;
+    public int id, midGrade, finalGrade, yearDoingGrade, bonusGrade, totalGrade, assignmentGrade;
     Scanner in;
 
     public Student(String name, int id, int midGrade, int finalGrade, int yearDoingGrade, int bonusGrade, int totalGrade) {
@@ -43,8 +25,19 @@ public class Student {
         this.totalGrade = totalGrade;
     }
 
+    public Student(String name, int id, int assignmentGrade) {
+        this.name = name;
+        this.id = id;
+        this.assignmentGrade = assignmentGrade;
+    }
+
     public Student() {
         in = new Scanner(System.in);
+    }
+
+    public Student(String name, int id) {
+        this.name = name;
+        this.id = id;
     }
 
     public void showMainMenue() {
@@ -52,7 +45,7 @@ public class Student {
                 + "2○ List My Courses\n"
                 + "3○ View a course\n"
                 + "4○ Log out\n");
-        
+
         try {
             int choice = in.nextInt();
             if (choice == 1) {
@@ -184,6 +177,15 @@ public class Student {
             System.out.println("----------------Please enter a correct input---------------");
             signUp();
         }
+
+    }
+
+    @Override
+    public int compareTo(Student o) {
+        if (id == o.id) {
+            return 0;
+        }
+        return 1;
 
     }
 
