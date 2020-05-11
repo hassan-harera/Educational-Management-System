@@ -85,18 +85,18 @@ public class Course {
             System.out.println(ex.getMessage());
         }
 
-        System.out.println("---------------- Course name : " + name + " ---------------");
-        System.out.println("---------------- Course code : " + code + " ---------------");
-        System.out.println("---------------- Course doctor : " + dname + " ---------------");
+        System.out.println("-------------------------------------------------------------------Course name : " + name + " ---------------");
+        System.out.println("-------------------------------------------------------------------Course code : " + code + " ---------------");
+        System.out.println("-------------------------------------------------------------------Course doctor : " + dname + " ---------------");
         if (!courseTAs.isEmpty()) {
-            System.out.println("---------------- Course TAs : ");
+            System.out.println("---------------------------------------------------------------Course TAs : ");
             for (String ct : courseTAs) {
                 System.out.print(ct + "--");
             }
         }
         if (!courseStudents.isEmpty()) {
             System.out.println("");
-            System.out.println("---------------- Course students : ");
+            System.out.println("-------------------------------------------------------------------Course students : ");
             for (String cs : courseStudents) {
                 System.out.print(cs + "--");
             }
@@ -121,7 +121,7 @@ public class Course {
         }
         if (!students.isEmpty()) {
             for (int i = 0; !students.isEmpty(); i++) {
-                System.out.println("---------------- Student name: " + students.get(i).name + " , "
+                System.out.println("Student name: " + students.get(i).name + " , "
                         + "Student id: " + students.get(i).id + " , "
                         + "Mid exame grade: " + students.get(i).midGrade + " , "
                         + "Year doing grade: " + students.get(i).yearDoingGrade + " , "
@@ -155,12 +155,12 @@ public class Course {
             System.out.println(ex.getMessage());
         }
         for (int i = 0; !assignmentName.isEmpty() && !assignmentCode.isEmpty(); i++) {
-            System.out.println("---------------- Assignment name : " + assignmentName.get(i) + " , " + "Assignment code : " + assignmentCode.get(i) + " ---------------");
+            System.out.println("----------------Assignment name : " + assignmentName.get(i) + " , " + "Assignment code : " + assignmentCode.get(i) + " ---------------");
         }
     }
 
     public void createAssignment() throws IOException {
-        System.out.println("----------------Please enter assignment code---------------");
+        System.out.println("----------------Please enter assignment code or 0 to cancel ---------------");
         String code, name, grade, questions;
         int cod, grad;
 
@@ -236,7 +236,7 @@ public class Course {
     }
 
     private void putBonusForAll() {
-        System.out.println("---------------- Please put bonus value ---------------");
+        System.out.println("----------------Please put bonus value ---------------");
         try {
             int bonus = in.readLine();
             String query = "update student_course set bonus (bonus+?) where ccod = ?;";
@@ -257,9 +257,9 @@ public class Course {
     private void putBonusForStudent() {
 
         try {
-            System.out.println("---------------- Please enter student id ---------------");
+            System.out.println("----------------Please enter student id ---------------");
             int sid = in.readLine();
-            System.out.println("---------------- Please put bonus value ---------------");
+            System.out.println("----------------Please put bonus value ---------------");
             int bonus = in.readLine();
             String query = "update student_course set bonus (bonus+?) where ccod = ? and sid = ?;";
             try {
@@ -295,12 +295,12 @@ public class Course {
         }
         if (!assignments.isEmpty()) {
             for (Assignment a : assignments) {
-                System.out.println("---------------- Assignment name : " + a.name + " , "
+                System.out.println("----------------Assignment name : " + a.name + " , "
                         + "Assignment code : " + a.code + " , "
                         + "Assignment grade : " + a.grade);
             }
         } else {
-            System.out.println("---------------- There is no assignments to view ---------------");
+            System.out.println("-------------------------------------------------------------------There is no assignments to view ---------------");
         }
         return assignments;
     }
@@ -308,9 +308,9 @@ public class Course {
     public int viewAssignment() throws IOException {
         List<Assignment> assignments = listAssignments();
         if (assignments.isEmpty()) {
-            System.out.println("---------------- There is no assignments was created to view ---------------");
+            System.out.println("-------------------------------------------------------------------There is no assignments was created to view ---------------");
         } else {
-            System.out.println("---------------- Enter the assignment code to view or 0 to cancel ---------------");
+            System.out.println("----------------Enter the assignment code to view or 0 to cancel ---------------");
             while (true) {
                 try {
                     String code = in.readLine();
@@ -321,7 +321,7 @@ public class Course {
                         new Assignment(cod).viewAssignment();
                         return cod;
                     } else {
-                        System.out.println("---------------- This course code is not existed enter another or 0 to cancel ---------------");
+                        System.out.println("----------------This course code is not existed enter another or 0 to cancel ---------------");
                     }
                 } catch (InputMismatchException e) {
                     System.out.println("----------------Please enter correct input---------------");
@@ -335,9 +335,9 @@ public class Course {
         List<Integer> students = listAllStudents();
 
         if (students.isEmpty()) {
-            System.out.println("---------------- There is no students in the site to add ---------------");
+            System.out.println("-------------------------------------------------------------------There is no students in the site to add ---------------");
         } else {
-            System.out.println("---------------- Enter the student id ---------------");
+            System.out.println("----------------Enter the student id ---------------");
             while (true) {
                 try {
                     String id = in.readLine();
@@ -345,13 +345,13 @@ public class Course {
                     if (id.equals("0")) {
                         return;
                     } else if (!students.contains(Id)) {
-                        System.out.println("---------------- This id is incorrect enter another id or 0 to cancel ---------------");
+                        System.out.println("----------------This id is incorrect enter another id or 0 to cancel ---------------");
                     } else {
                         insertStudent(Id);
                         break;
                     }
                 } catch (NumberFormatException e) {
-                    System.out.println("---------------- The id must me number ---------------");
+                    System.out.println("----------------The id must me number ---------------");
                 }
             }
         }
@@ -361,9 +361,9 @@ public class Course {
         List<Integer> students = listStudents();
 
         if (students.isEmpty()) {
-            System.out.println("---------------- There is no students registered in this course ---------------");
+            System.out.println("-------------------------------------------------------------------There is no students registered in this course ---------------");
         } else {
-            System.out.println("---------------- Enter the student id that you want to remove ---------------");
+            System.out.println("----------------Enter the student id that you want to remove ---------------");
             while (true) {
                 try {
                     String id = in.readLine();
@@ -371,13 +371,13 @@ public class Course {
                     if (id.equals("0")) {
                         return;
                     } else if (!students.contains(Id)) {
-                        System.out.println("---------------- This id is incorrect enter another id or 0 to cancel ---------------");
+                        System.out.println("----------------This id is incorrect enter another id or 0 to cancel ---------------");
                     } else {
                         removeStudent(Id);
                         break;
                     }
                 } catch (NumberFormatException e) {
-                    System.out.println("---------------- The id must me number ---------------");
+                    System.out.println("----------------The id must me number ---------------");
                 }
             }
         }
@@ -387,7 +387,7 @@ public class Course {
         List<Integer> TAs = listAllTAs();
 
         if (TAs.isEmpty()) {
-            System.out.println("---------------- There is no TAs in the site to add ---------------");
+            System.out.println("-------------------------------------------------------------------There is no TAs in the site to add ---------------");
         } else {
             while (true) {
                 try {
@@ -396,13 +396,13 @@ public class Course {
                     if (id.equals("0")) {
                         return;
                     } else if (!TAs.contains(Id)) {
-                        System.out.println("---------------- This id is incorrect enter another id or 0 to cancel ---------------");
+                        System.out.println("----------------This id is incorrect enter another id or 0 to cancel ---------------");
                     } else {
                         insertTA(Id);
                         break;
                     }
                 } catch (NumberFormatException e) {
-                    System.out.println("---------------- The id must me number ---------------");
+                    System.out.println("----------------The id must me number ---------------");
                 }
             }
         }
@@ -412,9 +412,9 @@ public class Course {
         List<Integer> TAs = listTAs();
 
         if (TAs.isEmpty()) {
-            System.out.println("---------------- There is no TAs are teaching in the course ---------------");
+            System.out.println("-------------------------------------------------------------------There is no TAs are teaching in the course ---------------");
         } else {
-            System.out.println("---------------- Enter the TA id to that you want to remove ---------------");
+            System.out.println("----------------Enter the TA id to that you want to remove ---------------");
             while (true) {
                 try {
                     String id = in.readLine();
@@ -422,13 +422,13 @@ public class Course {
                     if (id.equals("0")) {
                         return;
                     } else if (!TAs.contains(Id)) {
-                        System.out.println("---------------- This id is incorrect enter another id or 0 to cancel ---------------");
+                        System.out.println("----------------This id is incorrect enter another id or 0 to cancel ---------------");
                     } else {
                         removeTA(Id);
                         break;
                     }
                 } catch (NumberFormatException e) {
-                    System.out.println("---------------- The id must me number ---------------");
+                    System.out.println("----------------The id must me number ---------------");
                 }
             }
         }
@@ -459,7 +459,7 @@ public class Course {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 int s = rs.getInt("id");
-                System.out.println("---------------- Student id: " + s + "id"
+                System.out.println("----------------Student id: " + s + "id"
                         + " , Student name: " + rs.getString("name") + " ---------------");
                 students.add(s);
             }
@@ -494,7 +494,7 @@ public class Course {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 int s = rs.getInt("id");
-                System.out.println("---------------- Student id: " + s + "id"
+                System.out.println("-------------------------------------------------------------------Student id: " + s + "id"
                         + " , Student name: " + rs.getString("name") + " ---------------");
                 students.add(s);
             }
@@ -527,7 +527,7 @@ public class Course {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 int t = rs.getInt("id");
-                System.out.println("---------------- TA id: " + t + " , "
+                System.out.println("-------------------------------------------------------------------TA id: " + t + " , "
                         + "TA name: " + rs.getString("name") + " ---------------");
                 TAs.add(t);
             }
@@ -561,7 +561,7 @@ public class Course {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 int s = rs.getInt("id");
-                System.out.println("---------------- TA id: " + s + "id"
+                System.out.println("-------------------------------------------------------------------TA id: " + s + "id"
                         + " , TA name: " + rs.getString("name") + " ---------------");
                 TAs.add(s);
             }

@@ -77,7 +77,7 @@ public class User {
             ps.setString(1, username);
             ps.setString(2, encrPassword);
             ps.setBoolean(3, false);
-            ps.setBoolean(4, true);
+            ps.setBoolean(4, false);
             ps.execute();
         } catch (SQLException e) {
             System.out.println(e);
@@ -112,7 +112,7 @@ public class User {
             System.out.println(e);
         }
 
-        query = "insert into teacher (username,name) values (?,?);";
+        query = "insert into TA (username,name) values (?,?);";
         try {
             ps = MyConnection.con().prepareStatement(query);
             ps.setString(1, username);
@@ -125,15 +125,15 @@ public class User {
         return false;
     }
 
-    public static Boolean isTeacher(String username) {
-        String query = "select isteacher from user where username = ?";
+    public static Boolean isTA(String username) {
+        String query = "select isTA from user where username = ?";
         PreparedStatement ps;
         try {
             ps = MyConnection.con().prepareStatement(query);
             ps.setString(1, username);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                return rs.getBoolean("isteacher");
+                return rs.getBoolean("isTA");
             }
         } catch (SQLException e) {
             System.out.println(e);

@@ -33,9 +33,9 @@ public class Doctor {
     }
 
     public void showMainMenue() throws IOException {
-        System.out.println("----------------------------------------------------------------------------------------------------------");
-        System.out.println("----------------------------------------------- DOCTOR MENUE ---------------------------------------------");
-        System.out.println("----------------------------------------------------------------------------------------------------------");
+        System.out.println("------------------------------------------------------------------------------------------------------------------------------");
+        System.out.println("-------------------------------------------------------------------DOCTOR MENUE ---------------------------------------------");
+        System.out.println("------------------------------------------------------------------------------------------------------------------------------");
 
         System.out.println("1○ List all courses\n"
                 + "2○ List my courses\n"
@@ -43,7 +43,7 @@ public class Doctor {
                 + "4○ View a Course\n"
                 + "5○ Log out");
 
-        System.out.println("--------------------------------- Please enter a choice ---------------------------------");
+        System.out.println("-------------------------------------------------------------------Please enter a choice ---------------------------------");
         try {
             String choice = in.readLine();
             if (choice.equals("1")) {
@@ -58,7 +58,7 @@ public class Doctor {
                 return;
             }
         } catch (InputMismatchException e) {
-            System.out.println("---------------------------------Please enter a correct input---------------");
+            System.out.println("-------------------------------------------------------------------Please enter a correct input---------------");
         }
         showMainMenue();
     }
@@ -70,17 +70,17 @@ public class Doctor {
             ps = con.prepareStatement(query);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                System.out.println("--------------------------------- course code: " + rs.getInt("code")
+                System.out.println("-------------------------------------------------------------------course code: " + rs.getInt("code")
                         + " , Course name: " + rs.getString("name")
                         + " , Course doctor: " + rs.getString("D.name") + " ---------------------------------");
                 while (rs.next()) {
-                    System.out.println("--------------------------------- course code: " + rs.getInt("code")
+                    System.out.println("-------------------------------------------------------------------course code: " + rs.getInt("code")
                             + " , Course name: " + rs.getString("name")
                             + " , Course doctor: " + rs.getString("D.name") + " ---------------------------------");
 
                 }
             } else {
-                System.out.println("--------------------------------- There is no courses was created in the site ---------------");
+                System.out.println("-------------------------------------------------------------------There is no courses was created in the site ---------------");
             }
 
         } catch (SQLException ex) {
@@ -92,9 +92,9 @@ public class Doctor {
         List<Integer> courses = listMyCourses();
 
         if (courses.isEmpty()) {
-            System.out.println("--------------------------------- There is no courses was created to view ---------------------------------");
+            System.out.println("-------------------------------------------------------------------There is no courses was created to view ---------------------------------");
         } else {
-            System.out.println("--------------------------------- Enter the course code to view or 0 to cancel ---------------------------------");
+            System.out.println("-------------------------------------------------------------------Enter the course code to view or 0 to cancel ---------------------------------");
             try {
                 int code = Integer.parseInt(in.readLine());
                 if (code != 0) {
@@ -102,12 +102,12 @@ public class Doctor {
                         new Course(code).viewCourse();
                         courseMenue(code);
                     } else {
-                        System.out.println("--------------------------------- This course code is not found try again ---------------------------------");
+                        System.out.println("-------------------------------------------------------------------This course code is not found try again ---------------------------------");
                         viewCourse();
                     }
                 }
             } catch (NumberFormatException e) {
-                System.out.println("---------------------------------Please enter a correct input---------------");
+                System.out.println("-------------------------------------------------------------------Please enter a correct input---------------");
                 viewCourse();
             }
         }
@@ -123,17 +123,17 @@ public class Doctor {
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 int c = rs.getInt("code");
-                System.out.println("--------------------------------- course code: " + c + " , "
+                System.out.println("-------------------------------------------------------------------course code: " + c + " , "
                         + "  Course name: " + rs.getString("name") + " ---------------------------------");
                 courses.add(c);
                 while (rs.next()) {
                     c = rs.getInt("code");
-                    System.out.println("--------------------------------- course code: " + c + " , "
+                    System.out.println("-------------------------------------------------------------------course code: " + c + " , "
                             + "  Course name: " + rs.getString("name") + " ---------------------------------");
                     courses.add(c);
                 }
             } else {
-                System.out.println("--------------------------------- There is no courses was created in the site ---------------");
+                System.out.println("-------------------------------------------------------------------There is no courses was created in the site ---------------");
             }
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
@@ -142,7 +142,7 @@ public class Doctor {
     }
 
     private void createCourse() throws IOException {
-        System.out.println("---------------------------------Please enter the course name---------------");
+        System.out.println("-------------------------------------------------------------------Please enter the course name---------------");
         String cname;
 
         while (true) {
@@ -150,13 +150,13 @@ public class Doctor {
             if (username.equals("0")) {
                 return;
             } else if (!checkCourseName(cname)) {
-                System.out.println("---------------------------------This course name is already found enter another or enter 0 to cancel---------------");
+                System.out.println("-------------------------------------------------------------------This course name is already found enter another or enter 0 to cancel---------------");
             } else {
                 insertCourse(cname);
                 break;
             }
         }
-        System.out.println("---------------------------------Successfully created---------------");
+        System.out.println("-------------------------------------------------------------------Successfully created---------------");
     }
 
     private boolean checkCourseName(String cname) {
@@ -206,9 +206,9 @@ public class Doctor {
     }
 
     private void courseMenue(int code) throws IOException {
-        System.out.println("----------------------------------------------------------------------------------------------------------");
-        System.out.println("----------------------------------------------- COURSE MENUE ---------------------------------------------");
-        System.out.println("----------------------------------------------------------------------------------------------------------");
+        System.out.println("------------------------------------------------------------------------------------------------------------------------------");
+        System.out.println("-------------------------------------------------------------------COURSE MENUE ---------------------------------------------");
+        System.out.println("------------------------------------------------------------------------------------------------------------------------------");
         System.out.println("1○ View grade report\n"
                 + "2○ List assignments\n"
                 + "3○ Create assignment\n"
@@ -219,7 +219,7 @@ public class Doctor {
                 + "8○ Remove TA\n"
                 + "9○ Back");
 
-        System.out.println("---------------------------------Please enter a choice------------------------------");
+        System.out.println("-------------------------------------------------------------------Please enter a choice------------------------------");
         Course c = new Course(code);
         String choice = in.readLine();
 
@@ -243,7 +243,7 @@ public class Doctor {
         } else if (choice.equals("9")) {
             return;
         } else {
-            System.out.println("---------------------------------Please enter a correct choice---------------");
+            System.out.println("-------------------------------------------------------------------Please enter a correct choice---------------");
         }
         courseMenue(code);
     }
@@ -252,29 +252,29 @@ public class Doctor {
 
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 
-        System.out.println("--------------------------------- Please enter the username ---------------");
+        System.out.println("-------------------------------------------------------------------Please enter the username ---------------");
         String username, password;
         while (true) {
             username = in.readLine();
             if (username.equals("0")) {
                 return;
             } else if (User.checkUsername(username)) {
-                System.out.println("---------------------------------This username is already found enter another or enter 0 to cancel---------------");
+                System.out.println("-------------------------------------------------------------------This username is already found enter another or enter 0 to cancel---------------");
             } else {
                 break;
             }
         }
 
-        System.out.println("--------------------------------- Please enter the password ---------------");
+        System.out.println("-------------------------------------------------------------------Please enter the password ---------------");
         password = in.readLine();
 
-        System.out.println("---------------------------------Please enter your name---------------");
+        System.out.println("-------------------------------------------------------------------Please enter your name---------------");
         String name = in.readLine();
 
         String encrPassword = MyEncryption.encryptPassword(password);
         User.insertDoctor(username, encrPassword, name);
 
-        System.out.println("---------------------------------SUCCESSFULLY SIGNED UP---------------");
+        System.out.println("-------------------------------------------------------------------SUCCESSFULLY SIGNED UP---------------");
 
     }
 
@@ -294,23 +294,23 @@ public class Doctor {
     }
 
     private void courseAssignment(int code) throws IOException {
-        System.out.println("----------------------------------------------------------------------------------------------------------");
-        System.out.println("----------------------------------------------- ASSIGNMENT MENUE ---------------------------------------------");
-        System.out.println("----------------------------------------------------------------------------------------------------------");
-        System.out.println("1○ View assignment report\n"
-                + "2○ List submissions\n"
-                + "3○ Edit questions\n"
-                + "4○ View assignment\n"
+        System.out.println("------------------------------------------------------------------------------------------------------------------------------");
+        System.out.println("-------------------------------------------------------------------ASSIGNMENT MENUE ---------------------------------------------");
+        System.out.println("------------------------------------------------------------------------------------------------------------------------------");
+        System.out.println("1○ View the assignment report\n"
+                + "2○ View the submissions\n"
+                + "3○ Edit the questions\n"
+                + "4○ View the assignment info\n"
                 + "5○ Back");
 
-        System.out.println("---------------------------------Please enter a choice------------------------------");
+        System.out.println("-------------------------------------------------------------------Please enter a choice------------------------------");
         Assignment a = new Assignment(code);
         String choice = in.readLine();
 
         if (choice.equals("1")) {
             a.report();
         } else if (choice.equals("2")) {
-            a.listSubmissions();
+            a.viewSubmissions();
         } else if (choice.equals("3")) {
             a.editQuestions();
         } else if (choice.equals("4")) {
@@ -318,7 +318,7 @@ public class Doctor {
         } else if (choice.equals("5")) {
             return;
         } else {
-            System.out.println("---------------------------------Please enter a correct choice---------------");
+            System.out.println("-------------------------------------------------------------------Please enter a correct choice---------------");
         }
         courseAssignment(code);
     }

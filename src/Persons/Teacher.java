@@ -3,30 +3,15 @@ package Persons;
 import DataBase.MyConnection;
 import Encryption.MyEncryption;
 import Items.Course;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
-/*
-DOCTORS
-● Each course is created by a doctor. He adds some TAs for the course.
-● Course has name, code, and registered students
-● Doctors can create assignments, view them, set grades and get statistics
-● A Doctor main menu should be
-○ "List Courses", "Create course", "View Course", "Log out"
-■ Log out option back us to the main menu (sign in / sign up menu)
-● If doctor selects View Course,his menu may be like
-○ "List Assignments", "Create Assignment", "View Assignment", "Back"
-○ Back opton bring him back to the main menu
-● An Assignment View menu like
-○ "Show Info", "Show Grades Report", "List Solutions", "View Solution", "Back"
-● An Assignment Solution menu like
-○ "Show Info", "Set Grade", "Set a Comment", "Back"
-● Please, think what may be else missing….and try to imagine a good requreiments for
-each of the above menu items
- */
 public class Teacher {
 
     private String id, username, password, name, email;
@@ -43,7 +28,7 @@ public class Teacher {
                 + "3○ View a Course\n"
                 + "4○ Log out\n");
 
-        System.out.println("----------------Please enter a input---------------");
+        System.out.println("-------------------------------------------------------------------Please enter a input---------------");
         try {
             int choice = in.nextInt();
             if (choice == 1) {
@@ -56,7 +41,7 @@ public class Teacher {
                 return;
             }
         } catch (InputMismatchException e) {
-            System.out.println("----------------Please enter a correct input---------------");
+            System.out.println("-------------------------------------------------------------------Please enter a correct input---------------");
         }
         showMainMenue();
     }
@@ -70,17 +55,17 @@ public class Teacher {
 //            ResultSet rs = ps.executeQuery();
 //            for (int i = 1; rs.next(); i++) {
 //                courses.add(rs.getString(i));
-//                System.out.println("---------------- course Id: " + rs.getNString("cid") + ")Course name: " + rs.getString("cname") + " ---------------");
+//                System.out.println("-------------------------------------------------------------------course Id: " + rs.getNString("cid") + ")Course name: " + rs.getString("cname") + " ---------------");
 //            }
 //        } catch (SQLException ex) {
 //            System.out.println(ex.getMessage());
 //        }
 //
 //        if (courses.isEmpty()) {
-//            System.out.println("---------------- There is no courses to register ---------------");
+//            System.out.println("-------------------------------------------------------------------There is no courses to register ---------------");
 //        } else {
 //            while (true) {
-//                System.out.println("---------------- Enter the course Id to register or zero to cancel ---------------");
+//                System.out.println("-------------------------------------------------------------------Enter the course Id to register or zero to cancel ---------------");
 //                try {
 //                    int choice = in.nextInt();
 //                    if (choice != 0) {
@@ -88,7 +73,7 @@ public class Teacher {
 //                    }
 //                    break;
 //                } catch (InputMismatchException e) {
-//                    System.out.println("----------------Please enter a correct choice---------------");
+//                    System.out.println("-------------------------------------------------------------------Please enter a correct choice---------------");
 //                    registerInCourse();
 //                }
 //            }
@@ -104,7 +89,7 @@ public class Teacher {
             ResultSet rs = ps.executeQuery();
             for (int i = 1; rs.next(); i++) {
                 courses.add(rs.getString(i));
-                System.out.println("---------------- course code: " + rs.getNString("ccode")
+                System.out.println("-------------------------------------------------------------------course code: " + rs.getNString("ccode")
                         + " , Course name: " + rs.getString("cname")
                         + " , Course doctor: " + rs.getString("dname") + " ---------------");
             }
@@ -113,10 +98,10 @@ public class Teacher {
         }
 
 //        if (courses.isEmpty()) {
-//            System.out.println("---------------- There is no courses was created to view ---------------");
+//            System.out.println("-------------------------------------------------------------------There is no courses was created to view ---------------");
 //        } else {
 //            while (true) {
-//                System.out.println("---------------- Enter the course Id to view or zero to go back ---------------");
+//                System.out.println("-------------------------------------------------------------------Enter the course Id to view or zero to go back ---------------");
 //                try {
 //                    int choice = in.nextInt();
 //                    if (choice != 0) {
@@ -124,7 +109,7 @@ public class Teacher {
 //                    }
 //                    break;
 //                } catch (InputMismatchException e) {
-//                    System.out.println("----------------Please enter a correct choice---------------");
+//                    System.out.println("-------------------------------------------------------------------Please enter a correct choice---------------");
 //                    registerInCourse();
 //                }
 //            }
@@ -134,10 +119,10 @@ public class Teacher {
     private void viewCourse() {
         List<String> css = listCourses();
         if (css.isEmpty()) {
-            System.out.println("---------------- There is no courses was created to view ---------------");
+            System.out.println("-------------------------------------------------------------------There is no courses was created to view ---------------");
         } else {
             while (true) {
-                System.out.println("---------------- Enter the course code to view or 0 to cancel ---------------");
+                System.out.println("-------------------------------------------------------------------Enter the course code to view or 0 to cancel ---------------");
                 try {
                     int ccode = in.nextInt();
                     if (ccode != 0) {
@@ -145,13 +130,13 @@ public class Teacher {
                             new Course(ccode).viewCourse();
                             courseMenue(ccode);
                         } else {
-                            System.out.println("---------------- This course code is not found try again ---------------");
+                            System.out.println("-------------------------------------------------------------------This course code is not found try again ---------------");
                             viewCourse();
                         }
                     }
                     break;
                 } catch (InputMismatchException e) {
-                    System.out.println("----------------Please enter a correct input---------------");
+                    System.out.println("-------------------------------------------------------------------Please enter a correct input---------------");
                     viewCourse();
                 }
             }
@@ -168,7 +153,7 @@ public class Teacher {
             ResultSet rs = ps.executeQuery();
             for (int i = 1; rs.next(); i++) {
                 coursesCode.add(rs.getString("ccode"));
-                System.out.println("---------------- course code: " + rs.getNString("ccode") + "  Course name: " + rs.getString("cname") + " ---------------");
+                System.out.println("-------------------------------------------------------------------course code: " + rs.getNString("ccode") + "  Course name: " + rs.getString("cname") + " ---------------");
             }
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
@@ -177,30 +162,30 @@ public class Teacher {
     }
 
     private void createCourse() {
-        System.out.println("----------------Please enter the course name---------------");
-        String cname = in.nextLine();
+        System.out.println("-------------------------------------------------------------------Please enter the course name---------------");
+        String cname = in.readLine();
         if (!checkCourseName(cname)) {
-            System.out.println("----------------This course name is already found---------------");
-            System.out.println("----------------To try another name enter 1---------------");
-            System.out.println("----------------To cancel enter 0---------------");
+            System.out.println("-------------------------------------------------------------------This course name is already found---------------");
+            System.out.println("-------------------------------------------------------------------To try another name enter 1---------------");
+            System.out.println("-------------------------------------------------------------------To cancel enter 0---------------");
             int choice = in.nextInt();
             if (choice != 0) {
                 createCourse();
             }
         } else {
-            System.out.println("----------------Please enter the course code---------------");
-            String ccode = in.nextLine();
+            System.out.println("-------------------------------------------------------------------Please enter the course code---------------");
+            String ccode = in.readLine();
             if (!checkCourseCode(ccode)) {
-                System.out.println("----------------This course code is already found---------------");
-                System.out.println("----------------To try another code enter 1---------------");
-                System.out.println("----------------To cancel enter 0---------------");
+                System.out.println("-------------------------------------------------------------------This course code is already found---------------");
+                System.out.println("-------------------------------------------------------------------To try another code enter 1---------------");
+                System.out.println("-------------------------------------------------------------------To cancel enter 0---------------");
                 int choice = in.nextInt();
                 if (choice != 0) {
                     createCourse();
                 }
             } else {
                 if (insertCourse(cname, ccode)) {
-                    System.out.println("----------------Successfully created---------------");
+                    System.out.println("-------------------------------------------------------------------Successfully created---------------");
                 }
             }
         }
@@ -299,6 +284,8 @@ public class Teacher {
 
         query = "select  cname from course where ccode = ?;";
         try {
+            query = "select  cname from course where ccode = ?;";
+
             PreparedStatement ps;
             ps = MyConnection.con().prepareStatement(query);
             ps.setString(1, ccode + "");
@@ -306,21 +293,21 @@ public class Teacher {
             while (rs.next()) {
                 courseTeachers.add("tname");
             }
+
+            System.out.println("-------------------------------------------------------------------Course name : " + cname + " ---------------");
+            System.out.println("-------------------------------------------------------------------Course ccode : " + ccode + " ---------------");
+            System.out.println("-------------------------------------------------------------------Course doctor : " + dname + " ---------------");
+            System.out.println("-------------------------------------------------------------------Course teachers : ");
+            for (String ct : courseTeachers) {
+                System.out.print(ct + "--");
+            }
+            System.out.println("");
+            System.out.println("-------------------------------------------------------------------Course students : ");
+            for (String cs : courseStudents) {
+                System.out.print(cs + "--");
+            }
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
-        }
-
-        System.out.println("---------------- Course name : " + cname + " ---------------");
-        System.out.println("---------------- Course ccode : " + ccode + " ---------------");
-        System.out.println("---------------- Course doctor : " + dname + " ---------------");
-        System.out.println("---------------- Course teachers : ");
-        for (String ct : courseTeachers) {
-            System.out.print(ct + "--");
-        }
-        System.out.println("");
-        System.out.println("---------------- Course students : ");
-        for (String cs : courseStudents) {
-            System.out.print(cs + "--");
         }
     }
 
@@ -337,7 +324,7 @@ public class Teacher {
                 + "8○ Remove teacher\n"
                 + "9○ Back\n");
 
-        System.out.println("----------------Please enter a input---------------");
+        System.out.println("-------------------------------------------------------------------Please enter a input---------------");
         Course c = new Course(ccode);
         try {
             int choice = in.nextInt();
@@ -360,46 +347,41 @@ public class Teacher {
             } else if (choice == 9) {
 
             } else {
-                System.out.println("----------------Please enter a correct choice---------------");
+                System.out.println("-------------------------------------------------------------------Please enter a correct choice---------------");
             }
         } catch (InputMismatchException e) {
-            System.out.println("----------------Please enter a correct input---------------");
+            System.out.println("-------------------------------------------------------------------Please enter a correct input---------------");
         }
 
     }
+    public static void signUp() throws IOException {
 
-    public void signUp() {
-        System.out.println("----------------Please enter username---------------");
-        String username = in.nextLine();
+        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 
-        try {
-            if (User.checkUsername(username)) {
-                System.out.println("----------------This username is already found enter another or enter 0 to cancel---------------");
-                int choice = in.nextInt();
-                if (choice != 0) {
-                    signUp();
-                }
+        System.out.println("-------------------------------------------------------------------Please enter the username ---------------");
+        String username, password;
+        while (true) {
+            username = in.readLine();
+            if (username.equals("0")) {
+                return;
+            } else if (User.checkUsername(username)) {
+                System.out.println("-------------------------------------------------------------------This username is already found enter another or enter 0 to cancel---------------");
             } else {
-                System.out.println("----------------Please enter password---------------");
-                String password = in.nextLine();
-                System.out.println("----------------Please enter your name---------------");
-                String name = in.nextLine();
-                String encrPassword = MyEncryption.encryptPassword(password);
-                User.insertTeacher(username, encrPassword, name);
+                break;
             }
-        } catch (InputMismatchException e) {
-            System.out.println("----------------Please enter a correct input---------------");
-            signUp();
         }
+
+        System.out.println("-------------------------------------------------------------------Please enter the password ---------------");
+        password = in.readLine();
+
+        System.out.println("-------------------------------------------------------------------Please enter your name---------------");
+        String name = in.readLine();
+
+        String encrPassword = MyEncryption.encryptPassword(password);
+        User.insertTeacher(username, encrPassword, name);
+
+        System.out.println("-------------------------------------------------------------------SUCCESSFULLY SIGNED UP---------------");
+
     }
 
-    public boolean equals(Student s) {
-        if(id == s.id && s.name.equals(name)){
-            return true;
-        }
-        return false;
-    }
-    
-    
-    
 }

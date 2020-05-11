@@ -84,19 +84,19 @@ public class Assignment {
             System.out.println(ex.getMessage());
         }
 
-        System.out.println("---------------- Assignment name : " + name + " ---------------");
-        System.out.println("---------------- Assignment code : " + code + " ---------------");
-        System.out.println("---------------- Assignment grade : " + grade + " ---------------");
-        System.out.println("---------------- Course : " + cname + " ---------------");
-        System.out.println("---------------- Doctor : " + dname + " ---------------");
-        System.out.println("---------------- Assignment content: " + question + " ---------------");
-        System.out.println("---------------- Number of submissions : " + solved + " ---------------");
-        System.out.println("---------------- Number of scheduled students : " + totalStudents + " ---------------");
+        System.out.println("-------------------------------------------------------------------Assignment name : " + name + " ---------------");
+        System.out.println("-------------------------------------------------------------------Assignment code : " + code + " ---------------");
+        System.out.println("-------------------------------------------------------------------Assignment grade : " + grade + " ---------------");
+        System.out.println("-------------------------------------------------------------------Course : " + cname + " ---------------");
+        System.out.println("-------------------------------------------------------------------Doctor : " + dname + " ---------------");
+        System.out.println("-------------------------------------------------------------------Assignment content: " + question + " ---------------");
+        System.out.println("-------------------------------------------------------------------Number of submissions : " + solved + " ---------------");
+        System.out.println("-------------------------------------------------------------------Number of scheduled students : " + totalStudents + " ---------------");
     }
 
     public void report() {
-        System.out.println("---------------- Number of students that solved the assignment : " + solved + " ---------------");
-        System.out.println("---------------- Number of students that didn't solve the assignment : " + (totalStudents - solved) + " ---------------");
+        System.out.println("-------------------------------------------------------------------Number of students that solved the assignment : " + solved + " ---------------");
+        System.out.println("-------------------------------------------------------------------Number of students that didn't solve the assignment : " + (totalStudents - solved) + " ---------------");
 
         List<Student> studentsSolved = new ArrayList();
         Map<Integer, Integer> mapId = new HashMap();
@@ -135,19 +135,58 @@ public class Assignment {
             System.out.println(ex.getMessage());
         }
         for (Student student : studentsSolved) {
-            System.out.println("---------------- student id : " + student.id + " , " + " student name : " + student.name + " , " + " student status : solve , " + " student grade : " + (student.assignmentGrade == -1 ? "N/A" : student.assignmentGrade) + " ---------------");
+            System.out.println("-------------------------------------------------------------------student id : " + student.id + " , " + " student name : " + student.name + " , " + " student status : solve , " + " student grade : " + (student.assignmentGrade == -1 ? "N/A" : student.assignmentGrade) + " ---------------");
         }
         for (Student student : studentsNotSolved) {
-            System.out.println("---------------- student id : " + student.id + " , " + " student name : " + student.name + " , " + " student status : not solve ---------------");
+            System.out.println("-------------------------------------------------------------------student id : " + student.id + " , " + " student name : " + student.name + " , " + " student status : not solve ---------------");
         }
 
     }
 
-    public void listSubmissions() {
+    public void viewSubmissions() {
+        List<Student> studentsSolution = new ArrayList();
+        String query = "select S.name, A.sid, A.answer from assignment_student A JOIN student S ON A.sid = S.id where A.acode = ?;";
+        try {
+            PreparedStatement ps;
+            ps = MyConnection.con().prepareStatement(query);
+            ps.setInt(1, ccode);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                String name = rs.getString("S.name");
+                String answer = rs.getString("S.name");
+                int sid = rs.getInt("A.sid");
+                studentsSolution.add(new Student(name, sid, answer));
+            }
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
+        for (Student student : studentsSolution) {
+            System.out.println("--------------------------------------------------------------------------------------------------------------------------------------------");
+            System.out.println("-------------------------------------------------------------------Student name : " + student.name + " , " + "Student id : " + student.id + "-------------------------------------------------------------");
+            System.out.println(student.assignmentAnswer);
+        }
+
+        if (studentsSolution.isEmpty()) {
+            System.out.println("-------------------------------------------------------------------There is no submissions to view-------------------------------------------------------------");
+        }
 
     }
 
     public void editQuestions() {
-
+        String oldQuestions = "";
+        String query = "select question from assignment where code = ?;";
+        try {
+            PreparedStatement ps;
+            ps = MyConnection.con().prepareStatement(query);
+            ps.setInt(1, code);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                oldQuestions = rs.getString("question");
+            }
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
+        System.out.println("-------------------------------------------------------------------Old questions-------------------------------------------------------------");
+        System.out.println(oldQuestions);
     }
 }

@@ -2,6 +2,9 @@ package Persons;
 
 import DataBase.MyConnection;
 import Encryption.MyEncryption;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
@@ -10,6 +13,7 @@ import java.util.Scanner;
 
 public class Student implements Comparable<Student> {
 
+    public String assignmentAnswer;
     private String username, password;
     public String name;
     public int id, midGrade, finalGrade, yearDoingGrade, bonusGrade, totalGrade, assignmentGrade;
@@ -23,6 +27,12 @@ public class Student implements Comparable<Student> {
         this.yearDoingGrade = yearDoingGrade;
         this.bonusGrade = bonusGrade;
         this.totalGrade = totalGrade;
+    }
+
+    public Student(String name, int id, String assignmentAnswer) {
+        this.name = name;
+        this.id = id;
+        this.assignmentAnswer = assignmentAnswer;
     }
 
     public Student(String name, int id, int assignmentGrade) {
@@ -58,7 +68,7 @@ public class Student implements Comparable<Student> {
                 return;
             }
         } catch (InputMismatchException e) {
-            System.out.println("----------------Please enter a correct choice---------------");
+            System.out.println("-------------------------------------------------------------------Please enter a correct choice---------------");
         }
 
         showMainMenue();
@@ -74,17 +84,17 @@ public class Student implements Comparable<Student> {
             ResultSet rs = ps.executeQuery();
             for (int i = 1; rs.next(); i++) {
                 courses.add(rs.getString(i));
-                System.out.println("---------------- course Id: " + rs.getNString("cid") + ")Course name: " + rs.getString("cname") + " ---------------");
+                System.out.println("-------------------------------------------------------------------course Id: " + rs.getNString("cid") + ")Course name: " + rs.getString("cname") + " ---------------");
             }
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
         }
 
         if (courses.isEmpty()) {
-            System.out.println("---------------- There is no courses to register ---------------");
+            System.out.println("-------------------------------------------------------------------There is no courses to register ---------------");
         } else {
             while (true) {
-                System.out.println("---------------- Enter the course Id to register or zero to cancel ---------------");
+                System.out.println("-------------------------------------------------------------------Enter the course Id to register or zero to cancel ---------------");
                 try {
                     int choice = in.nextInt();
                     if (choice != 0) {
@@ -92,7 +102,7 @@ public class Student implements Comparable<Student> {
                     }
                     break;
                 } catch (InputMismatchException e) {
-                    System.out.println("----------------Please enter a correct choice---------------");
+                    System.out.println("-------------------------------------------------------------------Please enter a correct choice---------------");
                     registerInCourse();
                 }
             }
@@ -109,17 +119,17 @@ public class Student implements Comparable<Student> {
             ResultSet rs = ps.executeQuery();
             for (int i = 1; rs.next(); i++) {
                 courses.add(rs.getString(i));
-                System.out.println("---------------- course Id: " + rs.getNString("cid") + ")Course name: " + rs.getString("cname") + " ---------------");
+                System.out.println("-------------------------------------------------------------------course Id: " + rs.getNString("cid") + ")Course name: " + rs.getString("cname") + " ---------------");
             }
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
         }
 
         if (courses.isEmpty()) {
-            System.out.println("---------------- There is no courses was registered in to view ---------------");
+            System.out.println("-------------------------------------------------------------------There is no courses was registered in to view ---------------");
         } else {
             while (true) {
-                System.out.println("---------------- Enter the course Id to view or zero to cancel ---------------");
+                System.out.println("-------------------------------------------------------------------Enter the course Id to view or zero to cancel ---------------");
                 try {
                     int choice = in.nextInt();
                     if (choice != 0) {
@@ -127,7 +137,7 @@ public class Student implements Comparable<Student> {
                     }
                     break;
                 } catch (InputMismatchException e) {
-                    System.out.println("----------------Please enter a correct choice---------------");
+                    System.out.println("-------------------------------------------------------------------Please enter a correct choice---------------");
                     registerInCourse();
                 }
             }
@@ -154,38 +164,33 @@ public class Student implements Comparable<Student> {
 
     }
 
-    public void signUp() {
-        System.out.println("----------------Please enter username---------------");
-        String username = in.nextLine();
+    public static void signUp() throws IOException {
 
-        try {
-            if (User.checkUsername(username)) {
-                System.out.println("----------------This username is already found enter another or enter 0 to cancel---------------");
-                int choice = in.nextInt();
-                if (choice != 0) {
-                    signUp();
-                }
+        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+
+        System.out.println("-------------------------------------------------------------------Please enter the username ---------------");
+        String username, password;
+        while (true) {
+            username = in.readLine();
+            if (username.equals("0")) {
+                return;
+            } else if (User.checkUsername(username)) {
+                System.out.println("-------------------------------------------------------------------This username is already found enter another or enter 0 to cancel---------------");
             } else {
-                System.out.println("----------------Please enter password---------------");
-                String password = in.nextLine();
-                System.out.println("----------------Please enter your name---------------");
-                String name = in.nextLine();
-                String encrPassword = MyEncryption.encryptPassword(password);
-                User.insertStudent(username, encrPassword, name);
+                break;
             }
-        } catch (InputMismatchException e) {
-            System.out.println("----------------Please enter a correct input---------------");
-            signUp();
         }
 
-    }
+        System.out.println("-------------------------------------------------------------------Please enter the password ---------------");
+        password = in.readLine();
 
-    @Override
-    public int compareTo(Student o) {
-        if (id == o.id) {
-            return 0;
-        }
-        return 1;
+        System.out.println("-------------------------------------------------------------------Please enter your name---------------");
+        String name = in.readLine();
+
+        String encrPassword = MyEncryption.encryptPassword(password);
+        User.insertStudent(username, encrPassword, name);
+
+        System.out.println("-------------------------------------------------------------------SUCCESSFULLY SIGNED UP---------------");
 
     }
 
