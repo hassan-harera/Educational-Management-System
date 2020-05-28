@@ -2,6 +2,7 @@ package Persons;
 
 import DataBase.MyConnection;
 import Encryption.MyEncryption;
+import Items.Course;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -17,7 +18,7 @@ public class Student implements Comparable<Student> {
     private String username, password;
     public String name;
     public int id, midGrade, finalGrade, yearDoingGrade, bonusGrade, totalGrade, assignmentGrade;
-    Scanner in;
+    BufferedReader in;
 
     public Student(String name, int id, int midGrade, int finalGrade, int yearDoingGrade, int bonusGrade, int totalGrade) {
         this.name = name;
@@ -42,7 +43,7 @@ public class Student implements Comparable<Student> {
     }
 
     public Student() {
-        in = new Scanner(System.in);
+        in = new BufferedReader(new InputStreamReader(System.in));
     }
 
     public Student(String name, int id) {
@@ -50,98 +51,78 @@ public class Student implements Comparable<Student> {
         this.id = id;
     }
 
-    public void showMainMenue() {
+    public void showMainMenue() throws IOException {
+        System.out.println("------------------------------------------------------------------------------------------------------------------------------");
+        System.out.println("-------------------------------------------------------------------STUDENT MENUE ---------------------------------------------");
+        System.out.println("------------------------------------------------------------------------------------------------------------------------------");
+
         System.out.println("1○ Register in course\n"
-                + "2○ List My Courses\n"
+                + "2○ View My Courses\n"
                 + "3○ View a course\n"
-                + "4○ Log out\n");
+                + "4○ Log out");
 
         try {
-            int choice = in.nextInt();
-            if (choice == 1) {
+            String choice = in.readLine();
+            if (choice.equals("1")) {
                 registerInCourse();
-            } else if (choice == 2) {
+            } else if (choice.equals("2")) {
                 listMyCourses();
-            } else if (choice == 3) {
+            } else if (choice.equals("3")) {
                 viewACourse();
-            } else if (choice == 4) {
+            } else if (choice.equals("4")) {
                 return;
+            } else {
+                System.out.println("-------------------------------------------------------------------Please enter a correct choice---------------");
             }
         } catch (InputMismatchException e) {
             System.out.println("-------------------------------------------------------------------Please enter a correct choice---------------");
         }
-
+        
         showMainMenue();
-
     }
 
-    private void registerInCourse() {
-        List<String> courses = new ArrayList();
-        String query = "select * from course;";
-        try {
-            PreparedStatement ps;
-            ps = MyConnection.con().prepareStatement(query);
-            ResultSet rs = ps.executeQuery();
-            for (int i = 1; rs.next(); i++) {
-                courses.add(rs.getString(i));
-                System.out.println("-------------------------------------------------------------------course Id: " + rs.getNString("cid") + ")Course name: " + rs.getString("cname") + " ---------------");
-            }
-        } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
-        }
+    private void registerInCourse() throws IOException {
+        List<Integer> courses = listMyCourses();
 
         if (courses.isEmpty()) {
-            System.out.println("-------------------------------------------------------------------There is no courses to register ---------------");
+            System.out.println("-------------------------------------------------------------------There is no courses---------------");
         } else {
+            System.out.println("-------------------------------------------------------------------Enter the course code that want to register in---------------");
             while (true) {
-                System.out.println("-------------------------------------------------------------------Enter the course Id to register or zero to cancel ---------------");
                 try {
-                    int choice = in.nextInt();
-                    if (choice != 0) {
-                        registerInCourse(choice);
+                    String code = in.readLine();
+                    if (code.equals("0")) {
+                        return;
+                    } else if (!courses.contains(Integer.parseInt(code))) {
+                        System.out.println("-------------------------------------------------------------------This code is not correct enter another or 0 to cancel---------------");
+                    } else {
+                        new Course(Integer.parseInt(code)).insertStudent(id);
+                        System.out.println("-------------------------------------------------------------------SUCCESFULLY REGISTERED---------------");
                     }
-                    break;
                 } catch (InputMismatchException e) {
                     System.out.println("-------------------------------------------------------------------Please enter a correct choice---------------");
-                    registerInCourse();
                 }
             }
         }
     }
 
-    private void listMyCourses() {
-        List<String> courses = new ArrayList();
-        String query = "select * from student_course where sid = ?;";
+    private List<Integer> listMyCourses() {
+        List<Integer> courses = new ArrayList();
+        String query = "select C.name,S.ccode from student_course S join course C on C.code = S.ccode where S.sid = ?;";
         try {
             PreparedStatement ps;
             ps = MyConnection.con().prepareStatement(query);
-            ps.setString(1, id);
+            ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
             for (int i = 1; rs.next(); i++) {
-                courses.add(rs.getString(i));
-                System.out.println("-------------------------------------------------------------------course Id: " + rs.getNString("cid") + ")Course name: " + rs.getString("cname") + " ---------------");
+                int code = rs.getInt("S.ccode");
+                courses.add(code);
+                System.out.println("-------------------------------------------------------------------course code: " + code + " Course name: " + rs.getString("C.name") + " ---------------");
             }
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
         }
-
-        if (courses.isEmpty()) {
-            System.out.println("-------------------------------------------------------------------There is no courses was registered in to view ---------------");
-        } else {
-            while (true) {
-                System.out.println("-------------------------------------------------------------------Enter the course Id to view or zero to cancel ---------------");
-                try {
-                    int choice = in.nextInt();
-                    if (choice != 0) {
-                        viewCourse(choice);
-                    }
-                    break;
-                } catch (InputMismatchException e) {
-                    System.out.println("-------------------------------------------------------------------Please enter a correct choice---------------");
-                    registerInCourse();
-                }
-            }
-        }
+        return courses;
     }
 
     private void viewACourse() {
@@ -192,6 +173,11 @@ public class Student implements Comparable<Student> {
 
         System.out.println("-------------------------------------------------------------------SUCCESSFULLY SIGNED UP---------------");
 
+    }
+
+    @Override
+    public int compareTo(Student o) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

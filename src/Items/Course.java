@@ -9,13 +9,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.InputMismatchException;
 import java.util.List;
 
-/**
- *
- * @author harera
- */
 public class Course {
 
     private String name, dname;
@@ -33,7 +28,7 @@ public class Course {
         List<String> courseStudents = new ArrayList<>();
         List<String> courseTAs = new ArrayList<>();
 
-        String query = "select  S.name from student_course C JOIN student S ON S.id = C.sid where C.ccode = ?;";
+        String query = "select S.name from student_course C JOIN student S ON S.id = C.sid where C.ccode = ?;";
         try {
             PreparedStatement ps;
             ps = MyConnection.con().prepareStatement(query);
@@ -104,7 +99,7 @@ public class Course {
         System.out.println("");
     }
 
-    public void gradeReport() {
+    public void gradeReport() throws IOException {
         List<Student> students = new ArrayList<>();
 
         String query = "SELECT  S.name, S.id, C.midmark, C.finalmark, C.totalmark , C.bonus, C.yearmark FROM student_course C JOIN student S ON S.id = C.sid where C.ccode = ?;";
@@ -214,66 +209,75 @@ public class Course {
         }
     }
 
-    private void gradeActions() {
+    private void gradeActions() throws IOException {
         System.out.println("----------------To put bonus for all students enter 1---------------");
         System.out.println("----------------To put bonus for some student enter 2---------------");
         System.out.println("----------------To go back enter 0---------------");
 
-        try {
-            int choice = in.readLine();
-            if (choice != 0) {
-                if (choice == 1) {
-                    putBonusForAll();
-                } else if (choice == 2) {
-                    putBonusForStudent();
-                } else {
-                    System.out.println("----------------Please enter correct input---------------");
-                }
+        while (true) {
+            String choice = in.readLine();
+            if (choice.equals("0")) {
+                return;
+            } else if (choice.equals("1")) {
+                putBonusForAll();
+                break;
+            } else if (choice.equals("2")) {
+                putBonusForStudent();
+                break;
+            } else {
+                System.out.println("----------------Please enter correct input---------------");
             }
-        } catch (InputMismatchException e) {
-            System.out.println("----------------Please enter correct input---------------");
         }
     }
 
-    private void putBonusForAll() {
+    private void putBonusForAll() throws IOException {
         System.out.println("----------------Please put bonus value ---------------");
-        try {
-            int bonus = in.readLine();
-            String query = "update student_course set bonus (bonus+?) where ccod = ?;";
+        String bonus = null;
+        while (true) {
             try {
-                PreparedStatement ps;
-                ps = MyConnection.con().prepareStatement(query);
-                ps.setInt(1, bonus);
-                ps.setInt(2, code);
-                ps.executeUpdate();
-            } catch (SQLException ex) {
-                System.out.println(ex.getMessage());
+                bonus = in.readLine();
+                if (bonus.equals("0")) {
+                    return;
+                } else if (Integer.parseInt(bonus) != 0) {
+                    break;
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("----------------bonus input must be number or enter 0 to cancel---------------");
             }
-        } catch (InputMismatchException e) {
-            System.out.println("----------------Please enter correct input---------------");
+        }
+
+        String query = "update student_course set bonus (bonus+?) where ccod = ?;";
+        try {
+            PreparedStatement ps;
+            ps = MyConnection.con().prepareStatement(query);
+            ps.setInt(1, Integer.parseInt(bonus));
+            ps.setInt(2, code);
+            ps.executeUpdate();
+        } catch (SQLException ex) {
+            System.out.println(ex);
         }
     }
 
-    private void putBonusForStudent() {
-
+    private void putBonusForStudent() throws IOException {
+        
         try {
-            System.out.println("----------------Please enter student id ---------------");
-            int sid = in.readLine();
-            System.out.println("----------------Please put bonus value ---------------");
-            int bonus = in.readLine();
+            System.out.println("----------------Please enter student id---------------");
+            int sid = Integer.parseInt(in.readLine());
+
+            System.out.println("----------------Please put bonus value---------------");
+            int bonus = Integer.parseInt(in.readLine());
+            
             String query = "update student_course set bonus (bonus+?) where ccod = ? and sid = ?;";
-            try {
-                PreparedStatement ps;
-                ps = MyConnection.con().prepareStatement(query);
-                ps.setInt(1, bonus);
-                ps.setInt(2, code);
-                ps.setInt(3, sid);
-                ps.executeUpdate();
-            } catch (SQLException ex) {
-                System.out.println(ex.getMessage());
-            }
-        } catch (InputMismatchException e) {
-            System.out.println("----------------Please enter correct input---------------");
+            PreparedStatement ps;
+            ps = MyConnection.con().prepareStatement(query);
+            ps.setInt(1, sid);
+            ps.setInt(2, code);
+            ps.setInt(3, bonus);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e);
+        } catch (NumberFormatException e) {
+            System.out.println("----------------the student id and the bonus value must be number---------------");
         }
     }
 
@@ -323,7 +327,7 @@ public class Course {
                     } else {
                         System.out.println("----------------This course code is not existed enter another or 0 to cancel ---------------");
                     }
-                } catch (InputMismatchException e) {
+                } catch (NumberFormatException e) {
                     System.out.println("----------------Please enter correct input---------------");
                 }
             }
@@ -470,7 +474,7 @@ public class Course {
         return students;
     }
 
-    private void insertStudent(int id) {
+    public void insertStudent(int id) {
         String query = "insert into student_course (sid,ccode) values(?,?);";
         try {
             PreparedStatement ps;
