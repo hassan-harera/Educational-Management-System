@@ -21,6 +21,10 @@ public class Teacher {
         in = new BufferedReader(new InputStreamReader(System.in));
     }
 
+    public Teacher(String username) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
     public void showMainMenue() throws IOException {
         System.out.println("1○ List My courses\n"
                 + "2○ Create a course\n"

@@ -14,7 +14,7 @@ import java.util.List;
 public class Course {
 
     private String name, dname;
-    private int code;
+    private int code, dId, sId, taId;
     private Connection con;
     private BufferedReader in;
 
@@ -24,6 +24,20 @@ public class Course {
         this.code = code;
     }
 
+    public void setTaId(int taId) {
+        this.taId = taId;
+    }
+
+    public void setsId(int sId) {
+        this.sId = sId;
+    }
+
+    public void setdId(int dId) {
+        this.dId = dId;
+    }
+    
+    
+    
     public void viewCourse() {
         List<String> courseStudents = new ArrayList<>();
         List<String> courseTAs = new ArrayList<>();
@@ -35,7 +49,7 @@ public class Course {
             ps.setInt(1, code);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                courseStudents.add("name");
+                courseStudents.add(rs.getString("S.name"));
             }
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
@@ -86,17 +100,18 @@ public class Course {
         if (!courseTAs.isEmpty()) {
             System.out.println("---------------------------------------------------------------Course TAs : ");
             for (String ct : courseTAs) {
-                System.out.print(ct + "--");
+                System.out.print(ct + "-");
             }
-        }
-        if (!courseStudents.isEmpty()) {
             System.out.println("");
-            System.out.println("-------------------------------------------------------------------Course students : ");
-            for (String cs : courseStudents) {
-                System.out.print(cs + "--");
-            }
         }
-        System.out.println("");
+
+        if (!courseStudents.isEmpty()) {
+            System.out.print("-------------------------------------------------------------------Course students : ");
+            for (String cs : courseStudents) {
+                System.out.print(cs + ", ");
+            }
+            System.out.println("");
+        }
     }
 
     public void gradeReport() throws IOException {
@@ -259,14 +274,14 @@ public class Course {
     }
 
     private void putBonusForStudent() throws IOException {
-        
+
         try {
             System.out.println("----------------Please enter student id---------------");
             int sid = Integer.parseInt(in.readLine());
 
             System.out.println("----------------Please put bonus value---------------");
             int bonus = Integer.parseInt(in.readLine());
-            
+
             String query = "update student_course set bonus (bonus+?) where ccod = ? and sid = ?;";
             PreparedStatement ps;
             ps = MyConnection.con().prepareStatement(query);
@@ -322,7 +337,7 @@ public class Course {
                     if (code.equals("0")) {
                         return -1;
                     } else if (!checkAssignmentCode(cod)) {
-                        new Assignment(cod).viewAssignment();
+                        new Assignment(Integer.parseInt(code)).viewAssignment();
                         return cod;
                     } else {
                         System.out.println("----------------This course code is not existed enter another or 0 to cancel ---------------");
@@ -475,12 +490,13 @@ public class Course {
     }
 
     public void insertStudent(int id) {
-        String query = "insert into student_course (sid,ccode) values(?,?);";
+        String query = "INSERT INTO student_course (sid,ccode) SELECT * FROM (SELECT ?,?) AS tmp WHERE NOT EXISTS (SELECT sid FROM student_course WHERE sid = ?) LIMIT 1;";
         try {
             PreparedStatement ps;
             ps = con.prepareStatement(query);
             ps.setInt(1, id);
             ps.setInt(2, code);
+            ps.setInt(3, id);
             ps.execute();
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
@@ -588,4 +604,30 @@ public class Course {
         }
     }
 
+    public void studentGradeReport(int id) {
+        String query = "select S.id, S.name, C.code,C.name, A.yearmark,A.midmark,A.finalmark,A.bonus,totalmark from Student S join student_course A on S.id = A.sid join course C on C.code = A.ccode where C.code = ? and S.id = ?;";
+        try {
+            PreparedStatement ps;
+            ps = con.prepareStatement(query);
+            ps.setInt(1, code);
+            ps.setInt(2, id);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                System.out.println("-------------------------------------------------------------------Coures name : " + rs.getString("C.name") + " , Course code : " + rs.getString("C.code") + "-------------------------------------------------------------------");
+                System.out.println("-------------------------------------------------------------------Student name : " + rs.getString("S.name") + " , Student id : " + rs.getString("S.id") + "-------------------------------------------------------------------");
+                int yearMark = rs.getInt("A.yearmark");
+                int midMark = rs.getInt("A.midmark");
+                int finalrMark = rs.getInt("A.finalmark");
+                int bonusMark = rs.getInt("A.bonus");
+                int totalMark = rs.getInt("A.totalmark");
+                System.out.println("-------------------------------------------------------------------Year Mark : " + (yearMark == -1 ? "N/A" : yearMark) + "-------------------------------------------------------------------");
+                System.out.println("-------------------------------------------------------------------MidTerm Exam Mark : " + (midMark == -1 ? "N/A" : midMark) + "-------------------------------------------------------------------");
+                System.out.println("-------------------------------------------------------------------Final Exam Mark : " + (finalrMark == -1 ? "N/A" : finalrMark) + "-------------------------------------------------------------------");
+                System.out.println("-------------------------------------------------------------------Bonus Mark : " + (bonusMark == -1 ? "N/A" : bonusMark) + "-------------------------------------------------------------------");
+                System.out.println("-------------------------------------------------------------------Total Mark : " + (totalMark == -1 ? "N/A" : totalMark) + "-------------------------------------------------------------------");
+            }
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
 }

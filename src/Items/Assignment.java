@@ -2,6 +2,9 @@ package Items;
 
 import DataBase.MyConnection;
 import Persons.Student;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -12,17 +15,29 @@ import java.util.Map;
 
 public class Assignment {
 
-    public int code, grade, solved, ccode, totalStudents;
-    public String name, question, dname, cname;
-
-    public Assignment(int code, int grade, String name) {
-        this.code = code;
-        this.grade = grade;
-        this.name = name;
-    }
+    public int code, grade, solutions, totalStudents, studentId, doctorId, courseId, TAid;
+    public String name, questions, doctorName, courseName;
+    BufferedReader in;
 
     public Assignment(int code) {
         this.code = code;
+        in = new BufferedReader(new InputStreamReader(System.in));
+    }
+
+    public void setCourseId(int courseId) {
+        this.courseId = courseId;
+    }
+
+    public void setDoctorId(int doctorId) {
+        this.doctorId = doctorId;
+    }
+
+    public void setStudentId(int studentId) {
+        this.studentId = studentId;
+    }
+
+    public void setTAid(int TAid) {
+        this.TAid = TAid;
     }
 
     public void viewAssignment() {
@@ -34,10 +49,10 @@ public class Assignment {
             ps.setInt(1, code);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                ccode = rs.getInt("ccode");
+                courseId = rs.getInt("ccode");
                 grade = rs.getInt("grade");
                 name = rs.getString("name");
-                question = rs.getString("question");
+                questions = rs.getString("question");
             }
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
@@ -50,9 +65,9 @@ public class Assignment {
             ps.setInt(1, code);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                dname = rs.getString("D.name");
-                cname = rs.getString("C.name");
-                ccode = rs.getInt("C.code");
+                doctorName = rs.getString("D.name");
+                courseName = rs.getString("C.name");
+                courseId = rs.getInt("C.code");
             }
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
@@ -65,7 +80,7 @@ public class Assignment {
             ps.setInt(1, code);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                solved = rs.getInt("COUNT(sid)");
+                solutions = rs.getInt("COUNT(sid)");
             }
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
@@ -75,7 +90,7 @@ public class Assignment {
         try {
             PreparedStatement ps;
             ps = MyConnection.con().prepareStatement(query);
-            ps.setInt(1, ccode);
+            ps.setInt(1, courseId);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 totalStudents = rs.getInt("COUNT(sid)");
@@ -87,16 +102,16 @@ public class Assignment {
         System.out.println("-------------------------------------------------------------------Assignment name : " + name + " ---------------");
         System.out.println("-------------------------------------------------------------------Assignment code : " + code + " ---------------");
         System.out.println("-------------------------------------------------------------------Assignment grade : " + grade + " ---------------");
-        System.out.println("-------------------------------------------------------------------Course : " + cname + " ---------------");
-        System.out.println("-------------------------------------------------------------------Doctor : " + dname + " ---------------");
-        System.out.println("-------------------------------------------------------------------Assignment content: " + question + " ---------------");
-        System.out.println("-------------------------------------------------------------------Number of submissions : " + solved + " ---------------");
+        System.out.println("-------------------------------------------------------------------Course : " + courseName + " ---------------");
+        System.out.println("-------------------------------------------------------------------Doctor : " + doctorName + " ---------------");
+        System.out.println("-------------------------------------------------------------------Assignment questions: " + questions + " ---------------");
+        System.out.println("-------------------------------------------------------------------Number of submissions : " + solutions + " ---------------");
         System.out.println("-------------------------------------------------------------------Number of scheduled students : " + totalStudents + " ---------------");
     }
 
     public void report() {
-        System.out.println("-------------------------------------------------------------------Number of students that solved the assignment : " + solved + " ---------------");
-        System.out.println("-------------------------------------------------------------------Number of students that didn't solve the assignment : " + (totalStudents - solved) + " ---------------");
+        System.out.println("-------------------------------------------------------------------Number of students that solved the assignment : " + solutions + " ---------------");
+        System.out.println("-------------------------------------------------------------------Number of students that didn't solve the assignment : " + (totalStudents - solutions) + " ---------------");
 
         List<Student> studentsSolved = new ArrayList();
         Map<Integer, Integer> mapId = new HashMap();
@@ -121,7 +136,7 @@ public class Assignment {
         try {
             PreparedStatement ps;
             ps = MyConnection.con().prepareStatement(query);
-            ps.setInt(1, ccode);
+            ps.setInt(1, courseId);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 String name = rs.getString("S.name");
@@ -141,6 +156,41 @@ public class Assignment {
             System.out.println("-------------------------------------------------------------------student id : " + student.id + " , " + " student name : " + student.name + " , " + " student status : not solve ---------------");
         }
 
+        try {
+            AssignmentMenue(code);
+        } catch (IOException ex) {
+            System.out.println(ex);
+        }
+    }
+
+    private void AssignmentMenue(int code) throws IOException {
+        System.out.println("------------------------------------------------------------------------------------------------------------------------------");
+        System.out.println("-------------------------------------------------------------------Assignment MENUE ---------------------------------------------");
+        System.out.println("------------------------------------------------------------------------------------------------------------------------------");
+        System.out.println("1○ View the assignment questions\n"
+                + "2○ submit your answer\n"
+                + "3○ View my answer\n"
+                + "4○ View My Assignment's grade\n"
+                + "5○ Back");
+
+        System.out.println("-------------------------------------------------------------------Please enter a choice------------------------------");
+        Course c = new Course(code);
+
+        String choice = in.readLine();
+        if (choice.equals("1")) {
+            viewQuestions();
+        } else if (choice.equals("2")) {
+            submitAnswer();
+        } else if (choice.equals("3")) {
+            viewAnswer();
+        } else if (choice.equals("4")) {
+            viewGrade;
+        } else if (choice.equals("5")) {
+            return;
+        } else {
+            System.out.println("-------------------------------------------------------------------Please enter a correct choice---------------");
+        }
+        AssignmentMenue(code);
     }
 
     public void viewSubmissions() {
@@ -149,7 +199,7 @@ public class Assignment {
         try {
             PreparedStatement ps;
             ps = MyConnection.con().prepareStatement(query);
-            ps.setInt(1, ccode);
+            ps.setInt(1, courseId);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 String name = rs.getString("S.name");
@@ -188,5 +238,63 @@ public class Assignment {
         }
         System.out.println("-------------------------------------------------------------------Old questions-------------------------------------------------------------");
         System.out.println(oldQuestions);
+    }
+
+    private void viewQuestions() {
+        if (questions != null) {
+            System.out.println(questions);
+        } else {
+            String query = "select question from assignment where code = ?;";
+            try {
+                PreparedStatement ps;
+                ps = MyConnection.con().prepareStatement(query);
+                ps.setInt(1, code);
+                ResultSet rs = ps.executeQuery();
+                if (rs.next()) {
+                    questions = rs.getString("question");
+                    System.out.println(questions);
+                }
+            } catch (SQLException ex) {
+                System.out.println(ex.getMessage());
+            }
+        }
+    }
+
+    private void submitAnswer() throws IOException {
+        Boolean isSubmited = false;
+        String query = "select answer from assignment_student where acode = ? and sid = ?;";
+        try {
+            PreparedStatement ps;
+            ps = MyConnection.con().prepareStatement(query);
+            ps.setInt(1, code);
+            ps.setInt(2, studentId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                isSubmited = true;
+            }
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
+
+        if (isSubmited) {
+            System.out.println("-------------------------------------------------------------------You already have submitted your answer-------------------------------------------------------------");
+        } else {
+            System.out.println("-------------------------------------------------------------------Enter your answer-------------------------------------------------------------");
+            String answer = in.readLine();
+
+            query = "insert into assignment_student () values (?,?,?);";
+            try {
+                PreparedStatement ps;
+                ps = MyConnection.con().prepareStatement(query);
+                ps.setInt(1, code);
+                ps.setInt(2, studentId);
+                ResultSet rs = ps.executeQuery();
+                if (rs.next()) {
+                    isSubmited = true;
+                }
+            } catch (SQLException ex) {
+                System.out.println(ex.getMessage());
+            }
+        }
     }
 }

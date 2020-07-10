@@ -97,9 +97,9 @@ public class Main {
         if (isdoctor) {
             new Doctor(username).showMainMenue();
         } else if (isTA) {
-            new Teacher().showMainMenue();
+            new Teacher(username).showMainMenue();
         } else {
-            new Student().showMainMenue();
+            new Student(username).showMainMenue();
         }
     }
 }

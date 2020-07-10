@@ -10,15 +10,15 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.List;
-import java.util.Scanner;
 
-public class Student implements Comparable<Student> {
+public class Student {
 
     public String assignmentAnswer;
     private String username, password;
     public String name;
     public int id, midGrade, finalGrade, yearDoingGrade, bonusGrade, totalGrade, assignmentGrade;
     BufferedReader in;
+    private Connection con;
 
     public Student(String name, int id, int midGrade, int finalGrade, int yearDoingGrade, int bonusGrade, int totalGrade) {
         this.name = name;
@@ -28,27 +28,39 @@ public class Student implements Comparable<Student> {
         this.yearDoingGrade = yearDoingGrade;
         this.bonusGrade = bonusGrade;
         this.totalGrade = totalGrade;
+        con = MyConnection.con();
     }
 
     public Student(String name, int id, String assignmentAnswer) {
         this.name = name;
         this.id = id;
         this.assignmentAnswer = assignmentAnswer;
+        con = MyConnection.con();
     }
 
     public Student(String name, int id, int assignmentGrade) {
         this.name = name;
         this.id = id;
         this.assignmentGrade = assignmentGrade;
+        con = MyConnection.con();
     }
 
     public Student() {
         in = new BufferedReader(new InputStreamReader(System.in));
+        con = MyConnection.con();
     }
 
     public Student(String name, int id) {
         this.name = name;
         this.id = id;
+        con = MyConnection.con();
+    }
+
+    public Student(String username) {
+        con = MyConnection.con();
+        in = new BufferedReader(new InputStreamReader(System.in));
+        this.username = username;
+        getId();
     }
 
     public void showMainMenue() throws IOException {
@@ -68,7 +80,7 @@ public class Student implements Comparable<Student> {
             } else if (choice.equals("2")) {
                 listMyCourses();
             } else if (choice.equals("3")) {
-                viewACourse();
+                viewCourse();
             } else if (choice.equals("4")) {
                 return;
             } else {
@@ -77,17 +89,17 @@ public class Student implements Comparable<Student> {
         } catch (InputMismatchException e) {
             System.out.println("-------------------------------------------------------------------Please enter a correct choice---------------");
         }
-        
+
         showMainMenue();
     }
 
     private void registerInCourse() throws IOException {
-        List<Integer> courses = listMyCourses();
+        List<Integer> courses = listAllCourses();
 
         if (courses.isEmpty()) {
             System.out.println("-------------------------------------------------------------------There is no courses---------------");
         } else {
-            System.out.println("-------------------------------------------------------------------Enter the course code that want to register in---------------");
+            System.out.println("-------------------------------------------------------------------Enter the course code that you want to register in---------------");
             while (true) {
                 try {
                     String code = in.readLine();
@@ -98,9 +110,10 @@ public class Student implements Comparable<Student> {
                     } else {
                         new Course(Integer.parseInt(code)).insertStudent(id);
                         System.out.println("-------------------------------------------------------------------SUCCESFULLY REGISTERED---------------");
+                        break;
                     }
                 } catch (InputMismatchException e) {
-                    System.out.println("-------------------------------------------------------------------Please enter a correct choice---------------");
+                    System.out.println("-------------------------------------------------------------------The cousre code must be number as shown in the course list---------------");
                 }
             }
         }
@@ -125,16 +138,60 @@ public class Student implements Comparable<Student> {
         return courses;
     }
 
-    private void viewACourse() {
+    private void viewCourse() throws IOException {
+        List<Integer> courses = listMyCourses();
 
+        if (courses.isEmpty()) {
+            System.out.println("-------------------------------------------------------------------You are not registered in any course---------------");
+        } else {
+            System.out.println("-------------------------------------------------------------------Enter the course code that you want to view---------------");
+            try {
+                int code = Integer.parseInt(in.readLine());
+                if (code != 0) {
+                    if (courses.contains(code)) {
+                        new Course(code).viewCourse();
+                        courseMenue(code);
+                    } else {
+                        System.out.println("-------------------------------------------------------------------This course code is not found try again ---------------------------------");
+                        viewCourse();
+                    }
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("-------------------------------------------------------------------Please enter a correct input---------------");
+                viewCourse();
+            }
+        }
     }
 
     private void chooseCourse() {
 
     }
 
-    private void listAllCourses() {
+    private List<Integer> listAllCourses() {
+        List<Integer> courseList = new ArrayList();
+        String query = "select  C.name, C.code, D.name from course C JOIN doctor D ON C.did = D.id;";
+        try {
+            PreparedStatement ps;
+            ps = con.prepareStatement(query);
+            ResultSet rs = ps.executeQuery();
+            Boolean flag = false;
+            while (rs.next()) {
+                int code = rs.getInt("code");
+                courseList.add(code);
+                System.out.println("-------------------------------------------------------------------course code: " + code
+                        + " , Course name: " + rs.getString("name")
+                        + " , Course doctor: " + rs.getString("D.name") + " ---------------------------------");
+                flag = true;
+            }
+            if (!flag) {
+                System.out.println("-------------------------------------------------------------------There is no courses was created in the site ---------------");
+            }
 
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
+
+        return courseList;
     }
 
     private void registerInCourse(int choice) {
@@ -175,9 +232,46 @@ public class Student implements Comparable<Student> {
 
     }
 
-    @Override
-    public int compareTo(Student o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    private void getId() {
+        String query = "select id from student where username = ?;";
+        try {
+            PreparedStatement ps;
+            ps = con.prepareStatement(query);
+            ps.setString(1, username);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                id = rs.getInt("id");
+            }
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+
+    private void courseMenue(int code) throws IOException {
+        System.out.println("------------------------------------------------------------------------------------------------------------------------------");
+        System.out.println("-------------------------------------------------------------------COURSE MENUE ---------------------------------------------");
+        System.out.println("------------------------------------------------------------------------------------------------------------------------------");
+        System.out.println("1○ View my grade report\n"
+                + "2○ List assignments\n"
+                + "3○ View assignment\n"
+                + "4○ Back");
+
+        System.out.println("-------------------------------------------------------------------Please enter a choice------------------------------");
+        Course c = new Course(code);
+        String choice = in.readLine();
+
+        if (choice.equals("1")) {
+            c.studentGradeReport(id);
+        } else if (choice.equals("2")) {
+            c.listAssignments();
+        } else if (choice.equals("3")) {
+            c.viewAssignment();
+        } else if (choice.equals("4")) {
+            return;
+        } else {
+            System.out.println("-------------------------------------------------------------------Please enter a correct choice---------------");
+        }
+        courseMenue(code);
     }
 
 }
