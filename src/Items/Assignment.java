@@ -9,14 +9,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class Assignment {
 
-    public int code, grade, solutions, totalStudents, studentId, doctorId, courseId, TAid;
-    public String name, questions, doctorName, courseName;
+    private int code, grade, solutions, totalStudents, courseCode, studentId, doctorId, TAid;
+    private String name, questions, doctorName, courseName;
     BufferedReader in;
 
     public Assignment(int code) {
@@ -24,8 +22,8 @@ public class Assignment {
         in = new BufferedReader(new InputStreamReader(System.in));
     }
 
-    public void setCourseId(int courseId) {
-        this.courseId = courseId;
+    public void setCourseCode(int courseCode) {
+        this.courseCode = courseCode;
     }
 
     public void setDoctorId(int doctorId) {
@@ -40,6 +38,26 @@ public class Assignment {
         this.TAid = TAid;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setGrade(int grade) {
+        this.grade = grade;
+    }
+
+    public int getCode() {
+        return code;
+    }
+
+    public int getGrade() {
+        return grade;
+    }
+
+    public String getName() {
+        return name;
+    }
+
     public void viewAssignment() {
 
         String query = "select * from assignment where code = ?;";
@@ -49,7 +67,7 @@ public class Assignment {
             ps.setInt(1, code);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                courseId = rs.getInt("ccode");
+                courseCode = rs.getInt("ccode");
                 grade = rs.getInt("grade");
                 name = rs.getString("name");
                 questions = rs.getString("question");
@@ -67,7 +85,7 @@ public class Assignment {
             if (rs.next()) {
                 doctorName = rs.getString("D.name");
                 courseName = rs.getString("C.name");
-                courseId = rs.getInt("C.code");
+                courseCode = rs.getInt("C.code");
             }
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
@@ -90,7 +108,7 @@ public class Assignment {
         try {
             PreparedStatement ps;
             ps = MyConnection.con().prepareStatement(query);
-            ps.setInt(1, courseId);
+            ps.setInt(1, courseCode);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 totalStudents = rs.getInt("COUNT(sid)");
@@ -114,7 +132,6 @@ public class Assignment {
         System.out.println("-------------------------------------------------------------------Number of students that didn't solve the assignment : " + (totalStudents - solutions) + " ---------------");
 
         List<Student> studentsSolved = new ArrayList();
-        Map<Integer, Integer> mapId = new HashMap();
         String query = "select S.name,A.sid,A.grade from student S JOIN assignment_student A ON A.sid = S.id where A.acode = ?;";
         try {
             PreparedStatement ps;
@@ -122,10 +139,10 @@ public class Assignment {
             ps.setInt(1, code);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                String name = rs.getString("S.name");
-                int grade = rs.getInt("A.grade");
+                String studentName = rs.getString("S.name");
+                int studentGrade = rs.getInt("A.grade");
                 int sid = rs.getInt("A.sid");
-                studentsSolved.add(new Student(name, sid, grade));
+                studentsSolved.add(new Student(studentName, sid, studentGrade));
             }
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
@@ -136,61 +153,66 @@ public class Assignment {
         try {
             PreparedStatement ps;
             ps = MyConnection.con().prepareStatement(query);
-            ps.setInt(1, courseId);
+            ps.setInt(1, courseCode);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                String name = rs.getString("S.name");
+                String studentName = rs.getString("S.name");
                 int sid = rs.getInt("A.sid");
-                if (!mapId.containsKey(sid)) {
-                    Student s = new Student(name, sid);
-                    studentsNotSolved.add(s);
-                }
+                Student s = new Student(studentName, sid);
+                studentsNotSolved.add(s);
             }
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
         }
-        for (Student student : studentsSolved) {
+        studentsSolved.forEach((student) -> {
             System.out.println("-------------------------------------------------------------------student id : " + student.id + " , " + " student name : " + student.name + " , " + " student status : solve , " + " student grade : " + (student.assignmentGrade == -1 ? "N/A" : student.assignmentGrade) + " ---------------");
-        }
-        for (Student student : studentsNotSolved) {
+        });
+
+        studentsNotSolved.forEach((student) -> {
             System.out.println("-------------------------------------------------------------------student id : " + student.id + " , " + " student name : " + student.name + " , " + " student status : not solve ---------------");
-        }
+        });
 
         try {
-            AssignmentMenue(code);
+            studentAssignmentMenu(code);
         } catch (IOException ex) {
             System.out.println(ex);
         }
     }
 
-    private void AssignmentMenue(int code) throws IOException {
+    public void studentAssignmentMenu(int code) throws IOException {
         System.out.println("------------------------------------------------------------------------------------------------------------------------------");
         System.out.println("-------------------------------------------------------------------Assignment MENUE ---------------------------------------------");
         System.out.println("------------------------------------------------------------------------------------------------------------------------------");
         System.out.println("1○ View the assignment questions\n"
-                + "2○ submit your answer\n"
+                + "2○ submit my answer\n"
                 + "3○ View my answer\n"
-                + "4○ View My Assignment's grade\n"
+                + "4○ View my Assignment's grade\n"
                 + "5○ Back");
 
         System.out.println("-------------------------------------------------------------------Please enter a choice------------------------------");
         Course c = new Course(code);
 
         String choice = in.readLine();
-        if (choice.equals("1")) {
-            viewQuestions();
-        } else if (choice.equals("2")) {
-            submitAnswer();
-        } else if (choice.equals("3")) {
-            viewAnswer();
-        } else if (choice.equals("4")) {
-            viewGrade;
-        } else if (choice.equals("5")) {
-            return;
-        } else {
-            System.out.println("-------------------------------------------------------------------Please enter a correct choice---------------");
+        switch (choice) {
+            case "1":
+                viewQuestions();
+                break;
+            case "2":
+                submitAnswer();
+                break;
+            case "3":
+                viewAnswer();
+                break;
+            case "4":
+                viewGrade;
+                break;
+            case "5":
+                return;
+            default:
+                System.out.println("-------------------------------------------------------------------Please enter a correct choice---------------");
+                break;
         }
-        AssignmentMenue(code);
+        studentAssignmentMenu(code);
     }
 
     public void viewSubmissions() {
@@ -199,22 +221,26 @@ public class Assignment {
         try {
             PreparedStatement ps;
             ps = MyConnection.con().prepareStatement(query);
-            ps.setInt(1, courseId);
+            ps.setInt(1, courseCode);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                String name = rs.getString("S.name");
+                String studentName = rs.getString("S.name");
                 String answer = rs.getString("S.name");
                 int sid = rs.getInt("A.sid");
-                studentsSolution.add(new Student(name, sid, answer));
+                studentsSolution.add(new Student(studentName, sid, answer));
             }
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
         }
-        for (Student student : studentsSolution) {
+        studentsSolution.stream().map((student) -> {
             System.out.println("--------------------------------------------------------------------------------------------------------------------------------------------");
+            return student;
+        }).map((student) -> {
             System.out.println("-------------------------------------------------------------------Student name : " + student.name + " , " + "Student id : " + student.id + "-------------------------------------------------------------");
+            return student;
+        }).forEachOrdered((student) -> {
             System.out.println(student.assignmentAnswer);
-        }
+        });
 
         if (studentsSolution.isEmpty()) {
             System.out.println("-------------------------------------------------------------------There is no submissions to view-------------------------------------------------------------");
@@ -290,7 +316,7 @@ public class Assignment {
                 ps.setInt(2, studentId);
                 ResultSet rs = ps.executeQuery();
                 if (rs.next()) {
-                    isSubmited = true;
+
                 }
             } catch (SQLException ex) {
                 System.out.println(ex.getMessage());

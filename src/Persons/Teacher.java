@@ -25,7 +25,7 @@ public class Teacher {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public void showMainMenue() throws IOException {
+    public void showMainMenu() throws IOException {
         System.out.println("1○ List My courses\n"
                 + "2○ Create a course\n"
                 + "3○ View a Course\n"
@@ -46,7 +46,7 @@ public class Teacher {
             System.out.println("-------------------------------------------------------------------Please enter a correct input-------------------------------------------------------------------");;
         }
 
-        showMainMenue();
+        showMainMenu();
     }
 
 //    private void registerInCourse() {
@@ -132,7 +132,7 @@ public class Teacher {
                         return;
                     } else if (css.contains(ccode)) {
                         new Course(Integer.parseInt(ccode)).viewCourse();
-//                        courseMenue(Integer.parseInt(ccode));
+//                        courseMenu(Integer.parseInt(ccode));
                         break;
                     } else {
                         System.out.println("-------------------------------------------------------------------This course code is not found try another or eneter 0 to cancel -------------------------------------------------------------------");;
@@ -318,7 +318,7 @@ public class Teacher {
         }
     }
 
-//    private void courseMenue(int ccode) {
+//    private void courseMenu(int ccode) {
 ////○ "List Assignments", "Create Assignment", "View Assignment", "Back"
 //
 //        System.out.println("1○ View grade report\n"

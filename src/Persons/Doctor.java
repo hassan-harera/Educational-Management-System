@@ -32,7 +32,7 @@ public class Doctor {
         setId();
     }
 
-    public void showMainMenue() throws IOException {
+    public void showMainMenu() throws IOException {
         System.out.println("------------------------------------------------------------------------------------------------------------------------------");
         System.out.println("-------------------------------------------------------------------DOCTOR MENUE ---------------------------------------------");
         System.out.println("------------------------------------------------------------------------------------------------------------------------------");
@@ -60,7 +60,7 @@ public class Doctor {
         } catch (InputMismatchException e) {
             System.out.println("-------------------------------------------------------------------Please enter a correct input---------------");
         }
-        showMainMenue();
+        showMainMenu();
     }
 
     private void listAllCourses() {
@@ -100,7 +100,7 @@ public class Doctor {
                 if (code != 0) {
                     if (courses.contains(code)) {
                         new Course(code).viewCourse();
-                        courseMenue(code);
+                        courseMenu(code);
                     } else {
                         System.out.println("-------------------------------------------------------------------This course code is not found try again ---------------------------------");
                         viewCourse();
@@ -205,7 +205,7 @@ public class Doctor {
         return false;
     }
 
-    private void courseMenue(int code) throws IOException {
+    private void courseMenu(int code) throws IOException {
         System.out.println("------------------------------------------------------------------------------------------------------------------------------");
         System.out.println("-------------------------------------------------------------------COURSE MENUE ---------------------------------------------");
         System.out.println("------------------------------------------------------------------------------------------------------------------------------");
@@ -230,8 +230,10 @@ public class Doctor {
         } else if (choice.equals("3")) {
             c.createAssignment();
         } else if (choice.equals("4")) {
-            int Acode = c.viewAssignment();
-            courseAssignment(Acode);
+            int aCode = c.viewAssignment();
+            if (aCode != -1) {
+                assignmentMenu(aCode);
+            }
         } else if (choice.equals("5")) {
             c.addStudent();
         } else if (choice.equals("6")) {
@@ -245,7 +247,7 @@ public class Doctor {
         } else {
             System.out.println("-------------------------------------------------------------------Please enter a correct choice---------------");
         }
-        courseMenue(code);
+        courseMenu(code);
     }
 
     public static void signUp() throws IOException {
@@ -293,7 +295,7 @@ public class Doctor {
         }
     }
 
-    private void courseAssignment(int code) throws IOException {
+    private void assignmentMenu(int code) throws IOException {
         System.out.println("------------------------------------------------------------------------------------------------------------------------------");
         System.out.println("-------------------------------------------------------------------ASSIGNMENT MENUE ---------------------------------------------");
         System.out.println("------------------------------------------------------------------------------------------------------------------------------");
@@ -320,6 +322,6 @@ public class Doctor {
         } else {
             System.out.println("-------------------------------------------------------------------Please enter a correct choice---------------");
         }
-        courseAssignment(code);
+        assignmentMenu(code);
     }
 }

@@ -2,6 +2,7 @@ package Persons;
 
 import DataBase.MyConnection;
 import Encryption.MyEncryption;
+import Items.Assignment;
 import Items.Course;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -63,7 +64,7 @@ public class Student {
         getId();
     }
 
-    public void showMainMenue() throws IOException {
+    public void showMainMenu() throws IOException {
         System.out.println("------------------------------------------------------------------------------------------------------------------------------");
         System.out.println("-------------------------------------------------------------------STUDENT MENUE ---------------------------------------------");
         System.out.println("------------------------------------------------------------------------------------------------------------------------------");
@@ -90,7 +91,7 @@ public class Student {
             System.out.println("-------------------------------------------------------------------Please enter a correct choice---------------");
         }
 
-        showMainMenue();
+        showMainMenu();
     }
 
     private void registerInCourse() throws IOException {
@@ -112,7 +113,7 @@ public class Student {
                         System.out.println("-------------------------------------------------------------------SUCCESFULLY REGISTERED---------------");
                         break;
                     }
-                } catch (InputMismatchException e) {
+                } catch (NumberFormatException e) {
                     System.out.println("-------------------------------------------------------------------The cousre code must be number as shown in the course list---------------");
                 }
             }
@@ -150,7 +151,7 @@ public class Student {
                 if (code != 0) {
                     if (courses.contains(code)) {
                         new Course(code).viewCourse();
-                        courseMenue(code);
+                        courseMenu(code);
                     } else {
                         System.out.println("-------------------------------------------------------------------This course code is not found try again ---------------------------------");
                         viewCourse();
@@ -247,7 +248,7 @@ public class Student {
         }
     }
 
-    private void courseMenue(int code) throws IOException {
+    private void courseMenu(int code) throws IOException {
         System.out.println("------------------------------------------------------------------------------------------------------------------------------");
         System.out.println("-------------------------------------------------------------------COURSE MENUE ---------------------------------------------");
         System.out.println("------------------------------------------------------------------------------------------------------------------------------");
@@ -265,13 +266,18 @@ public class Student {
         } else if (choice.equals("2")) {
             c.listAssignments();
         } else if (choice.equals("3")) {
-            c.viewAssignment();
+            int aCode = c.viewAssignment();
+            if (aCode != -1) {
+                Assignment a = new Assignment(aCode);
+                a.setCourseCode(code);
+                a.setStudentId(id);
+                a.studentAssignmentMenu(code);
+            }
         } else if (choice.equals("4")) {
             return;
         } else {
             System.out.println("-------------------------------------------------------------------Please enter a correct choice---------------");
         }
-        courseMenue(code);
+        courseMenu(code);
     }
-
 }

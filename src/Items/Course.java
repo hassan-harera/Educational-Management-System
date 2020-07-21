@@ -13,8 +13,8 @@ import java.util.List;
 
 public class Course {
 
-    private String name, dname;
-    private int code, dId, sId, taId;
+    private String name, doctorName;
+    private int code, doctorId, studentId, TAid;
     private Connection con;
     private BufferedReader in;
 
@@ -24,20 +24,18 @@ public class Course {
         this.code = code;
     }
 
-    public void setTaId(int taId) {
-        this.taId = taId;
+    public void setStudentId(int studentId) {
+        this.studentId = studentId;
     }
 
-    public void setsId(int sId) {
-        this.sId = sId;
+    public void setTAid(int TAid) {
+        this.TAid = TAid;
     }
 
-    public void setdId(int dId) {
-        this.dId = dId;
+    public void setDoctorId(int doctorId) {
+        this.doctorId = doctorId;
     }
-    
-    
-    
+
     public void viewCourse() {
         List<String> courseStudents = new ArrayList<>();
         List<String> courseTAs = new ArrayList<>();
@@ -62,7 +60,7 @@ public class Course {
             ps.setInt(1, code);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                dname = rs.getString("name");
+                doctorName = rs.getString("name");
             }
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
@@ -96,7 +94,7 @@ public class Course {
 
         System.out.println("-------------------------------------------------------------------Course name : " + name + " ---------------");
         System.out.println("-------------------------------------------------------------------Course code : " + code + " ---------------");
-        System.out.println("-------------------------------------------------------------------Course doctor : " + dname + " ---------------");
+        System.out.println("-------------------------------------------------------------------Course doctor : " + doctorName + " ---------------");
         if (!courseTAs.isEmpty()) {
             System.out.println("---------------------------------------------------------------Course TAs : ");
             for (String ct : courseTAs) {
@@ -307,16 +305,19 @@ public class Course {
             ps.setInt(1, code);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                assignments.add(new Assignment(rs.getInt("code"), rs.getInt("grade"), rs.getString("name")));
+                Assignment assignment = new Assignment(rs.getInt("code"));
+                assignment.setName(rs.getString("name"));
+                assignment.setGrade(rs.getInt("grade"));
+                assignments.add(assignment);
             }
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
         }
         if (!assignments.isEmpty()) {
             for (Assignment a : assignments) {
-                System.out.println("----------------Assignment name : " + a.name + " , "
-                        + "Assignment code : " + a.code + " , "
-                        + "Assignment grade : " + a.grade);
+                System.out.println("----------------Assignment name : " + a.getName() + " , "
+                        + "Assignment code : " + a.getCode() + " , "
+                        + "Assignment grade : " + a.getGrade());
             }
         } else {
             System.out.println("-------------------------------------------------------------------There is no assignments to view ---------------");

@@ -95,11 +95,11 @@ public class Main {
         Boolean isdoctor = User.isDoctor(username);
         Boolean isTA = User.isTA(username);
         if (isdoctor) {
-            new Doctor(username).showMainMenue();
+            new Doctor(username).showMainMenu();
         } else if (isTA) {
-            new Teacher(username).showMainMenue();
+            new Teacher(username).showMainMenu();
         } else {
-            new Student(username).showMainMenue();
+            new Student(username).showMainMenu();
         }
     }
 }
