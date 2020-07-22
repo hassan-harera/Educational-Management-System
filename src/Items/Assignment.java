@@ -128,7 +128,8 @@ public class Assignment {
     }
 
     public void report() {
-        System.out.println("-------------------------------------------------------------------Number of students that solved the assignment : " + solutions + " ---------------");
+        System.out.println("-------------------------------------------------------------------Number of students that solved the assignment : "
+                + solutions + " ---------------");
         System.out.println("-------------------------------------------------------------------Number of students that didn't solve the assignment : " + (totalStudents - solutions) + " ---------------");
 
         List<Student> studentsSolved = new ArrayList();
@@ -142,7 +143,10 @@ public class Assignment {
                 String studentName = rs.getString("S.name");
                 int studentGrade = rs.getInt("A.grade");
                 int sid = rs.getInt("A.sid");
-                studentsSolved.add(new Student(studentName, sid, studentGrade));
+                Student s = new Student(sid);
+                s.setName(name);
+                s.setAssignmentGrade(studentGrade);
+                studentsSolved.add(s);
             }
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
@@ -158,18 +162,23 @@ public class Assignment {
             while (rs.next()) {
                 String studentName = rs.getString("S.name");
                 int sid = rs.getInt("A.sid");
-                Student s = new Student(studentName, sid);
+                Student s = new Student(sid);
+                s.setName(name);
                 studentsNotSolved.add(s);
             }
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
         }
         studentsSolved.forEach((student) -> {
-            System.out.println("-------------------------------------------------------------------student id : " + student.id + " , " + " student name : " + student.name + " , " + " student status : solve , " + " student grade : " + (student.assignmentGrade == -1 ? "N/A" : student.assignmentGrade) + " ---------------");
+            System.out.println("-------------------------------------------------------------------student id : " + student.getId() + " , "
+                    + " student name : " + student.getName() + " , "
+                    + " student status : solve , " + " student grade : "
+                    + (student.getAssignmentGrade() == -1 ? "unknown" : student.getAssignmentGrade()) + " ---------------");
         });
 
         studentsNotSolved.forEach((student) -> {
-            System.out.println("-------------------------------------------------------------------student id : " + student.id + " , " + " student name : " + student.name + " , " + " student status : not solve ---------------");
+            System.out.println("-------------------------------------------------------------------student id : " + student.getId() + " , "
+                    + " student name : " + student.getName() + " , " + " student status : not solve ---------------");
         });
 
         try {
@@ -181,7 +190,7 @@ public class Assignment {
 
     public void studentAssignmentMenu(int code) throws IOException {
         System.out.println("------------------------------------------------------------------------------------------------------------------------------");
-        System.out.println("-------------------------------------------------------------------Assignment MENUE ---------------------------------------------");
+        System.out.println("-------------------------------------------------------------------Assignment MENU ---------------------------------------------");
         System.out.println("------------------------------------------------------------------------------------------------------------------------------");
         System.out.println("1○ View the assignment questions\n"
                 + "2○ submit my answer\n"
@@ -204,7 +213,7 @@ public class Assignment {
                 viewAnswer();
                 break;
             case "4":
-                viewGrade;
+                viewGrade();
                 break;
             case "5":
                 return;
@@ -227,7 +236,10 @@ public class Assignment {
                 String studentName = rs.getString("S.name");
                 String answer = rs.getString("S.name");
                 int sid = rs.getInt("A.sid");
-                studentsSolution.add(new Student(studentName, sid, answer));
+                Student s = new Student(sid);
+                s.setName(name);
+                s.setAssignmentAnswer(answer);
+                studentsSolution.add(s);
             }
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
@@ -236,10 +248,11 @@ public class Assignment {
             System.out.println("--------------------------------------------------------------------------------------------------------------------------------------------");
             return student;
         }).map((student) -> {
-            System.out.println("-------------------------------------------------------------------Student name : " + student.name + " , " + "Student id : " + student.id + "-------------------------------------------------------------");
+            System.out.println("-------------------------------------------------------------------Student name : " + student.getName() + " , "
+                    + "Student id : " + student.getId() + "-------------------------------------------------------------");
             return student;
         }).forEachOrdered((student) -> {
-            System.out.println(student.assignmentAnswer);
+            System.out.println(student.getAssignmentAnswer());
         });
 
         if (studentsSolution.isEmpty()) {
@@ -308,19 +321,60 @@ public class Assignment {
             System.out.println("-------------------------------------------------------------------Enter your answer-------------------------------------------------------------");
             String answer = in.readLine();
 
-            query = "insert into assignment_student () values (?,?,?);";
+            query = "insert into assignment_student values (?,?,?,?,?);";
             try {
                 PreparedStatement ps;
                 ps = MyConnection.con().prepareStatement(query);
-                ps.setInt(1, code);
-                ps.setInt(2, studentId);
-                ResultSet rs = ps.executeQuery();
-                if (rs.next()) {
-
+                ps.setInt(1, studentId);
+                ps.setInt(2, courseCode);
+                ps.setString(3, answer);
+                ps.setInt(4, code);
+                ps.setInt(5, -1);
+                if (ps.execute()) {
+                    System.out.println("-------------------------------------------------------------------SUCCESSFULLY SUBMITTED-------------------------------------------------------------");
                 }
             } catch (SQLException ex) {
                 System.out.println(ex.getMessage());
             }
+        }
+    }
+
+    private void viewAnswer() {
+        String query = "select answer from assignment_student where acode = ? and sid = ?;";
+        try {
+            PreparedStatement ps;
+            ps = MyConnection.con().prepareStatement(query);
+            ps.setInt(1, code);
+            ps.setInt(2, studentId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                String answer = rs.getString("answer");
+                System.out.println("-------------------------------------------------------------------Your Answer-------------------------------------------------------------");
+                System.out.println(answer);
+            } else {
+                System.out.println("-------------------------------------------------------------------Your hvae not submitted any answer yet-------------------------------------------------------------");
+            }
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+
+    private void viewGrade() {
+        String query = "select grade from assignment_student where acode = ? and sid = ?;";
+        try {
+            PreparedStatement ps;
+            ps = MyConnection.con().prepareStatement(query);
+            ps.setInt(1, code);
+            ps.setInt(2, studentId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                int grade = rs.getInt("grade");
+                System.out.println("-------------------------------------------------------------------" + "Your grade is " + (grade == -1 ? "unknown" : grade) + " -------------------------------------------------------------");
+            } else {
+                System.out.println("-------------------------------------------------------------------Your hvae not submitted any answer yet-------------------------------------------------------------");
+            }
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
         }
     }
 }

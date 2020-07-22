@@ -14,59 +14,121 @@ import java.util.List;
 
 public class Student {
 
-    public String assignmentAnswer;
+    private String assignmentAnswer;
     private String username, password;
-    public String name;
-    public int id, midGrade, finalGrade, yearDoingGrade, bonusGrade, totalGrade, assignmentGrade;
+    private String name;
+    private int id, midGrade, finalGrade, yearDoingGrade, bonusGrade, totalGrade, assignmentGrade;
     BufferedReader in;
     private Connection con;
 
-    public Student(String name, int id, int midGrade, int finalGrade, int yearDoingGrade, int bonusGrade, int totalGrade) {
-        this.name = name;
-        this.id = id;
-        this.midGrade = midGrade;
-        this.finalGrade = finalGrade;
-        this.yearDoingGrade = yearDoingGrade;
-        this.bonusGrade = bonusGrade;
-        this.totalGrade = totalGrade;
-        con = MyConnection.con();
-    }
-
-    public Student(String name, int id, String assignmentAnswer) {
-        this.name = name;
-        this.id = id;
-        this.assignmentAnswer = assignmentAnswer;
-        con = MyConnection.con();
-    }
-
-    public Student(String name, int id, int assignmentGrade) {
-        this.name = name;
-        this.id = id;
-        this.assignmentGrade = assignmentGrade;
-        con = MyConnection.con();
-    }
-
-    public Student() {
-        in = new BufferedReader(new InputStreamReader(System.in));
-        con = MyConnection.con();
-    }
-
-    public Student(String name, int id) {
-        this.name = name;
+    public Student(int id) {
         this.id = id;
         con = MyConnection.con();
+        getIdByUsername();
     }
 
     public Student(String username) {
-        con = MyConnection.con();
-        in = new BufferedReader(new InputStreamReader(System.in));
         this.username = username;
-        getId();
+        con = MyConnection.con();
+        getIdByUsername();
+        in = new BufferedReader(new InputStreamReader(System.in));
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setAssignmentGrade(int assignmentGrade) {
+        this.assignmentGrade = assignmentGrade;
+    }
+
+    public int getId() {
+        return this.id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getAssignmentGrade() {
+        return assignmentGrade;
+    }
+
+    public void setAssignmentAnswer(String assignmentAnswer) {
+        this.assignmentAnswer = assignmentAnswer;
+    }
+
+    public String getAssignmentAnswer() {
+        return assignmentAnswer;
+    }
+
+    public void setBonusGrade(int bonusGrade) {
+        this.bonusGrade = bonusGrade;
+    }
+
+    public void setCon(Connection con) {
+        this.con = con;
+    }
+
+    public void setFinalGrade(int finalGrade) {
+        this.finalGrade = finalGrade;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setMidGrade(int midGrade) {
+        this.midGrade = midGrade;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setTotalGrade(int totalGrade) {
+        this.totalGrade = totalGrade;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setYearDoingGrade(int yearDoingGrade) {
+        this.yearDoingGrade = yearDoingGrade;
+    }
+
+    public int getBonusGrade() {
+        return bonusGrade;
+    }
+
+    public int getFinalGrade() {
+        return finalGrade;
+    }
+
+    public int getMidGrade() {
+        return midGrade;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public int getTotalGrade() {
+        return totalGrade;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public int getYearDoingGrade() {
+        return yearDoingGrade;
     }
 
     public void showMainMenu() throws IOException {
         System.out.println("------------------------------------------------------------------------------------------------------------------------------");
-        System.out.println("-------------------------------------------------------------------STUDENT MENUE ---------------------------------------------");
+        System.out.println("-------------------------------------------------------------------STUDENT MENU ---------------------------------------------");
         System.out.println("------------------------------------------------------------------------------------------------------------------------------");
 
         System.out.println("1○ Register in course\n"
@@ -164,10 +226,6 @@ public class Student {
         }
     }
 
-    private void chooseCourse() {
-
-    }
-
     private List<Integer> listAllCourses() {
         List<Integer> courseList = new ArrayList();
         String query = "select  C.name, C.code, D.name from course C JOIN doctor D ON C.did = D.id;";
@@ -233,7 +291,7 @@ public class Student {
 
     }
 
-    private void getId() {
+    private void getIdByUsername() {
         String query = "select id from student where username = ?;";
         try {
             PreparedStatement ps;
@@ -250,7 +308,7 @@ public class Student {
 
     private void courseMenu(int code) throws IOException {
         System.out.println("------------------------------------------------------------------------------------------------------------------------------");
-        System.out.println("-------------------------------------------------------------------COURSE MENUE ---------------------------------------------");
+        System.out.println("-------------------------------------------------------------------COURSE MENU ---------------------------------------------");
         System.out.println("------------------------------------------------------------------------------------------------------------------------------");
         System.out.println("1○ View my grade report\n"
                 + "2○ List assignments\n"

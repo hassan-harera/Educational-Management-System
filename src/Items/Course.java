@@ -122,20 +122,27 @@ public class Course {
             ps.setInt(1, code);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                students.add(new Student(rs.getString("name"), rs.getInt("id"), rs.getInt("mid_grade"), rs.getInt("final_grade"), rs.getInt("year_grade"), rs.getInt("bonus_grade"), rs.getInt("total_grade")));
+                Student s = new Student(rs.getInt("id"));
+                s.setName(rs.getString("name"));
+                s.setMidGrade(rs.getInt("mid_grade"));
+                s.setFinalGrade(rs.getInt("final_grade"));
+                s.setYearDoingGrade(rs.getInt("year_grade"));
+                s.setBonusGrade(rs.getInt("bonus_grade"));
+                s.setTotalGrade(rs.getInt("total_grade"));
+                students.add(s);
             }
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
         }
         if (!students.isEmpty()) {
             for (int i = 0; !students.isEmpty(); i++) {
-                System.out.println("Student name: " + students.get(i).name + " , "
-                        + "Student id: " + students.get(i).id + " , "
-                        + "Mid exame grade: " + students.get(i).midGrade + " , "
-                        + "Year doing grade: " + students.get(i).yearDoingGrade + " , "
-                        + "bonus: " + students.get(i).bonusGrade + " , "
-                        + "Final exam grid: " + students.get(i).finalGrade + " , "
-                        + "Total grid: " + students.get(i).totalGrade);
+                System.out.println("Student name: " + students.get(i).getName() + " , "
+                        + "Student id: " + students.get(i).getId() + " , "
+                        + "Mid exame grade: " + students.get(i).getMidGrade() + " , "
+                        + "Year doing grade: " + students.get(i).getYearDoingGrade() + " , "
+                        + "bonus: " + students.get(i).getBonusGrade() + " , "
+                        + "Final exam grid: " + students.get(i).getFinalGrade() + " , "
+                        + "Total grid: " + students.get(i).getTotalGrade());
             }
             gradeActions();
         } else {
@@ -621,11 +628,11 @@ public class Course {
                 int finalrMark = rs.getInt("A.finalmark");
                 int bonusMark = rs.getInt("A.bonus");
                 int totalMark = rs.getInt("A.totalmark");
-                System.out.println("-------------------------------------------------------------------Year Mark : " + (yearMark == -1 ? "N/A" : yearMark) + "-------------------------------------------------------------------");
-                System.out.println("-------------------------------------------------------------------MidTerm Exam Mark : " + (midMark == -1 ? "N/A" : midMark) + "-------------------------------------------------------------------");
-                System.out.println("-------------------------------------------------------------------Final Exam Mark : " + (finalrMark == -1 ? "N/A" : finalrMark) + "-------------------------------------------------------------------");
-                System.out.println("-------------------------------------------------------------------Bonus Mark : " + (bonusMark == -1 ? "N/A" : bonusMark) + "-------------------------------------------------------------------");
-                System.out.println("-------------------------------------------------------------------Total Mark : " + (totalMark == -1 ? "N/A" : totalMark) + "-------------------------------------------------------------------");
+                System.out.println("-------------------------------------------------------------------Year Mark : " + (yearMark == -1 ? "unknown" : yearMark) + "-------------------------------------------------------------------");
+                System.out.println("-------------------------------------------------------------------MidTerm Exam Mark : " + (midMark == -1 ? "unknown" : midMark) + "-------------------------------------------------------------------");
+                System.out.println("-------------------------------------------------------------------Final Exam Mark : " + (finalrMark == -1 ? "unknown" : finalrMark) + "-------------------------------------------------------------------");
+                System.out.println("-------------------------------------------------------------------Bonus Mark : " + (bonusMark == -1 ? "unknown" : bonusMark) + "-------------------------------------------------------------------");
+                System.out.println("-------------------------------------------------------------------Total Mark : " + (totalMark == -1 ? "unknown" : totalMark) + "-------------------------------------------------------------------");
             }
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
