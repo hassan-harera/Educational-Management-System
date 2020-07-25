@@ -13,7 +13,7 @@ import java.util.List;
 
 public class Assignment {
 
-    private int code, grade, solutions, totalStudents, courseCode, studentId, doctorId, TAid;
+    private int code, mark, solutions, totalStudents, courseCode, studentId, doctorId, TAid;
     private String name, questions, doctorName, courseName;
     BufferedReader in;
 
@@ -42,8 +42,8 @@ public class Assignment {
         this.name = name;
     }
 
-    public void setGrade(int grade) {
-        this.grade = grade;
+    public void setGrade(int mark) {
+        this.mark = mark;
     }
 
     public int getCode() {
@@ -51,7 +51,7 @@ public class Assignment {
     }
 
     public int getGrade() {
-        return grade;
+        return mark;
     }
 
     public String getName() {
@@ -68,7 +68,7 @@ public class Assignment {
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 courseCode = rs.getInt("ccode");
-                grade = rs.getInt("grade");
+                mark = rs.getInt("grade");
                 name = rs.getString("name");
                 questions = rs.getString("question");
             }
@@ -119,7 +119,7 @@ public class Assignment {
 
         System.out.println("-------------------------------------------------------------------Assignment name : " + name + " ---------------");
         System.out.println("-------------------------------------------------------------------Assignment code : " + code + " ---------------");
-        System.out.println("-------------------------------------------------------------------Assignment grade : " + grade + " ---------------");
+        System.out.println("-------------------------------------------------------------------Assignment mark : " + mark + " ---------------");
         System.out.println("-------------------------------------------------------------------Course : " + courseName + " ---------------");
         System.out.println("-------------------------------------------------------------------Doctor : " + doctorName + " ---------------");
         System.out.println("-------------------------------------------------------------------Assignment questions: " + questions + " ---------------");
@@ -173,7 +173,7 @@ public class Assignment {
         studentsSolved.forEach((student) -> {
             System.out.println("-------------------------------------------------------------------student id : " + student.getId() + " , "
                     + " student name : " + student.getName() + " , "
-                    + " student status : solve , " + " student grade : "
+                    + " student status : solve , " + " student mark : "
                     + (student.getAssignmentGrade() == -1 ? "unknown" : student.getAssignmentGrade()) + " ---------------");
         });
 
@@ -196,7 +196,7 @@ public class Assignment {
         System.out.println("1○ View the assignment questions\n"
                 + "2○ submit my answer\n"
                 + "3○ View my answer\n"
-                + "4○ View my Assignment's grade\n"
+                + "4○ View my Assignment's mark\n"
                 + "5○ Back");
 
         System.out.println("-------------------------------------------------------------------Please enter a choice------------------------------");
@@ -369,8 +369,8 @@ public class Assignment {
             ps.setInt(2, studentId);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                int grade = rs.getInt("grade");
-                System.out.println("-------------------------------------------------------------------" + "Your grade is " + (grade == -1 ? "unknown" : grade) + " -------------------------------------------------------------");
+                int mark = rs.getInt("grade");
+                System.out.println("-------------------------------------------------------------------" + "Your mark is " + (mark == -1 ? "unknown" : mark) + " -------------------------------------------------------------");
             } else {
                 System.out.println("-------------------------------------------------------------------Your hvae not submitted any answer yet-------------------------------------------------------------");
             }

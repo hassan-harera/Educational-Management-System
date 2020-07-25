@@ -209,7 +209,7 @@ public class Doctor {
         System.out.println("------------------------------------------------------------------------------------------------------------------------------");
         System.out.println("-------------------------------------------------------------------COURSE MENU ---------------------------------------------");
         System.out.println("------------------------------------------------------------------------------------------------------------------------------");
-        System.out.println("1○ View grade report\n"
+        System.out.println("1○ View mark report\n"
                 + "2○ List assignments\n"
                 + "3○ Create assignment\n"
                 + "4○ View assignment\n"
@@ -224,7 +224,7 @@ public class Doctor {
         String choice = in.readLine();
 
         if (choice.equals("1")) {
-            c.gradeReport();
+            c.markReport();
         } else if (choice.equals("2")) {
             c.listAssignments();
         } else if (choice.equals("3")) {

@@ -112,7 +112,7 @@ public class Course {
         }
     }
 
-    public void gradeReport() throws IOException {
+    public void markReport() throws IOException {
         List<Student> students = new ArrayList<>();
 
         String query = "SELECT  S.name, S.id, C.midmark, C.finalmark, C.totalmark , C.bonus, C.yearmark FROM student_course C JOIN student S ON S.id = C.sid where C.ccode = ?;";
@@ -123,12 +123,20 @@ public class Course {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 Student s = new Student(rs.getInt("id"));
+
+                int midMark = rs.getInt("midmark");
+                int finalMark = rs.getInt("finalmark");
+                int yearMark = rs.getInt("yearmark");
+                int bonus = rs.getInt("bonus");
+                int totalMark = (midMark == -1 ? 0 : midMark ) + (finalMark == -1 ? 0 :  finalMark) + (yearMark == -1 ? 0 : yearMark) + bonus;
+
                 s.setName(rs.getString("name"));
-                s.setMidGrade(rs.getInt("midmark"));
-                s.setFinalGrade(rs.getInt("finalmark"));
-                s.setYearDoingGrade(rs.getInt("yearmark"));
-                s.setBonusGrade(rs.getInt("bonus"));
-                s.setTotalGrade(rs.getInt("totalmark"));
+                s.setMidGrade(midMark);
+                s.setFinalGrade(finalMark);
+                s.setYearDoingGrade(yearMark);
+                s.setBonusGrade(bonus);
+                s.setTotalGrade(totalMark);
+
                 students.add(s);
             }
         } catch (SQLException ex) {
@@ -138,13 +146,13 @@ public class Course {
             for (int i = 0; i < students.size(); i++) {
                 System.out.println("Student name: " + students.get(i).getName() + " , "
                         + "Student id: " + students.get(i).getId() + " , "
-                        + "Mid exame grade: " + (students.get(i).getMidGrade() == -1 ? "unknown" : students.get(i).getMidGrade()) + " , "
-                        + "Year doing grade: " + (students.get(i).getYearDoingGrade()== -1 ? "unknown" : students.get(i).getYearDoingGrade())+ " , "
-                        + "bonus: " + (students.get(i).getBonusGrade()== -1 ? "unknown" : students.get(i).getBonusGrade()) + " , "
-                        + "Final exam grid: " + (students.get(i).getFinalGrade()== -1 ? "unknown" : students.get(i).getFinalGrade()) + " , "
-                        + "Total grid: " + (students.get(i).getTotalGrade()== -1 ? "unknown" : students.get(i).getTotalGrade()));
+                        + "Mid exame mark: " + (students.get(i).getMidGrade() == -1 ? "unknown" : students.get(i).getMidGrade()) + " , "
+                        + "work mark mark: " + (students.get(i).getYearDoingGrade() == -1 ? "unknown" : students.get(i).getYearDoingGrade()) + " , "
+                        + "bonus: " + (students.get(i).getBonusGrade() == -1 ? "unknown" : students.get(i).getBonusGrade()) + " , "
+                        + "Final exam mark: " + (students.get(i).getFinalGrade() == -1 ? "unknown" : students.get(i).getFinalGrade()) + " , "
+                        + "Total mark: " + (students.get(i).getTotalGrade() == -1 ? "unknown" : students.get(i).getTotalGrade()));
             }
-            gradeActions();
+            markActions();
         } else {
             System.out.println("---------------------------------NO students was registerd in this course------------------------------");
         }
@@ -176,7 +184,7 @@ public class Course {
 
     public void createAssignment() throws IOException {
         System.out.println("----------------Please enter assignment code or 0 to cancel ---------------");
-        String code, name, grade, questions;
+        String code, name, mark, questions;
         int cod, grad;
 
         while (true) {
@@ -201,15 +209,15 @@ public class Course {
         System.out.println("----------------Please enter the assignment questions manually---------------");
         questions = in.readLine();
 
-        System.out.println("----------------Please enter assignment grade---------------");
+        System.out.println("----------------Please enter assignment mark---------------");
 
         while (true) {
             try {
-                grade = in.readLine();
-                grad = Integer.parseInt(grade);
+                mark = in.readLine();
+                grad = Integer.parseInt(mark);
                 break;
             } catch (NumberFormatException e) {
-                System.out.println("----------------Please enter The assignment grade in number---------------");
+                System.out.println("----------------Please enter The assignment mark in number---------------");
             }
         }
 
@@ -229,7 +237,7 @@ public class Course {
         }
     }
 
-    private void gradeActions() throws IOException {
+    private void markActions() throws IOException {
         System.out.println("----------------To put bonus for all students enter 1---------------");
         System.out.println("----------------To put bonus for some student enter 2---------------");
         System.out.println("----------------To go back enter 0---------------");
@@ -324,7 +332,7 @@ public class Course {
             for (Assignment a : assignments) {
                 System.out.println("----------------Assignment name : " + a.getName() + " , "
                         + "Assignment code : " + a.getCode() + " , "
-                        + "Assignment grade : " + a.getGrade());
+                        + "Assignment mark : " + a.getGrade());
             }
         } else {
             System.out.println("-------------------------------------------------------------------There is no assignments to view ---------------");
@@ -345,7 +353,7 @@ public class Course {
                     if (code.equals("0")) {
                         return null;
                     } else if (!checkAssignmentCode(cod)) {
-                        Assignment a  = new  Assignment(Integer.parseInt(code));
+                        Assignment a = new Assignment(Integer.parseInt(code));
                         a.viewAssignment();
                         return a;
                     } else {

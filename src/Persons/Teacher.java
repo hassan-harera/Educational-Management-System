@@ -321,7 +321,7 @@ public class Teacher {
 //    private void courseMenu(int ccode) {
 ////○ "List Assignments", "Create Assignment", "View Assignment", "Back"
 //
-//        System.out.println("1○ View grade report\n"
+//        System.out.println("1○ View mark report\n"
 //                + "2○ List assignments\n"
 //                + "3○ Create assignment\n"
 //                + "4○ View assignment\n"
@@ -336,7 +336,7 @@ public class Teacher {
 //        try {
 //            int choice = in.readLine();
 //            if (choice == 1) {
-//                c.gradeReport();
+//                c.markReport();
 //            } else if (choice == 2) {
 //                c.listAssignments();
 //            } else if (choice == 3) {
