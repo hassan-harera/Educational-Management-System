@@ -124,25 +124,25 @@ public class Course {
             while (rs.next()) {
                 Student s = new Student(rs.getInt("id"));
                 s.setName(rs.getString("name"));
-                s.setMidGrade(rs.getInt("mid_grade"));
-                s.setFinalGrade(rs.getInt("final_grade"));
-                s.setYearDoingGrade(rs.getInt("year_grade"));
-                s.setBonusGrade(rs.getInt("bonus_grade"));
-                s.setTotalGrade(rs.getInt("total_grade"));
+                s.setMidGrade(rs.getInt("midmark"));
+                s.setFinalGrade(rs.getInt("finalmark"));
+                s.setYearDoingGrade(rs.getInt("yearmark"));
+                s.setBonusGrade(rs.getInt("bonus"));
+                s.setTotalGrade(rs.getInt("totalmark"));
                 students.add(s);
             }
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
         }
         if (!students.isEmpty()) {
-            for (int i = 0; !students.isEmpty(); i++) {
+            for (int i = 0; i < students.size(); i++) {
                 System.out.println("Student name: " + students.get(i).getName() + " , "
                         + "Student id: " + students.get(i).getId() + " , "
-                        + "Mid exame grade: " + students.get(i).getMidGrade() + " , "
-                        + "Year doing grade: " + students.get(i).getYearDoingGrade() + " , "
-                        + "bonus: " + students.get(i).getBonusGrade() + " , "
-                        + "Final exam grid: " + students.get(i).getFinalGrade() + " , "
-                        + "Total grid: " + students.get(i).getTotalGrade());
+                        + "Mid exame grade: " + (students.get(i).getMidGrade() == -1 ? "unknown" : students.get(i).getMidGrade()) + " , "
+                        + "Year doing grade: " + (students.get(i).getYearDoingGrade()== -1 ? "unknown" : students.get(i).getYearDoingGrade())+ " , "
+                        + "bonus: " + (students.get(i).getBonusGrade()== -1 ? "unknown" : students.get(i).getBonusGrade()) + " , "
+                        + "Final exam grid: " + (students.get(i).getFinalGrade()== -1 ? "unknown" : students.get(i).getFinalGrade()) + " , "
+                        + "Total grid: " + (students.get(i).getTotalGrade()== -1 ? "unknown" : students.get(i).getTotalGrade()));
             }
             gradeActions();
         } else {
@@ -266,7 +266,7 @@ public class Course {
             }
         }
 
-        String query = "update student_course set bonus (bonus+?) where ccod = ?;";
+        String query = "update student_course set bonus = (bonus+?) where ccode = ?;";
         try {
             PreparedStatement ps;
             ps = MyConnection.con().prepareStatement(query);
@@ -332,7 +332,7 @@ public class Course {
         return assignments;
     }
 
-    public int viewAssignment() throws IOException {
+    public Assignment viewAssignment() throws IOException {
         List<Assignment> assignments = listAssignments();
         if (assignments.isEmpty()) {
             System.out.println("-------------------------------------------------------------------There is no assignments was created to view ---------------");
@@ -343,10 +343,11 @@ public class Course {
                     String code = in.readLine();
                     int cod = Integer.parseInt(code);
                     if (code.equals("0")) {
-                        return -1;
+                        return null;
                     } else if (!checkAssignmentCode(cod)) {
-                        new Assignment(Integer.parseInt(code)).viewAssignment();
-                        return cod;
+                        Assignment a  = new  Assignment(Integer.parseInt(code));
+                        a.viewAssignment();
+                        return a;
                     } else {
                         System.out.println("----------------This course code is not existed enter another or 0 to cancel ---------------");
                     }
@@ -355,15 +356,13 @@ public class Course {
                 }
             }
         }
-        return -1;
+        return null;
     }
 
     public void addStudent() throws IOException {
         List<Integer> students = listAllStudents();
 
-        if (students.isEmpty()) {
-            System.out.println("-------------------------------------------------------------------There is no students in the site to add ---------------");
-        } else {
+        if (!students.isEmpty()) {
             System.out.println("----------------Enter the student id ---------------");
             while (true) {
                 try {
@@ -498,13 +497,14 @@ public class Course {
     }
 
     public void insertStudent(int id) {
-        String query = "INSERT INTO student_course (sid,ccode) SELECT * FROM (SELECT ?,?) AS tmp WHERE NOT EXISTS (SELECT sid FROM student_course WHERE sid = ?) LIMIT 1;";
+        String query = "INSERT INTO student_course (sid,ccode) SELECT * FROM (SELECT ?,?) AS tmp WHERE NOT EXISTS (SELECT sid FROM student_course WHERE sid = ? and ccode = ?) LIMIT 1;";
         try {
             PreparedStatement ps;
             ps = con.prepareStatement(query);
             ps.setInt(1, id);
             ps.setInt(2, code);
             ps.setInt(3, id);
+            ps.setInt(4, code);
             ps.execute();
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());

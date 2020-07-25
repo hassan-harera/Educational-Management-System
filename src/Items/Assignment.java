@@ -98,7 +98,7 @@ public class Assignment {
             ps.setInt(1, code);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                solutions = rs.getInt("COUNT(sid)");
+                this.solutions = rs.getInt("COUNT(sid)");
             }
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
@@ -111,7 +111,7 @@ public class Assignment {
             ps.setInt(1, courseCode);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                totalStudents = rs.getInt("COUNT(sid)");
+                this.totalStudents = rs.getInt("COUNT(sid)");
             }
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
@@ -129,8 +129,9 @@ public class Assignment {
 
     public void report() {
         System.out.println("-------------------------------------------------------------------Number of students that solved the assignment : "
-                + solutions + " ---------------");
-        System.out.println("-------------------------------------------------------------------Number of students that didn't solve the assignment : " + (totalStudents - solutions) + " ---------------");
+                + this.solutions + " ---------------");
+        System.out.println("-------------------------------------------------------------------Number of students that didn't solve the assignment :"
+                + (totalStudents - this.solutions) + " ---------------");
 
         List<Student> studentsSolved = new ArrayList();
         String query = "select S.name,A.sid,A.grade from student S JOIN assignment_student A ON A.sid = S.id where A.acode = ?;";
@@ -377,4 +378,6 @@ public class Assignment {
             System.out.println(ex.getMessage());
         }
     }
+
+
 }

@@ -324,9 +324,8 @@ public class Student {
         } else if (choice.equals("2")) {
             c.listAssignments();
         } else if (choice.equals("3")) {
-            int aCode = c.viewAssignment();
-            if (aCode != -1) {
-                Assignment a = new Assignment(aCode);
+            Assignment a = c.viewAssignment();
+            if (a != null) {
                 a.setCourseCode(code);
                 a.setStudentId(id);
                 a.studentAssignmentMenu(code);

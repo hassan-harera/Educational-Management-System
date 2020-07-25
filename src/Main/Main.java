@@ -49,7 +49,7 @@ public class Main {
         System.out.println("-------------------------------------------------------------------To signup for doctor enter 1---------------");
         System.out.println("-------------------------------------------------------------------To signup for TA enter 2---------------");
         System.out.println("-------------------------------------------------------------------To signup for student enter 3---------------");
-        System.out.println("-------------------------------------------------------------------To return enter 3---------------");
+        System.out.println("-------------------------------------------------------------------To return enter 0---------------");
 
         String choice = in.readLine();
         if (choice.equals("1")) {
@@ -58,6 +58,8 @@ public class Main {
                 Teacher.signUp();
         } else if (choice.equals("3")) {
                 Student.signUp();
+        } else if (choice.equals("0")) {
+            return;
         } else {
             System.out.println("-------------------------------------------------------------------Invalid Choice---------------");
             signUp();

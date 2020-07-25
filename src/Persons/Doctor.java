@@ -230,9 +230,9 @@ public class Doctor {
         } else if (choice.equals("3")) {
             c.createAssignment();
         } else if (choice.equals("4")) {
-            int aCode = c.viewAssignment();
-            if (aCode != -1) {
-                assignmentMenu(aCode);
+            Assignment a = c.viewAssignment();
+            if (a != null) {
+                assignmentMenu(a);
             }
         } else if (choice.equals("5")) {
             c.addStudent();
@@ -295,7 +295,7 @@ public class Doctor {
         }
     }
 
-    private void assignmentMenu(int code) throws IOException {
+    public void assignmentMenu(Assignment a) throws IOException {
         System.out.println("------------------------------------------------------------------------------------------------------------------------------");
         System.out.println("-------------------------------------------------------------------ASSIGNMENT MENU ---------------------------------------------");
         System.out.println("------------------------------------------------------------------------------------------------------------------------------");
@@ -306,7 +306,6 @@ public class Doctor {
                 + "5○ Back");
 
         System.out.println("-------------------------------------------------------------------Please enter a choice------------------------------");
-        Assignment a = new Assignment(code);
         String choice = in.readLine();
 
         if (choice.equals("1")) {
@@ -322,6 +321,7 @@ public class Doctor {
         } else {
             System.out.println("-------------------------------------------------------------------Please enter a correct choice---------------");
         }
-        assignmentMenu(code);
+        assignmentMenu(a);
     }
+
 }
