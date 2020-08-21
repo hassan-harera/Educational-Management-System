@@ -5,9 +5,7 @@ import Persons.Student;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,10 +14,12 @@ public class Assignment {
     private int code, mark, solutions, totalStudents, courseCode, studentId, doctorId, TAid;
     private String name, questions, doctorName, courseName;
     BufferedReader in;
+    private Connection con;
 
     public Assignment(int code) {
         this.code = code;
         in = new BufferedReader(new InputStreamReader(System.in));
+        con = MyConnection.con();
     }
 
     public void setCourseCode(int courseCode) {
@@ -127,7 +127,7 @@ public class Assignment {
         System.out.println("-------------------------------------------------------------------Number of scheduled students : " + totalStudents + " ---------------");
     }
 
-    public void report() {
+    public void doctorReport() {
         System.out.println("-------------------------------------------------------------------Number of students that solved the assignment : "
                 + this.solutions + " ---------------");
         System.out.println("-------------------------------------------------------------------Number of students that didn't solve the assignment :"
@@ -154,7 +154,7 @@ public class Assignment {
         }
 
         List<Student> studentsNotSolved = new ArrayList();
-        query = "select S.name, A.sid from student S JOIN student_course A ON A.sid = S.id where A.ccode = ?;";
+        query = "select S.name, A.sid from student S JOIN student_course A ON A.sid = S.id JOIN assignment_student T On T.sid != A.sid where A.ccode = ?;";
         try {
             PreparedStatement ps;
             ps = MyConnection.con().prepareStatement(query);
@@ -170,6 +170,9 @@ public class Assignment {
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
         }
+
+        System.out.println("-------------------------------------------------------------------------------------STUDENT LIST-------------------------------------------------------------------");
+
         studentsSolved.forEach((student) -> {
             System.out.println("-------------------------------------------------------------------student id : " + student.getId() + " , "
                     + " student name : " + student.getName() + " , "
@@ -182,11 +185,6 @@ public class Assignment {
                     + " student name : " + student.getName() + " , " + " student status : not solve ---------------");
         });
 
-        try {
-            studentAssignmentMenu(code);
-        } catch (IOException ex) {
-            System.out.println(ex);
-        }
     }
 
     public void studentAssignmentMenu(int code) throws IOException {
@@ -225,39 +223,75 @@ public class Assignment {
         studentAssignmentMenu(code);
     }
 
-    public void viewSubmissions() {
+    /*
+    public void doctorAssignmentMenu(int code) throws IOException {
+        System.out.println("------------------------------------------------------------------------------------------------------------------------------");
+        System.out.println("-------------------------------------------------------------------Assignment MENU ---------------------------------------------");
+        System.out.println("------------------------------------------------------------------------------------------------------------------------------");
+        System.out.println("1○ View the assignment questions\n"
+                + "2○ submit my answer\n"
+                + "3○ View my answer\n"
+                + "4○ View my Assignment's mark\n"
+                + "5○ Back");
+
+        System.out.println("-------------------------------------------------------------------Please enter a choice------------------------------");
+        Course c = new Course(code);
+
+        String choice = in.readLine();
+        switch (choice) {
+            case "1":
+                viewQuestions();
+                break;
+            case "2":
+                submitAnswer();
+                break;
+            case "3":
+                viewAnswer();
+                break;
+            case "4":
+                viewGrade();
+                break;
+            case "5":
+                return;
+            default:
+                System.out.println("-------------------------------------------------------------------Please enter a correct choice---------------");
+                break;
+        }
+        doctorAssignmentMenu(code);
+    }
+
+     */
+    public void viewSubmissions() throws IOException {
         List<Student> studentsSolution = new ArrayList();
         String query = "select S.name, A.sid, A.answer from assignment_student A JOIN student S ON A.sid = S.id where A.acode = ?;";
         try {
             PreparedStatement ps;
             ps = MyConnection.con().prepareStatement(query);
-            ps.setInt(1, courseCode);
+            ps.setInt(1, code);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 String studentName = rs.getString("S.name");
-                String answer = rs.getString("S.name");
+                String answer = rs.getString("A.answer");
                 int sid = rs.getInt("A.sid");
                 Student s = new Student(sid);
-                s.setName(name);
+                s.setName(studentName);
                 s.setAssignmentAnswer(answer);
                 studentsSolution.add(s);
             }
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
         }
-        studentsSolution.stream().map((student) -> {
-            System.out.println("--------------------------------------------------------------------------------------------------------------------------------------------");
-            return student;
-        }).map((student) -> {
-            System.out.println("-------------------------------------------------------------------Student name : " + student.getName() + " , "
-                    + "Student id : " + student.getId() + "-------------------------------------------------------------");
-            return student;
-        }).forEachOrdered((student) -> {
-            System.out.println(student.getAssignmentAnswer());
-        });
 
         if (studentsSolution.isEmpty()) {
             System.out.println("-------------------------------------------------------------------There is no submissions to view-------------------------------------------------------------");
+        } else {
+            for (Student student : studentsSolution) {
+                System.out.println("-------------------------------------------------------------------Student name : " + student.getName()
+                        + " , " + "Student id : " + student.getId() + "-------------------------------------------------------------");
+                System.out.println("-------------------------------------------------------------------STUDENT SOLUTION-------------------------------------------------------------------");
+                System.out.println(student.getAssignmentAnswer());
+            }
+            submissionActions();
         }
 
     }
@@ -379,5 +413,100 @@ public class Assignment {
         }
     }
 
+    private void submissionActions() throws IOException {
+        System.out.println("------------------------------------------------------------------------------------------------------------------------------");
+        System.out.println("-------------------------------------------------------------------SUBMISSION ACTIONS---------------------------------------------");
+        System.out.println("------------------------------------------------------------------------------------------------------------------------------");
+        System.out.println("1○ Put grade for solutions\n"
+                + "2○ View the submissions again\n"
+                + "3○ Back");
+
+        System.out.println("-------------------------------------------------------------------Please enter a choice------------------------------");
+        String choice = in.readLine();
+
+        if (choice.equals("1")) {
+            enterStudentId();
+        } else if (choice.equals("2")) {
+            viewSubmissions();
+        } else if (choice.equals("3")) {
+            return;
+        } else {
+            System.out.println("-------------------------------------------------------------------Please enter a correct choice---------------");
+        }
+        submissionActions();
+    }
+
+    private void enterStudentId() throws IOException {
+        System.out.println("Enter the student id from id list");
+        String sid;
+
+        while (true) {
+            sid = in.readLine();
+            try {
+                if (sid.equals("0")) {
+                    return;
+                } else if (sid.equals("")) {
+                    System.out.println("-------------------------------------------------------------------No input was entered---------------");
+                } else if (checkStudentId(Integer.parseInt(sid))) {
+                    enterGrade(Integer.parseInt(sid));
+                    break;
+                } else {
+                    System.out.println("-------------------------------------------------------------------This id si not correct---------------");
+                }
+            } catch (NumberFormatException nfe) {
+                System.out.println("-------------------------------------------------------------------The id must be number---------------");
+            }
+        }
+    }
+
+    private boolean checkStudentId(int id) {
+        String query = "select id from student where id = ?;";
+        try {
+            PreparedStatement ps;
+            ps = con.prepareStatement(query);
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return true;
+            }
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
+        return false;
+    }
+
+    private void enterGrade(int sid) throws IOException {
+        System.out.println("Enter the grade value or -1 to cancel");
+        String grade;
+
+        while (true) {
+            grade = in.readLine();
+            try {
+                int studentGrade = Integer.parseInt(grade);
+                if (grade.equals("")) {
+                    System.out.println("-------------------------------------------------------------------No input was entered---------------");
+                } else if (studentGrade == -1) {
+                    break;
+                } else if (studentGrade <= this.mark && studentGrade >= 0) {
+                    String query = "update assignment_student set grade = ? where sid = ? and acode = ?;";
+                    try {
+                        PreparedStatement ps;
+                        ps = con.prepareStatement(query);
+                        ps.setInt(1, studentGrade);
+                        ps.setInt(2, sid);
+                        ps.setInt(3, code);
+                        ps.execute();
+                        break;
+                    } catch (SQLException ex) {
+                        System.out.println(ex.getMessage());
+                    }
+                } else {
+                    System.out.println("-------------------------------------------------------------------Invalid grade---------------");
+                }
+            } catch (NumberFormatException nfe) {
+                System.out.println("-------------------------------------------------------------------The grade must be number---------------");
+            }
+        }
+    }
 
 }

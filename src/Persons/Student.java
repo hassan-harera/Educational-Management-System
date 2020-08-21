@@ -18,7 +18,7 @@ public class Student {
     private String username, password;
     private String name;
     private int id, midGrade, finalGrade, yearDoingGrade, bonusGrade, totalGrade, assignmentGrade;
-    BufferedReader in;
+    private BufferedReader in;
     private Connection con;
 
     public Student(int id) {
@@ -337,4 +337,5 @@ public class Student {
         }
         courseMenu(code);
     }
+
 }

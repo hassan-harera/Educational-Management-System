@@ -128,7 +128,7 @@ public class Course {
                 int finalMark = rs.getInt("finalmark");
                 int yearMark = rs.getInt("yearmark");
                 int bonus = rs.getInt("bonus");
-                int totalMark = (midMark == -1 ? 0 : midMark ) + (finalMark == -1 ? 0 :  finalMark) + (yearMark == -1 ? 0 : yearMark) + bonus;
+                int totalMark = (midMark == -1 ? 0 : midMark) + (finalMark == -1 ? 0 : finalMark) + (yearMark == -1 ? 0 : yearMark) + bonus;
 
                 s.setName(rs.getString("name"));
                 s.setMidGrade(midMark);
@@ -144,12 +144,12 @@ public class Course {
         }
         if (!students.isEmpty()) {
             for (int i = 0; i < students.size(); i++) {
-                System.out.println("Student name: " + students.get(i).getName() + " , "
-                        + "Student id: " + students.get(i).getId() + " , "
-                        + "Mid exame mark: " + (students.get(i).getMidGrade() == -1 ? "unknown" : students.get(i).getMidGrade()) + " , "
-                        + "work mark mark: " + (students.get(i).getYearDoingGrade() == -1 ? "unknown" : students.get(i).getYearDoingGrade()) + " , "
-                        + "bonus: " + (students.get(i).getBonusGrade() == -1 ? "unknown" : students.get(i).getBonusGrade()) + " , "
-                        + "Final exam mark: " + (students.get(i).getFinalGrade() == -1 ? "unknown" : students.get(i).getFinalGrade()) + " , "
+                System.out.println("Student name: " + students.get(i).getName() + " ------ "
+                        + "Student id: " + students.get(i).getId() + " ------ "
+                        + "Mid exame mark: " + (students.get(i).getMidGrade() == -1 ? "unknown" : students.get(i).getMidGrade()) + " ------ "
+                        + "work mark mark: " + (students.get(i).getYearDoingGrade() == -1 ? "unknown" : students.get(i).getYearDoingGrade()) + " ------ "
+                        + "bonus: " + (students.get(i).getBonusGrade() == -1 ? "unknown" : students.get(i).getBonusGrade()) + " ------ "
+                        + "Final exam mark: " + (students.get(i).getFinalGrade() == -1 ? "unknown" : students.get(i).getFinalGrade()) + " ------ "
                         + "Total mark: " + (students.get(i).getTotalGrade() == -1 ? "unknown" : students.get(i).getTotalGrade()));
             }
             markActions();
@@ -493,7 +493,7 @@ public class Course {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 int s = rs.getInt("id");
-                System.out.println("----------------Student id: " + s + "id"
+                System.out.println("----------------Student id: " + s
                         + " , Student name: " + rs.getString("name") + " ---------------");
                 students.add(s);
             }
@@ -530,7 +530,7 @@ public class Course {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 int s = rs.getInt("id");
-                System.out.println("-------------------------------------------------------------------Student id: " + s + "id"
+                System.out.println("-------------------------------------------------------------------Student id: " + s 
                         + " , Student name: " + rs.getString("name") + " ---------------");
                 students.add(s);
             }

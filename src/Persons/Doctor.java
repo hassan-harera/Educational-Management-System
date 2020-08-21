@@ -142,12 +142,12 @@ public class Doctor {
     }
 
     private void createCourse() throws IOException {
-        System.out.println("-------------------------------------------------------------------Please enter the course name---------------");
+        System.out.println("-------------------------------------------------------------------Please enter the course name or enter 0 to cancel---------------");
         String cname;
 
         while (true) {
             cname = in.readLine();
-            if (username.equals("0")) {
+            if (cname.equals("0")) {
                 return;
             } else if (!checkCourseName(cname)) {
                 System.out.println("-------------------------------------------------------------------This course name is already found enter another or enter 0 to cancel---------------");
@@ -309,7 +309,7 @@ public class Doctor {
         String choice = in.readLine();
 
         if (choice.equals("1")) {
-            a.report();
+            a.doctorReport();
         } else if (choice.equals("2")) {
             a.viewSubmissions();
         } else if (choice.equals("3")) {
