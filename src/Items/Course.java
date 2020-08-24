@@ -147,8 +147,8 @@ public class Course {
                 System.out.println("Student name: " + students.get(i).getName() + " ------ "
                         + "Student id: " + students.get(i).getId() + " ------ "
                         + "Mid exame mark: " + (students.get(i).getMidGrade() == -1 ? "unknown" : students.get(i).getMidGrade()) + " ------ "
-                        + "work mark mark: " + (students.get(i).getYearDoingGrade() == -1 ? "unknown" : students.get(i).getYearDoingGrade()) + " ------ "
-                        + "bonus: " + (students.get(i).getBonusGrade() == -1 ? "unknown" : students.get(i).getBonusGrade()) + " ------ "
+                        + "coursework mark: " + (students.get(i).getYearDoingGrade() == -1 ? "unknown" : students.get(i).getYearDoingGrade()) + " ------ "
+                        + "bonus marks: " + (students.get(i).getBonusGrade() == -1 ? "unknown" : students.get(i).getBonusGrade()) + " ------ "
                         + "Final exam mark: " + (students.get(i).getFinalGrade() == -1 ? "unknown" : students.get(i).getFinalGrade()) + " ------ "
                         + "Total mark: " + (students.get(i).getTotalGrade() == -1 ? "unknown" : students.get(i).getTotalGrade()));
             }
@@ -238,7 +238,7 @@ public class Course {
     }
 
     private void markActions() throws IOException {
-        System.out.println("----------------To put bonus for all students enter 1---------------");
+        System.out.println("\n----------------To put bonus for all students enter 1---------------");
         System.out.println("----------------To put bonus for some student enter 2---------------");
         System.out.println("----------------To go back enter 0---------------");
 
@@ -259,26 +259,23 @@ public class Course {
     }
 
     private void putBonusForAll() throws IOException {
-        System.out.println("----------------Please put bonus value ---------------");
-        String bonus = null;
+        System.out.println("----------------Please enter the bouns value---------------");
+        String value;
         while (true) {
-            try {
-                bonus = in.readLine();
-                if (bonus.equals("0")) {
-                    return;
-                } else if (Integer.parseInt(bonus) != 0) {
-                    break;
-                }
-            } catch (NumberFormatException e) {
-                System.out.println("----------------bonus input must be number or enter 0 to cancel---------------");
+            value = in.readLine();
+            if (value.matches("^\\d+$")) {
+                break;
+            } else {
+                System.out.println("----------------INVALID VALUE---------------");
             }
         }
-
+        
+        
         String query = "update student_course set bonus = (bonus+?) where ccode = ?;";
         try {
             PreparedStatement ps;
             ps = MyConnection.con().prepareStatement(query);
-            ps.setInt(1, Integer.parseInt(bonus));
+            ps.setInt(1, Integer.parseInt(value));
             ps.setInt(2, code);
             ps.executeUpdate();
         } catch (SQLException ex) {
@@ -287,26 +284,39 @@ public class Course {
     }
 
     private void putBonusForStudent() throws IOException {
+        System.out.println("----------------Please enter the student id---------------");
+        String id;
+        while (true) {
+            id = in.readLine();
+            if (id.matches("^\\d+$")) {
+                break;
+            } else {
+                System.out.println("----------------INVALID ID---------------");
+            }
+        }
 
+        System.out.println("----------------Please enter the bouns value---------------");
+        String value;
+        while (true) {
+            value = in.readLine();
+            if (value.matches("^\\d+$")) {
+                break;
+            } else {
+                System.out.println("----------------INVALID VALUE---------------");
+            }
+        }
+
+        String query = "update student_course set bonus = (bonus+?) where ccode = ?;";
         try {
-            System.out.println("----------------Please enter student id---------------");
-            int sid = Integer.parseInt(in.readLine());
-
-            System.out.println("----------------Please put bonus value---------------");
-            int bonus = Integer.parseInt(in.readLine());
-
-            String query = "update student_course set bonus (bonus+?) where ccod = ? and sid = ?;";
             PreparedStatement ps;
             ps = MyConnection.con().prepareStatement(query);
-            ps.setInt(1, sid);
+            ps.setInt(1, Integer.parseInt(value));
             ps.setInt(2, code);
-            ps.setInt(3, bonus);
             ps.executeUpdate();
-        } catch (SQLException e) {
-            System.out.println(e);
-        } catch (NumberFormatException e) {
-            System.out.println("----------------the student id and the bonus value must be number---------------");
+        } catch (SQLException ex) {
+            System.out.println(ex);
         }
+
     }
 
     public List<Assignment> listAssignments() {
@@ -530,7 +540,7 @@ public class Course {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 int s = rs.getInt("id");
-                System.out.println("-------------------------------------------------------------------Student id: " + s 
+                System.out.println("-------------------------------------------------------------------Student id: " + s
                         + " , Student name: " + rs.getString("name") + " ---------------");
                 students.add(s);
             }
@@ -636,10 +646,10 @@ public class Course {
                 int finalrMark = rs.getInt("A.finalmark");
                 int bonusMark = rs.getInt("A.bonus");
                 int totalMark = rs.getInt("A.totalmark");
-                System.out.println("-------------------------------------------------------------------Year Mark : " + (yearMark == -1 ? "unknown" : yearMark) + "-------------------------------------------------------------------");
+                System.out.println("-------------------------------------------------------------------Workcourse Mark : " + (yearMark == -1 ? "unknown" : yearMark) + "-------------------------------------------------------------------");
                 System.out.println("-------------------------------------------------------------------MidTerm Exam Mark : " + (midMark == -1 ? "unknown" : midMark) + "-------------------------------------------------------------------");
                 System.out.println("-------------------------------------------------------------------Final Exam Mark : " + (finalrMark == -1 ? "unknown" : finalrMark) + "-------------------------------------------------------------------");
-                System.out.println("-------------------------------------------------------------------Bonus Mark : " + (bonusMark == -1 ? "unknown" : bonusMark) + "-------------------------------------------------------------------");
+                System.out.println("-------------------------------------------------------------------Bonus Marks : " + (bonusMark == -1 ? "unknown" : bonusMark) + "-------------------------------------------------------------------");
                 System.out.println("-------------------------------------------------------------------Total Mark : " + (totalMark == -1 ? "unknown" : totalMark) + "-------------------------------------------------------------------");
             }
         } catch (SQLException ex) {

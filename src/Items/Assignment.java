@@ -128,6 +128,7 @@ public class Assignment {
     }
 
     public void doctorReport() {
+        System.out.println("-------------------------------------------------------------------ASSIGNMENT INFO-------------------------------------------------------------------");
         System.out.println("-------------------------------------------------------------------Number of students that solved the assignment : "
                 + this.solutions + " ---------------");
         System.out.println("-------------------------------------------------------------------Number of students that didn't solve the assignment :"
@@ -289,7 +290,7 @@ public class Assignment {
                 System.out.println("-------------------------------------------------------------------Student name : " + student.getName()
                         + " , " + "Student id : " + student.getId() + "-------------------------------------------------------------");
                 System.out.println("-------------------------------------------------------------------STUDENT SOLUTION-------------------------------------------------------------------");
-                System.out.println(student.getAssignmentAnswer());
+                System.out.println("-----------------------------" + student.getAssignmentAnswer());
             }
             submissionActions();
         }
@@ -439,23 +440,18 @@ public class Assignment {
     private void enterStudentId() throws IOException {
         System.out.println("Enter the student id from id list");
         String sid;
-
         while (true) {
             sid = in.readLine();
-            try {
-                if (sid.equals("0")) {
-                    return;
-                } else if (sid.equals("")) {
-                    System.out.println("-------------------------------------------------------------------No input was entered---------------");
-                } else if (checkStudentId(Integer.parseInt(sid))) {
-                    enterGrade(Integer.parseInt(sid));
-                    break;
-                } else {
-                    System.out.println("-------------------------------------------------------------------This id si not correct---------------");
-                }
-            } catch (NumberFormatException nfe) {
-                System.out.println("-------------------------------------------------------------------The id must be number---------------");
+            if (sid.matches("^\\d+$")) {
+                break;
+            } else {
+                System.out.println("----------------INVALID ID---------------");
             }
+        }
+        if (checkStudentId(Integer.parseInt(sid))) {
+            enterGrade(Integer.parseInt(sid));
+        } else {
+            System.out.println("----------------INVALID ID---------------");
         }
     }
 
@@ -476,37 +472,27 @@ public class Assignment {
     }
 
     private void enterGrade(int sid) throws IOException {
-        System.out.println("Enter the grade value or -1 to cancel");
+        System.out.println("Enter the grade value");
         String grade;
-
         while (true) {
             grade = in.readLine();
-            try {
-                int studentGrade = Integer.parseInt(grade);
-                if (grade.equals("")) {
-                    System.out.println("-------------------------------------------------------------------No input was entered---------------");
-                } else if (studentGrade == -1) {
-                    break;
-                } else if (studentGrade <= this.mark && studentGrade >= 0) {
-                    String query = "update assignment_student set grade = ? where sid = ? and acode = ?;";
-                    try {
-                        PreparedStatement ps;
-                        ps = con.prepareStatement(query);
-                        ps.setInt(1, studentGrade);
-                        ps.setInt(2, sid);
-                        ps.setInt(3, code);
-                        ps.execute();
-                        break;
-                    } catch (SQLException ex) {
-                        System.out.println(ex.getMessage());
-                    }
-                } else {
-                    System.out.println("-------------------------------------------------------------------Invalid grade---------------");
-                }
-            } catch (NumberFormatException nfe) {
-                System.out.println("-------------------------------------------------------------------The grade must be number---------------");
+            if (grade.matches("^\\d+$")) {
+                break;
+            } else {
+                System.out.println("----------------INVALID VALUE---------------");
             }
         }
+        
+        String query = "update assignment_student set grade = ? where sid = ? and acode = ?;";
+        try {
+            PreparedStatement ps;
+            ps = con.prepareStatement(query);
+            ps.setInt(1, Integer.parseInt(grade));
+            ps.setInt(2, sid);
+            ps.setInt(3, code);
+            ps.execute();
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
     }
-
 }

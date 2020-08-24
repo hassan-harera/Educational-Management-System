@@ -70,6 +70,7 @@ public class Doctor {
             ps = con.prepareStatement(query);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
+                System.out.println("-------------------------------------------------------------------COURSES LIST-------------------------------------------------------------------");
                 System.out.println("-------------------------------------------------------------------course code: " + rs.getInt("code")
                         + " , Course name: " + rs.getString("name")
                         + " , Course doctor: " + rs.getString("D.name") + " ---------------------------------");
