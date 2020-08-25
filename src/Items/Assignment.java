@@ -297,7 +297,7 @@ public class Assignment {
 
     }
 
-    public void editQuestions() {
+    public void editQuestions() throws IOException {
         String oldQuestions = "";
         String query = "select question from assignment where code = ?;";
         try {
@@ -313,6 +313,8 @@ public class Assignment {
         }
         System.out.println("-------------------------------------------------------------------Old questions-------------------------------------------------------------");
         System.out.println(oldQuestions);
+
+        enterNewQuestion();
     }
 
     private void viewQuestions() {
@@ -482,7 +484,7 @@ public class Assignment {
                 System.out.println("----------------INVALID VALUE---------------");
             }
         }
-        
+
         String query = "update assignment_student set grade = ? where sid = ? and acode = ?;";
         try {
             PreparedStatement ps;
@@ -494,5 +496,22 @@ public class Assignment {
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
         }
+    }
+
+    private void enterNewQuestion() throws IOException {
+        System.out.println("Enter the new question");
+        String newQuestions = in.readLine();
+        String query = "update assignment set question = ? where code = ?;";
+        try {
+            PreparedStatement ps;
+            ps = MyConnection.con().prepareStatement(query);
+            ps.setString(1, newQuestions);
+            ps.setInt(2, code);
+            ps.execute();
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
+        System.out.println("-------------------------------------------------------------------New questions-------------------------------------------------------------");
+        System.out.println(newQuestions);
     }
 }

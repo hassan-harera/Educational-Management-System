@@ -203,25 +203,28 @@ public class Student {
 
     private void viewCourse() throws IOException {
         List<Integer> courses = listMyCourses();
+        String code;
 
         if (courses.isEmpty()) {
             System.out.println("-------------------------------------------------------------------You are not registered in any course---------------");
         } else {
-            System.out.println("-------------------------------------------------------------------Enter the course code that you want to view---------------");
-            try {
-                int code = Integer.parseInt(in.readLine());
-                if (code != 0) {
-                    if (courses.contains(code)) {
-                        new Course(code).viewCourse();
-                        courseMenu(code);
+            System.out.println("----------------Please enter the course code---------------");
+            while (true) {
+                code = in.readLine();
+                int intCode = Integer.parseInt(code);
+                if (code.matches("^\\d+$")) {
+                    if (intCode == 0) {
+                        return;
+                    } else if (courses.contains(intCode)) {
+                        new Course(intCode).viewCourse();
+                        courseMenu(intCode);
+                        break;
                     } else {
-                        System.out.println("-------------------------------------------------------------------This course code is not found try again ---------------------------------");
-                        viewCourse();
+                        System.out.println("----------------Course code is not correct---------------");
                     }
+                } else {
+                    System.out.println("----------------INVALID VALUE---------------");
                 }
-            } catch (NumberFormatException e) {
-                System.out.println("-------------------------------------------------------------------Please enter a correct input---------------");
-                viewCourse();
             }
         }
     }
