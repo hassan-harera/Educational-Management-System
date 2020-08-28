@@ -4,12 +4,11 @@ public class MyEncryption {
 
     public static String encryptPassword(String str) {
 
-        int len = str.length();
-
-        String encrpted = len + "~";
+        var len = str.length();
+        var encrpted = len + "~";
         encrpted += len;
 
-        for (int i = 0; i < str.length(); i++) {
+        for (var i = 0; i < str.length(); i++) {
             if (i != str.length() - 1) {
                 encrpted += (int) str.charAt(i) - 'A' + "~";
             } else {

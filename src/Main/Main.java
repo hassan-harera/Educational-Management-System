@@ -1,15 +1,18 @@
 package Main;
 
-import Encryption.MyEncryption;
+import static Encryption.MyEncryption.encryptPassword;
 import Persons.Doctor;
 import Persons.Student;
 import Persons.Teacher;
-import Persons.User;
+import static Persons.User.checkPassword;
+import static Persons.User.checkUsername;
+import static Persons.User.isDoctor;
+import static Persons.User.isTA;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import static java.lang.System.out;
 import java.util.InputMismatchException;
-import java.util.Scanner;
 
 /**
  *
@@ -21,81 +24,90 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
         in = new BufferedReader(new InputStreamReader(System.in));
-        System.out.println("--------------------------------------------------------------------------------------------------------------------------------------------");
-        System.out.println("-------------------------------------------------------------------MAIN MENUE -------------------------------------------------------------");
-        System.out.println("--------------------------------------------------------------------------------------------------------------------------------------------");
-        System.out.println("--------------------------------------------------------------------1 Sign up---------------------------------------------------------------\n"
-                         + "--------------------------------------------------------------------2 Sign in---------------------------------------------------------------\n"
-                         + "--------------------------------------------------------------------3 Exit------------------------------------------------------------------");
-        System.out.println("--------------------------------------------------------------------Please enter a input--------------------------------------------------------");
+        out.println("--------------------------------------------------------------------------------------------------------------------------------------------");
+        out.println("-------------------------------------------------------------------MAIN MENUE -------------------------------------------------------------");
+        out.println("--------------------------------------------------------------------------------------------------------------------------------------------");
+        out.println("--------------------------------------------------------------------1 Sign up---------------------------------------------------------------\n"
+                + "--------------------------------------------------------------------2 Sign in---------------------------------------------------------------\n"
+                + "--------------------------------------------------------------------3 Exit------------------------------------------------------------------");
+        out.println("--------------------------------------------------------------------Please enter a input--------------------------------------------------------");
         try {
-            String choice = in.readLine();
-            if (choice.equals("1")) {
-                signUp();
-            } else if (choice.equals("2")) {
-                signIn();
-            } else if (choice.equals("3")) {
-                return;
-            } else {
-                System.out.println("----------------------------------------------------------------Please enter a correct input--------------------------------------------------------");
+            var choice = in.readLine();
+            switch (choice) {
+                case "1":
+                    signUp();
+                    break;
+                case "2":
+                    signIn();
+                    break;
+                case "3":
+                    return;
+                default:
+                    out.println("----------------------------------------------------------------Please enter a correct input--------------------------------------------------------");
+                    break;
             }
         } catch (InputMismatchException e) {
-            System.out.println("-------------------------------------------------------------------Please enter a correct input---------------");
+            out.println("-------------------------------------------------------------------Please enter a correct input---------------");
         }
         main(args);
     }
 
     private static void signUp() throws IOException {
-        System.out.println("-------------------------------------------------------------------To signup for doctor enter 1---------------");
-        System.out.println("-------------------------------------------------------------------To signup for TA enter 2---------------");
-        System.out.println("-------------------------------------------------------------------To signup for student enter 3---------------");
-        System.out.println("-------------------------------------------------------------------To return enter 0---------------");
+        out.println("-------------------------------------------------------------------To signup for doctor enter 1---------------");
+        out.println("-------------------------------------------------------------------To signup for TA enter 2---------------");
+        out.println("-------------------------------------------------------------------To signup for student enter 3---------------");
+        out.println("-------------------------------------------------------------------To return enter 0---------------");
 
-        String choice = in.readLine();
-        if (choice.equals("1")) {
-            Doctor.signUp();
-        } else if (choice.equals("2")) {
+        var choice = in.readLine();
+        switch (choice) {
+            case "1":
+                Doctor.signUp();
+                break;
+            case "2":
                 Teacher.signUp();
-        } else if (choice.equals("3")) {
+                break;
+            case "3":
                 Student.signUp();
-        } else if (choice.equals("0")) {
-            return;
-        } else {
-            System.out.println("-------------------------------------------------------------------Invalid Choice---------------");
-            signUp();
+                break;
+            case "0":
+                return;
+            default:
+                out.println("-------------------------------------------------------------------Invalid Choice---------------");
+                signUp();
+                break;
         }
     }
 
     private static void signIn() throws IOException {
 
-        System.out.println("-------------------------------------------------------------------Please enter the username ---------------");
+        out.println("-------------------------------------------------------------------Please enter the username ---------------");
         String username, password;
         while (true) {
             username = in.readLine();
             if (username.equals("0")) {
                 return;
-            } else if (!User.checkUsername(username)) {
-                System.out.println("-------------------------------------------------------------------Username is not correct try another or enter 0 to cancel---------------");
+            } else if (!checkUsername(username)) {
+                out.println("-------------------------------------------------------------------Username is not correct try another or enter 0 to cancel---------------");
             } else {
                 break;
             }
         }
 
-        System.out.println("-------------------------------------------------------------------Please enter the password ---------------");
+        out.println("-------------------------------------------------------------------Please enter the password ---------------");
 
         while (true) {
             password = in.readLine();
-            String encrPassword = MyEncryption.encryptPassword(password);
+            var encrPassword = encryptPassword(password);
             if (password.equals("0")) {
                 return;
-            } else if (!User.checkPassword(username, encrPassword)) {
-                System.out.println("-------------------------------------------------------------------The password is not correct try another or enter 0 to cancel---------------");
+            } else if (!checkPassword(username, encrPassword)) {
+                out.println("-------------------------------------------------------------------The password is not correct try another or enter 0 to cancel---------------");
             } else {
                 break;
             }
         }
-        Boolean isdoctor = User.isDoctor(username);
-        Boolean isTA = User.isTA(username);
+        var isdoctor = isDoctor(username);
+        var isTA = isTA(username);
         if (isdoctor) {
             new Doctor(username).showMainMenu();
         } else if (isTA) {

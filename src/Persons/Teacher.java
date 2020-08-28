@@ -1,14 +1,15 @@
-
-
-
 package Persons;
 
-import DataBase.MyConnection;
-import Encryption.MyEncryption;
+import static DataBase.MyConnection.con;
+import static Encryption.MyEncryption.encryptPassword;
 import Items.Course;
+import static Persons.User.checkUsername;
+import static Persons.User.insertTeacher;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import static java.lang.Integer.parseInt;
+import static java.lang.System.out;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
@@ -28,28 +29,28 @@ public class Teacher {
     public Teacher(String username) {
         in = new BufferedReader(new InputStreamReader(System.in));
         this.username = username;
-        con = MyConnection.con();
+        con = con();
         setId();
     }
 
     public void showMainMenu() throws IOException, IOException {
 
         while (true) {
-            System.out.println("------------------------------------------------------------------------------------------------------------------------------");
-            System.out.println("-------------------------------------------------------------------TEACHER MENU ---------------------------------------------");
-            System.out.println("------------------------------------------------------------------------------------------------------------------------------");
+            out.println("------------------------------------------------------------------------------------------------------------------------------");
+            out.println("-------------------------------------------------------------------TEACHER MENU ---------------------------------------------");
+            out.println("------------------------------------------------------------------------------------------------------------------------------");
 
-            System.out.println("1○ List all courses\n"
+            out.println("1○ List all courses\n"
                     + "2○ List my courses\n"
                     + "3○ View a Course\n"
                     + "4○ Log out");
 
-            System.out.println("-------------------------------------------------------------------Please enter a choice ---------------------------------");
-            String choice = in.readLine();
+            out.println("-------------------------------------------------------------------Please enter a choice ---------------------------------");
+            var choice = in.readLine();
             int ch;
 
             if (choice.matches("^\\d+$")) {
-                ch = Integer.parseInt(choice);
+                ch = parseInt(choice);
                 if (ch >= 1 && ch <= 4) {
                     if (ch == 1) {
                         listAllCourses();
@@ -61,57 +62,57 @@ public class Teacher {
                         break;
                     }
                 } else {
-                    System.out.println("-------------------------------------------------------------------INVALID CHOICE-------------------------------------------------------------------");
+                    out.println("-------------------------------------------------------------------INVALID CHOICE-------------------------------------------------------------------");
                 }
             } else {
-                System.out.println("-------------------------------------------------------------------INVALID CHOICE-------------------------------------------------------------------");
+                out.println("-------------------------------------------------------------------INVALID CHOICE-------------------------------------------------------------------");
             }
         }
     }
 
     private void listAllCourses() {
-        String query = "select  C.name, C.code, D.name from course C JOIN doctor D ON C.did = D.id;";
+        var query = "select  C.name, C.code, D.name from course C JOIN doctor D ON C.did = D.id;";
         try {
             PreparedStatement ps;
             ps = con.prepareStatement(query);
-            ResultSet rs = ps.executeQuery();
+            var rs = ps.executeQuery();
             if (rs.next()) {
-                System.out.println("-------------------------------------------------------------------COURSES LIST-------------------------------------------------------------------");
-                System.out.println("-------------------------------------------------------------------course code: " + rs.getInt("code")
+                out.println("-------------------------------------------------------------------COURSES LIST-------------------------------------------------------------------");
+                out.println("-------------------------------------------------------------------course code: " + rs.getInt("code")
                         + " , Course name: " + rs.getString("name")
                         + " , Course doctor: " + rs.getString("D.name") + " ---------------------------------");
                 while (rs.next()) {
-                    System.out.println("-------------------------------------------------------------------course code: " + rs.getInt("code")
+                    out.println("-------------------------------------------------------------------course code: " + rs.getInt("code")
                             + " , Course name: " + rs.getString("name")
                             + " , Course doctor: " + rs.getString("D.name") + " ---------------------------------");
 
                 }
             } else {
-                System.out.println("-------------------------------------------------------------------There is no courses was created in the site ---------------");
+                out.println("-------------------------------------------------------------------There is no courses was created in the site ---------------");
             }
 
         } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
+            out.println(ex.getMessage());
         }
     }
 
     private void viewCourse() throws IOException {
-        List<Integer> css = listMyCourses();
+        var css = listMyCourses();
         if (!css.isEmpty()) {
             while (true) {
-                System.out.println("-------------------------------------------------------------------Enter the course code to view or 0 to cancel -------------------------------------------------------------------");;
+                out.println("-------------------------------------------------------------------Enter the course code to view or 0 to cancel -------------------------------------------------------------------");;
                 try {
-                    String ccode = in.readLine();
+                    var ccode = in.readLine();
                     if (ccode.equals("0")) {
                         return;
                     } else if (css.contains(ccode)) {
-                        new Course(Integer.parseInt(ccode)).viewCourse();
+                        new Course(parseInt(ccode)).viewCourse();
                         break;
                     } else {
-                        System.out.println("-------------------------------------------------------------------This course code is not found try another or eneter 0 to cancel -------------------------------------------------------------------");;
+                        out.println("-------------------------------------------------------------------This course code is not found try another or eneter 0 to cancel -------------------------------------------------------------------");;
                     }
                 } catch (InputMismatchException e) {
-                    System.out.println("-------------------------------------------------------------------Please enter a correct input-------------------------------------------------------------------");;
+                    out.println("-------------------------------------------------------------------Please enter a correct input-------------------------------------------------------------------");;
                 }
             }
         }
@@ -122,43 +123,43 @@ public class Teacher {
         List<String> courseTeachers = new ArrayList<>();
         String dname = null, cname = null;
 
-        String query = "select  S.sname from student_course C JOIN student S ON S.sid = C.sid where ccode = ?;";
+        var query = "select  S.sname from student_course C JOIN student S ON S.sid = C.sid where ccode = ?;";
         try {
             PreparedStatement ps;
-            ps = MyConnection.con().prepareStatement(query);
+            ps = con().prepareStatement(query);
             ps.setString(1, ccode + "");
-            ResultSet rs = ps.executeQuery();
+            var rs = ps.executeQuery();
             while (rs.next()) {
                 courseStudents.add("sname");
             }
         } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
+            out.println(ex.getMessage());
         }
 
         query = "select  D.dname from course C JOIN doctor D ON C.did = D.did where ccode = ?;";
         try {
             PreparedStatement ps;
-            ps = MyConnection.con().prepareStatement(query);
+            ps = con().prepareStatement(query);
             ps.setString(1, ccode + "");
-            ResultSet rs = ps.executeQuery();
+            var rs = ps.executeQuery();
             while (rs.next()) {
                 dname = rs.getString("dname");
             }
         } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
+            out.println(ex.getMessage());
         }
 
         query = "select  T.tname from teacher T JOIN course_teacher C ON C.tid = T.tid where ccode = ?;";
         try {
             PreparedStatement ps;
-            ps = MyConnection.con().prepareStatement(query);
+            ps = con().prepareStatement(query);
             ps.setString(1, ccode + "");
-            ResultSet rs = ps.executeQuery();
+            var rs = ps.executeQuery();
             while (rs.next()) {
                 courseTeachers.add("tname");
             }
         } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
+            out.println(ex.getMessage());
         }
 
         query = "select  cname from course where ccode = ?;";
@@ -166,95 +167,94 @@ public class Teacher {
             query = "select  cname from course where ccode = ?;";
 
             PreparedStatement ps;
-            ps = MyConnection.con().prepareStatement(query);
+            ps = con().prepareStatement(query);
             ps.setString(1, ccode + "");
-            ResultSet rs = ps.executeQuery();
+            var rs = ps.executeQuery();
             while (rs.next()) {
                 courseTeachers.add("tname");
             }
 
-            System.out.println("-------------------------------------------------------------------Course name : " + cname + " -------------------------------------------------------------------");;
-            System.out.println("-------------------------------------------------------------------Course ccode : " + ccode + " -------------------------------------------------------------------");;
-            System.out.println("-------------------------------------------------------------------Course doctor : " + dname + " -------------------------------------------------------------------");;
-            System.out.println("-------------------------------------------------------------------Course teachers : ");
-            for (String ct : courseTeachers) {
-                System.out.print(ct + "--");
+            out.println("-------------------------------------------------------------------Course name : " + cname + " -------------------------------------------------------------------");;
+            out.println("-------------------------------------------------------------------Course ccode : " + ccode + " -------------------------------------------------------------------");;
+            out.println("-------------------------------------------------------------------Course doctor : " + dname + " -------------------------------------------------------------------");;
+            out.println("-------------------------------------------------------------------Course teachers : ");
+            for (var ct : courseTeachers) {
+                out.print(ct + "--");
             }
-            System.out.println("");
-            System.out.println("-------------------------------------------------------------------Course students : ");
-            for (String cs : courseStudents) {
-                System.out.print(cs + "--");
+            out.println("");
+            out.println("-------------------------------------------------------------------Course students : ");
+            for (var cs : courseStudents) {
+                out.print(cs + "--");
             }
         } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
+            out.println(ex.getMessage());
         }
     }
 
     public static void signUp() throws IOException {
 
-        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+        var in = new BufferedReader(new InputStreamReader(System.in));
 
-        System.out.println("-------------------------------------------------------------------Please enter the username -------------------------------------------------------------------");;
+        out.println("-------------------------------------------------------------------Please enter the username -------------------------------------------------------------------");;
         String username, password;
         while (true) {
             username = in.readLine();
             if (username.equals("0")) {
                 return;
-            } else if (User.checkUsername(username)) {
-                System.out.println("-------------------------------------------------------------------This username is already found enter another or enter 0 to cancel-------------------------------------------------------------------");;
+            } else if (checkUsername(username)) {
+                out.println("-------------------------------------------------------------------This username is already found enter another or enter 0 to cancel-------------------------------------------------------------------");;
             } else {
                 break;
             }
         }
 
-        System.out.println("-------------------------------------------------------------------Please enter the password -------------------------------------------------------------------");;
+        out.println("-------------------------------------------------------------------Please enter the password -------------------------------------------------------------------");;
         password = in.readLine();
 
-        System.out.println("-------------------------------------------------------------------Please enter your name-------------------------------------------------------------------");;
-        String name = in.readLine();
+        out.println("-------------------------------------------------------------------Please enter your name-------------------------------------------------------------------");;
+        var name = in.readLine();
+        var encrPassword = encryptPassword(password);
+        insertTeacher(username, encrPassword, name);
 
-        String encrPassword = MyEncryption.encryptPassword(password);
-        User.insertTeacher(username, encrPassword, name);
-
-        System.out.println("-------------------------------------------------------------------SUCCESSFULLY SIGNED UP-------------------------------------------------------------------");;
+        out.println("-------------------------------------------------------------------SUCCESSFULLY SIGNED UP-------------------------------------------------------------------");;
 
     }
 
     private void setId() {
-        String query = "select id from TA where username = ?;";
+        var query = "select id from TA where username = ?;";
         try {
             PreparedStatement ps;
             ps = con.prepareStatement(query);
             ps.setString(1, username);
-            ResultSet rs = ps.executeQuery();
+            var rs = ps.executeQuery();
             if (rs.next()) {
                 id = rs.getInt("id");
             }
         } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
+            out.println(ex.getMessage());
         }
     }
 
     private List<Integer> listMyCourses() {
         List<Integer> courses = new ArrayList();
-        String query = "select * from student_course where sid = ?;";
+        var query = "select * from student_course where sid = ?;";
         try {
             PreparedStatement ps;
             ps = con.prepareStatement(query);
             ps.setInt(1, id);
-            ResultSet rs = ps.executeQuery();
+            var rs = ps.executeQuery();
 
             while (rs.next()) {
-                int c = rs.getInt("code");
-                System.out.println("-------------------------------------------------------------------course code: " + c + " , "
+                var c = rs.getInt("code");
+                out.println("-------------------------------------------------------------------course code: " + c + " , "
                         + "  Course name: " + rs.getString("name") + " ---------------------------------");
                 courses.add(c);
             }
         } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
+            out.println(ex.getMessage());
         }
         if (courses.isEmpty()) {
-            System.out.println("-------------------------------------------------------------------You are not registered in any course-------------------------------------------------------------------");;
+            out.println("-------------------------------------------------------------------You are not registered in any course-------------------------------------------------------------------");;
         }
         return courses;
     }
