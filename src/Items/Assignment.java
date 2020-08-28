@@ -224,44 +224,6 @@ public class Assignment {
         studentAssignmentMenu(code);
     }
 
-    /*
-    public void doctorAssignmentMenu(int code) throws IOException {
-        System.out.println("------------------------------------------------------------------------------------------------------------------------------");
-        System.out.println("-------------------------------------------------------------------Assignment MENU ---------------------------------------------");
-        System.out.println("------------------------------------------------------------------------------------------------------------------------------");
-        System.out.println("1○ View the assignment questions\n"
-                + "2○ submit my answer\n"
-                + "3○ View my answer\n"
-                + "4○ View my Assignment's mark\n"
-                + "5○ Back");
-
-        System.out.println("-------------------------------------------------------------------Please enter a choice------------------------------");
-        Course c = new Course(code);
-
-        String choice = in.readLine();
-        switch (choice) {
-            case "1":
-                viewQuestions();
-                break;
-            case "2":
-                submitAnswer();
-                break;
-            case "3":
-                viewAnswer();
-                break;
-            case "4":
-                viewGrade();
-                break;
-            case "5":
-                return;
-            default:
-                System.out.println("-------------------------------------------------------------------Please enter a correct choice---------------");
-                break;
-        }
-        doctorAssignmentMenu(code);
-    }
-
-     */
     public void viewSubmissions() throws IOException {
         List<Student> studentsSolution = new ArrayList();
         String query = "select S.name, A.sid, A.answer from assignment_student A JOIN student S ON A.sid = S.id where A.acode = ?;";
@@ -290,7 +252,7 @@ public class Assignment {
                 System.out.println("-------------------------------------------------------------------Student name : " + student.getName()
                         + " , " + "Student id : " + student.getId() + "-------------------------------------------------------------");
                 System.out.println("-------------------------------------------------------------------STUDENT SOLUTION-------------------------------------------------------------------");
-                System.out.println("-----------------------------" + student.getAssignmentAnswer());
+                System.out.println("------------------------------------------------------------------" + student.getAssignmentAnswer());
             }
             submissionActions();
         }
@@ -447,13 +409,13 @@ public class Assignment {
             if (sid.matches("^\\d+$")) {
                 break;
             } else {
-                System.out.println("----------------INVALID ID---------------");
+                System.out.println("------------------------------------------------------------------INVALID ID------------------------------------------------------------------");
             }
         }
         if (checkStudentId(Integer.parseInt(sid))) {
             enterGrade(Integer.parseInt(sid));
         } else {
-            System.out.println("----------------INVALID ID---------------");
+            System.out.println("------------------------------------------------------------------INVALID ID------------------------------------------------------------------");
         }
     }
 
@@ -481,7 +443,7 @@ public class Assignment {
             if (grade.matches("^\\d+$")) {
                 break;
             } else {
-                System.out.println("----------------INVALID VALUE---------------");
+                System.out.println("-------------------------------------------------------------------INVALID VALUE---------------");
             }
         }
 

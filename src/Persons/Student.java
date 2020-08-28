@@ -127,33 +127,40 @@ public class Student {
     }
 
     public void showMainMenu() throws IOException {
-        System.out.println("------------------------------------------------------------------------------------------------------------------------------");
-        System.out.println("-------------------------------------------------------------------STUDENT MENU ---------------------------------------------");
-        System.out.println("------------------------------------------------------------------------------------------------------------------------------");
 
-        System.out.println("1○ Register in course\n"
-                + "2○ View My Courses\n"
-                + "3○ View a course\n"
-                + "4○ Log out");
+        while (true) {
+            System.out.println("------------------------------------------------------------------------------------------------------------------------------");
+            System.out.println("-------------------------------------------------------------------STUDENT MENU ---------------------------------------------");
+            System.out.println("------------------------------------------------------------------------------------------------------------------------------");
 
-        try {
+            System.out.println("1○ Register in course\n"
+                    + "2○ View My Courses\n"
+                    + "3○ View a course\n"
+                    + "4○ Log out");
+
+            System.out.println("-------------------------------------------------------------------Please enter a choice ---------------------------------");
             String choice = in.readLine();
-            if (choice.equals("1")) {
-                registerInCourse();
-            } else if (choice.equals("2")) {
-                listMyCourses();
-            } else if (choice.equals("3")) {
-                viewCourse();
-            } else if (choice.equals("4")) {
-                return;
-            } else {
-                System.out.println("-------------------------------------------------------------------Please enter a correct choice---------------");
-            }
-        } catch (InputMismatchException e) {
-            System.out.println("-------------------------------------------------------------------Please enter a correct choice---------------");
-        }
+            int ch;
 
-        showMainMenu();
+            if (choice.matches("^\\d+$")) {
+                ch = Integer.parseInt(choice);
+                if (ch >= 1 && ch <= 4) {
+                    if (ch == 1) {
+                        registerInCourse();
+                    } else if (ch == 2) {
+                        listMyCourses();
+                    } else if (ch == 3) {
+                        viewCourse();
+                    } else if (ch == 4) {
+                        return;
+                    }
+                } else {
+                    System.out.println("-------------------------------------------------------------------INVALID CHOICE---------------");
+                }
+            } else {
+                System.out.println("-------------------------------------------------------------------INVALID CHOICE---------------");
+            }
+        }
     }
 
     private void registerInCourse() throws IOException {
@@ -208,7 +215,7 @@ public class Student {
         if (courses.isEmpty()) {
             System.out.println("-------------------------------------------------------------------You are not registered in any course---------------");
         } else {
-            System.out.println("----------------Please enter the course code---------------");
+            System.out.println("-------------------------------------------------------------------Please enter the course code---------------");
             while (true) {
                 code = in.readLine();
                 int intCode = Integer.parseInt(code);
@@ -220,10 +227,10 @@ public class Student {
                         courseMenu(intCode);
                         break;
                     } else {
-                        System.out.println("----------------Course code is not correct---------------");
+                        System.out.println("-------------------------------------------------------------------Course code is not correct---------------");
                     }
                 } else {
-                    System.out.println("----------------INVALID VALUE---------------");
+                    System.out.println("-------------------------------------------------------------------INVALID VALUE---------------");
                 }
             }
         }

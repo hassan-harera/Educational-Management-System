@@ -1,3 +1,6 @@
+
+
+
 package Persons;
 
 import DataBase.MyConnection;
@@ -30,37 +33,38 @@ public class Teacher {
     }
 
     public void showMainMenu() throws IOException, IOException {
-        System.out.println("------------------------------------------------------------------------------------------------------------------------------");
-        System.out.println("-------------------------------------------------------------------TEACHER MENU ---------------------------------------------");
-        System.out.println("------------------------------------------------------------------------------------------------------------------------------");
 
-        System.out.println("1○ List My courses\n"
-                + "2○ Create a course\n"
-                + "3○ View a Course\n"
-                + "4○ Log out\n");
-
-        System.out.println("-------------------------------------------------------------------Please enter a choice ---------------------------------");
-        int ch;
-        String choice = in.readLine();
         while (true) {
-            choice = in.readLine();
+            System.out.println("------------------------------------------------------------------------------------------------------------------------------");
+            System.out.println("-------------------------------------------------------------------TEACHER MENU ---------------------------------------------");
+            System.out.println("------------------------------------------------------------------------------------------------------------------------------");
+
+            System.out.println("1○ List all courses\n"
+                    + "2○ List my courses\n"
+                    + "3○ View a Course\n"
+                    + "4○ Log out");
+
+            System.out.println("-------------------------------------------------------------------Please enter a choice ---------------------------------");
+            String choice = in.readLine();
+            int ch;
+
             if (choice.matches("^\\d+$")) {
                 ch = Integer.parseInt(choice);
                 if (ch >= 1 && ch <= 4) {
-                    if (choice.equals("1")) {
+                    if (ch == 1) {
                         listAllCourses();
-                    } else if (choice.equals("2")) {
+                    } else if (ch == 2) {
                         listMyCourses();
-                    } else if (choice.equals("3")) {
-                        createCourse();
-                    } else if (choice.equals("4")) {
+                    } else if (ch == 3) {
+                        viewCourse();
+                    } else if (ch == 4) {
                         break;
                     }
                 } else {
-                    System.out.println("----------------INVALID CHOICE---------------");
+                    System.out.println("-------------------------------------------------------------------INVALID CHOICE-------------------------------------------------------------------");
                 }
             } else {
-                System.out.println("----------------INVALID CHOICE---------------");
+                System.out.println("-------------------------------------------------------------------INVALID CHOICE-------------------------------------------------------------------");
             }
         }
     }
@@ -92,10 +96,8 @@ public class Teacher {
     }
 
     private void viewCourse() throws IOException {
-        List<String> css = listCourses();
-        if (css.isEmpty()) {
-            System.out.println("-------------------------------------------------------------------There is no courses was created to view -------------------------------------------------------------------");;
-        } else {
+        List<Integer> css = listMyCourses();
+        if (!css.isEmpty()) {
             while (true) {
                 System.out.println("-------------------------------------------------------------------Enter the course code to view or 0 to cancel -------------------------------------------------------------------");;
                 try {
@@ -104,7 +106,6 @@ public class Teacher {
                         return;
                     } else if (css.contains(ccode)) {
                         new Course(Integer.parseInt(ccode)).viewCourse();
-//                        courseMenu(Integer.parseInt(ccode));
                         break;
                     } else {
                         System.out.println("-------------------------------------------------------------------This course code is not found try another or eneter 0 to cancel -------------------------------------------------------------------");;
@@ -114,56 +115,6 @@ public class Teacher {
                 }
             }
         }
-    }
-
-    private List<String> listCourses() {
-        List<String> coursesCode = new ArrayList();
-        String query = "select * from course where did = ?;";
-        try {
-            PreparedStatement ps;
-            ps = MyConnection.con().prepareStatement(query);
-            ps.setString(1, id);
-            ResultSet rs = ps.executeQuery();
-            for (int i = 1; rs.next(); i++) {
-                coursesCode.add(rs.getString("ccode"));
-                System.out.println("-------------------------------------------------------------------course code: " + rs.getNString("ccode") + "  Course name: " + rs.getString("cname") + " -------------------------------------------------------------------");;
-            }
-        } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
-        }
-        return coursesCode;
-    }
-
-    private boolean checkCourseName(String cname) {
-        String query = "select cname from courses where cname = ?;";
-        try {
-            PreparedStatement ps;
-            ps = MyConnection.con().prepareStatement(query);
-            ps.setString(1, cname);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                return false;
-            }
-        } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
-        }
-        return true;
-    }
-
-    private boolean checkCourseCode(int ccode) {
-        String query = "select ccode from courses where ccode = ?;";
-        try {
-            PreparedStatement ps;
-            ps = MyConnection.con().prepareStatement(query);
-            ps.setInt(1, ccode);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                return false;
-            }
-        } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
-        }
-        return true;
     }
 
     private void viewCourse(int ccode) {
@@ -239,49 +190,6 @@ public class Teacher {
         }
     }
 
-//    private void courseMenu(int ccode) {
-////○ "List Assignments", "Create Assignment", "View Assignment", "Back"
-//
-//        System.out.println("1○ View mark report\n"
-//                + "2○ List assignments\n"
-//                + "3○ Create assignment\n"
-//                + "4○ View assignment\n"
-//                + "5○ Add stduent\n"
-//                + "6○ Remove stduent\n"
-//                + "7○ Add teacher\n"
-//                + "8○ Remove teacher\n"
-//                + "9○ Back\n");
-//
-//        System.out.println("-------------------------------------------------------------------Please enter a input-------------------------------------------------------------------");;
-//        Course c = new Course(ccode);
-//        try {
-//            int choice = in.readLine();
-//            if (choice == 1) {
-//                c.markReport();
-//            } else if (choice == 2) {
-//                c.listAssignments();
-//            } else if (choice == 3) {
-//                c.createAssignment();
-//            } else if (choice == 4) {
-//                c.viewAssignment();
-//            } else if (choice == 5) {
-//                c.addStudent();
-//            } else if (choice == 6) {
-//                c.removeStduent();
-//            } else if (choice == 7) {
-//                c.addTeacher();
-//            } else if (choice == 8) {
-//                c.removeTeacher();
-//            } else if (choice == 9) {
-//
-//            } else {
-//                System.out.println("-------------------------------------------------------------------Please enter a correct choice-------------------------------------------------------------------");;
-//            }
-//        } catch (InputMismatchException e) {
-//            System.out.println("-------------------------------------------------------------------Please enter a correct input-------------------------------------------------------------------");;
-//        }
-//
-//    }
     public static void signUp() throws IOException {
 
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
@@ -335,22 +243,18 @@ public class Teacher {
             ps = con.prepareStatement(query);
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
+
+            while (rs.next()) {
                 int c = rs.getInt("code");
                 System.out.println("-------------------------------------------------------------------course code: " + c + " , "
                         + "  Course name: " + rs.getString("name") + " ---------------------------------");
                 courses.add(c);
-                while (rs.next()) {
-                    c = rs.getInt("code");
-                    System.out.println("-------------------------------------------------------------------course code: " + c + " , "
-                            + "  Course name: " + rs.getString("name") + " ---------------------------------");
-                    courses.add(c);
-                }
-            } else {
-                System.out.println("-------------------------------------------------------------------There is no courses was created in the site ---------------");
             }
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
+        }
+        if (courses.isEmpty()) {
+            System.out.println("-------------------------------------------------------------------You are not registered in any course-------------------------------------------------------------------");;
         }
         return courses;
     }

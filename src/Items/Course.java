@@ -73,7 +73,7 @@ public class Course {
             ps.setInt(1, code);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                courseTAs.add("tname");
+                courseTAs.add(rs.getString("T.name"));
             }
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
@@ -96,7 +96,7 @@ public class Course {
         System.out.println("-------------------------------------------------------------------Course code : " + code + " ---------------");
         System.out.println("-------------------------------------------------------------------Course doctor : " + doctorName + " ---------------");
         if (!courseTAs.isEmpty()) {
-            System.out.println("---------------------------------------------------------------Course TAs : ");
+            System.out.print("-------------------------------------------------------------------Course TAs : ");
             for (String ct : courseTAs) {
                 System.out.print(ct + "-");
             }
@@ -154,7 +154,7 @@ public class Course {
             }
             markActions();
         } else {
-            System.out.println("---------------------------------NO students was registerd in this course------------------------------");
+            System.out.println("-------------------------------------------------------------------NO students was registerd in this course------------------------------");
         }
 
     }
@@ -178,69 +178,79 @@ public class Course {
             System.out.println(ex.getMessage());
         }
         for (int i = 0; !assignmentName.isEmpty() && !assignmentCode.isEmpty(); i++) {
-            System.out.println("----------------Assignment name : " + assignmentName.get(i) + " , " + "Assignment code : " + assignmentCode.get(i) + " ---------------");
+            System.out.println("-------------------------------------------------------------------Assignment name : " + assignmentName.get(i) + " , " + "Assignment code : " + assignmentCode.get(i) + " ---------------");
         }
     }
 
     public void createAssignment() throws IOException {
-        System.out.println("----------------Please enter assignment code or 0 to cancel ---------------");
         String code, name, mark, questions;
-        int cod, grad;
+        int Code, Mark;
 
         while (true) {
-            try {
-                code = in.readLine();
-                cod = Integer.parseInt(code);
-                if (code.equals("0")) {
+            System.out.println("-------------------------------------------------------------------Please enter assignment code---------------");
+            code = in.readLine();
+            if (code.matches("^\\d+$")) {
+                Code = Integer.parseInt(code);
+                if (Code == 0) {
                     return;
-                } else if (!checkAssignmentCode(cod)) {
+                } else if (!checkAssignmentCode(Code)) {
+                    System.out.println("-------------------------------------------------------------------This Assignment code is already exists---------------");
+                } else {
+                    break;
+                }
+            } else {
+                System.out.println("-------------------------------------------------------------------INVALID CODE-------------------------------------------------------------------");
+            }
+        }
+
+        System.out.println(
+                "----------------Please enter assignment name---------------");
+        name = in.readLine();
+
+        System.out.println(
+                "----------------Please enter the assignment questions manually---------------");
+        questions = in.readLine();
+
+
+        while (true) {
+            System.out.println("-------------------------------------------------------------------Please enter the assignment mark---------------");
+            mark = in.readLine();
+            Mark = Integer.parseInt(mark);
+            if (code.matches("^\\d+$")) {
+                Code = Integer.parseInt(code);
+                if (Code == 0) {
+                    return;
+                } else if (!checkAssignmentCode(Code)) {
                     System.out.println("----------------This Assignment code is already exists enter another code or 0 to go back---------------");
                 } else {
                     break;
                 }
-            } catch (NumberFormatException e) {
-                System.out.println("----------------Please enter The assignment code in number---------------");
-            }
-        }
-
-        System.out.println("----------------Please enter assignment name---------------");
-        name = in.readLine();
-
-        System.out.println("----------------Please enter the assignment questions manually---------------");
-        questions = in.readLine();
-
-        System.out.println("----------------Please enter assignment mark---------------");
-
-        while (true) {
-            try {
-                mark = in.readLine();
-                grad = Integer.parseInt(mark);
-                break;
-            } catch (NumberFormatException e) {
-                System.out.println("----------------Please enter The assignment mark in number---------------");
+            } else {
+                System.out.println("-------------------------------------------------------------------INVALID CODE-------------------------------------------------------------------");
             }
         }
 
         String query = "insert  into assignment (ccode,code,grade,name,question) values (?,?,?,?,?);";
+
         try {
             PreparedStatement ps;
             ps = MyConnection.con().prepareStatement(query);
             ps.setInt(1, this.code);
-            ps.setInt(2, cod);
-            ps.setInt(3, grad);
+            ps.setInt(2, Code);
+            ps.setInt(3, Mark);
             ps.setString(4, name);
             ps.setString(5, questions);
             ps.execute();
-            System.out.println("---------------------------------SUCCESSFULLY CREATED---------------");
+            System.out.println("-------------------------------------------------------------------SUCCESSFULLY CREATED---------------");
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
         }
     }
 
     private void markActions() throws IOException {
-        System.out.println("\n----------------To put bonus for all students enter 1---------------");
-        System.out.println("----------------To put bonus for some student enter 2---------------");
-        System.out.println("----------------To go back enter 0---------------");
+        System.out.println("\n-------------------------------------------------------------------To put bonus for all students enter 1---------------");
+        System.out.println("-------------------------------------------------------------------To put bonus for some student enter 2---------------");
+        System.out.println("-------------------------------------------------------------------To go back enter 0---------------");
 
         while (true) {
             String choice = in.readLine();
@@ -253,24 +263,23 @@ public class Course {
                 putBonusForStudent();
                 break;
             } else {
-                System.out.println("----------------Please enter correct input---------------");
+                System.out.println("-------------------------------------------------------------------Please enter correct input---------------");
             }
         }
     }
 
     private void putBonusForAll() throws IOException {
-        System.out.println("----------------Please enter the bouns value---------------");
+        System.out.println("-------------------------------------------------------------------Please enter the bouns value---------------");
         String value;
         while (true) {
             value = in.readLine();
             if (value.matches("^\\d+$")) {
                 break;
             } else {
-                System.out.println("----------------INVALID VALUE---------------");
+                System.out.println("-------------------------------------------------------------------INVALID VALUE---------------");
             }
         }
-        
-        
+
         String query = "update student_course set bonus = (bonus+?) where ccode = ?;";
         try {
             PreparedStatement ps;
@@ -284,25 +293,25 @@ public class Course {
     }
 
     private void putBonusForStudent() throws IOException {
-        System.out.println("----------------Please enter the student id---------------");
+        System.out.println("-------------------------------------------------------------------Please enter the student id---------------");
         String id;
         while (true) {
             id = in.readLine();
             if (id.matches("^\\d+$")) {
                 break;
             } else {
-                System.out.println("----------------INVALID ID---------------");
+                System.out.println("-------------------------------------------------------------------INVALID ID---------------");
             }
         }
 
-        System.out.println("----------------Please enter the bouns value---------------");
+        System.out.println("-------------------------------------------------------------------Please enter the bouns value---------------");
         String value;
         while (true) {
             value = in.readLine();
             if (value.matches("^\\d+$")) {
                 break;
             } else {
-                System.out.println("----------------INVALID VALUE---------------");
+                System.out.println("-------------------------------------------------------------------INVALID VALUE---------------");
             }
         }
 
@@ -340,7 +349,7 @@ public class Course {
         }
         if (!assignments.isEmpty()) {
             for (Assignment a : assignments) {
-                System.out.println("----------------Assignment name : " + a.getName() + " , "
+                System.out.println("-------------------------------------------------------------------Assignment name : " + a.getName() + " , "
                         + "Assignment code : " + a.getCode() + " , "
                         + "Assignment mark : " + a.getGrade());
             }
@@ -355,22 +364,22 @@ public class Course {
         if (assignments.isEmpty()) {
             System.out.println("-------------------------------------------------------------------There is no assignments was created to view ---------------");
         } else {
-            System.out.println("----------------Enter the assignment code to view or 0 to cancel ---------------");
             while (true) {
-                try {
-                    String code = in.readLine();
-                    int cod = Integer.parseInt(code);
-                    if (code.equals("0")) {
+                System.out.println("-------------------------------------------------------------------Enter the assignment code---------------");
+                String code = in.readLine();
+                if (code.matches("^\\d+$")) {
+                    int Code = Integer.parseInt(code);
+                    if (Code == 0) {
                         return null;
-                    } else if (!checkAssignmentCode(cod)) {
+                    } else if (!checkAssignmentCode(Code)) {
                         Assignment a = new Assignment(Integer.parseInt(code));
                         a.viewAssignment();
                         return a;
                     } else {
-                        System.out.println("----------------This course code is not existed enter another or 0 to cancel ---------------");
+                        System.out.println("-------------------------------------------------------------------This course code is not corrected---------------");
                     }
-                } catch (NumberFormatException e) {
-                    System.out.println("----------------Please enter correct input---------------");
+                } else {
+                    System.out.println("-------------------------------------------------------------------INVALID code-------------------------------------------------------------------");
                 }
             }
         }
@@ -379,23 +388,23 @@ public class Course {
 
     public void addStudent() throws IOException {
         List<Integer> students = listAllStudents();
-
         if (!students.isEmpty()) {
-            System.out.println("----------------Enter the student id ---------------");
             while (true) {
-                try {
-                    String id = in.readLine();
+                System.out.println("-------------------------------------------------------------------Enter the student id-------------------------------------------------------------------");
+                String id = in.readLine();
+                if (id.matches("^\\d+$")) {
                     int Id = Integer.parseInt(id);
-                    if (id.equals("0")) {
+                    Id = Integer.parseInt(id);
+                    if (Id == 0) {
                         return;
                     } else if (!students.contains(Id)) {
-                        System.out.println("----------------This id is incorrect enter another id or 0 to cancel ---------------");
+                        System.out.println("-------------------------------------------------------------------this id is incorrect-------------------------------------------------------------------");
                     } else {
                         insertStudent(Id);
                         break;
                     }
-                } catch (NumberFormatException e) {
-                    System.out.println("----------------The id must me number ---------------");
+                } else {
+                    System.out.println("-------------------------------------------------------------------INVALID ID-------------------------------------------------------------------");
                 }
             }
         }
@@ -407,21 +416,22 @@ public class Course {
         if (students.isEmpty()) {
             System.out.println("-------------------------------------------------------------------There is no students registered in this course ---------------");
         } else {
-            System.out.println("----------------Enter the student id that you want to remove ---------------");
             while (true) {
-                try {
-                    String id = in.readLine();
+                System.out.println("-------------------------------------------------------------------Enter the student id-------------------------------------------------------------------");
+                String id = in.readLine();
+                if (id.matches("^\\d+$")) {
                     int Id = Integer.parseInt(id);
-                    if (id.equals("0")) {
+                    Id = Integer.parseInt(id);
+                    if (Id == 0) {
                         return;
                     } else if (!students.contains(Id)) {
-                        System.out.println("----------------This id is incorrect enter another id or 0 to cancel ---------------");
+                        System.out.println("-------------------------------------------------------------------this id is incorrect-------------------------------------------------------------------");
                     } else {
                         removeStudent(Id);
                         break;
                     }
-                } catch (NumberFormatException e) {
-                    System.out.println("----------------The id must me number ---------------");
+                } else {
+                    System.out.println("-------------------------------------------------------------------INVALID ID-------------------------------------------------------------------");
                 }
             }
         }
@@ -434,19 +444,19 @@ public class Course {
             System.out.println("-------------------------------------------------------------------There is no TAs in the site to add ---------------");
         } else {
             while (true) {
-                try {
-                    String id = in.readLine();
+                System.out.println("-------------------------------------------------------------------Enter the TA id-------------------------------------------------------------------");
+                String id = in.readLine();
+                if (id.matches("^\\d+$")) {
                     int Id = Integer.parseInt(id);
-                    if (id.equals("0")) {
+                    Id = Integer.parseInt(id);
+                    if (Id == 0) {
                         return;
-                    } else if (!TAs.contains(Id)) {
-                        System.out.println("----------------This id is incorrect enter another id or 0 to cancel ---------------");
                     } else {
-                        insertTA(Id);
-                        break;
+                        addTA(Id);
+                        return;
                     }
-                } catch (NumberFormatException e) {
-                    System.out.println("----------------The id must me number ---------------");
+                } else {
+                    System.out.println("-------------------------------------------------------------------INVALID ID-------------------------------------------------------------------");
                 }
             }
         }
@@ -458,21 +468,20 @@ public class Course {
         if (TAs.isEmpty()) {
             System.out.println("-------------------------------------------------------------------There is no TAs are teaching in the course ---------------");
         } else {
-            System.out.println("----------------Enter the TA id to that you want to remove ---------------");
             while (true) {
-                try {
-                    String id = in.readLine();
+                System.out.println("-------------------------------------------------------------------Enter the TA id-------------------------------------------------------------------");
+                String id = in.readLine();
+                if (id.matches("^\\d+$")) {
                     int Id = Integer.parseInt(id);
-                    if (id.equals("0")) {
+                    Id = Integer.parseInt(id);
+                    if (Id == 0) {
                         return;
-                    } else if (!TAs.contains(Id)) {
-                        System.out.println("----------------This id is incorrect enter another id or 0 to cancel ---------------");
                     } else {
                         removeTA(Id);
-                        break;
+                        return;
                     }
-                } catch (NumberFormatException e) {
-                    System.out.println("----------------The id must me number ---------------");
+                } else {
+                    System.out.println("-------------------------------------------------------------------INVALID ID-------------------------------------------------------------------");
                 }
             }
         }
@@ -503,7 +512,7 @@ public class Course {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 int s = rs.getInt("id");
-                System.out.println("----------------Student id: " + s
+                System.out.println("-------------------------------------------------------------------Student id: " + s
                         + " , Student name: " + rs.getString("name") + " ---------------");
                 students.add(s);
             }
@@ -515,17 +524,28 @@ public class Course {
     }
 
     public void insertStudent(int id) {
-        String query = "INSERT INTO student_course (sid,ccode) SELECT * FROM (SELECT ?,?) AS tmp WHERE NOT EXISTS (SELECT sid FROM student_course WHERE sid = ? and ccode = ?) LIMIT 1;";
+        Boolean isInserted = false;
+        String query = "select sid from student_course where sid = ?;";
         try {
             PreparedStatement ps;
             ps = con.prepareStatement(query);
             ps.setInt(1, id);
-            ps.setInt(2, code);
-            ps.setInt(3, id);
-            ps.setInt(4, code);
-            ps.execute();
+            isInserted = ps.executeQuery().next();
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
+
+        }
+        if (!isInserted) {
+            query = "insert into student_course (sid,ccode) values (?,?);";
+            try {
+                PreparedStatement ps;
+                ps = con.prepareStatement(query);
+                ps.setInt(1, id);
+                ps.setInt(2, code);
+                ps.execute();
+            } catch (SQLException ex) {
+                System.out.println(ex.getMessage());
+            }
         }
     }
 
@@ -565,7 +585,6 @@ public class Course {
 
     private List<Integer> listAllTAs() {
         List<Integer> TAs = new ArrayList();
-
         String query = "select name,id from TA;";
         try {
             PreparedStatement ps;
@@ -607,7 +626,7 @@ public class Course {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 int s = rs.getInt("id");
-                System.out.println("-------------------------------------------------------------------TA id: " + s + "id"
+                System.out.println("-------------------------------------------------------------------TA id: " + s
                         + " , TA name: " + rs.getString("name") + " ---------------");
                 TAs.add(s);
             }
@@ -615,6 +634,24 @@ public class Course {
             System.out.println(ex.getMessage());
         }
         return TAs;
+    }
+
+    private void addTA(int id) {
+        if (checkTAId(id)) {
+            String query = "insert into TA_course Values (?,?);";
+            try {
+                PreparedStatement ps;
+                ps = con.prepareStatement(query);
+                ps.setInt(1, id);
+                ps.setInt(2, code);
+                ps.execute();
+            } catch (SQLException ex) {
+                System.out.println(ex.getMessage());
+            }
+        } else {
+            System.out.println("-------------------------------------------------------------------INCORRECT ID-------------------------------------------------------------------");
+
+        }
     }
 
     private void removeTA(int id) {
@@ -655,5 +692,27 @@ public class Course {
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
         }
+    }
+
+    private boolean checkTAId(int id) {
+        Boolean result = false;
+        String query = "select id from TA where id = ?";
+        try {
+            PreparedStatement ps = con.prepareStatement(query);
+            ps.setInt(1, id);
+            result = ps.executeQuery().next();
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+
+        query = "select tid from TA_course where tid = ?";
+        try {
+            PreparedStatement ps = con.prepareStatement(query);
+            ps.setInt(1, id);
+            return result && !ps.executeQuery().next();
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+        return false;
     }
 }
