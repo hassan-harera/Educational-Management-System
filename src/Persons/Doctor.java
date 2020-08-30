@@ -1,12 +1,10 @@
 package Persons;
 
 import static DataBase.MyConnection.con;
-import static Encryption.MyEncryption.encryptPassword;
 import Items.Assignment;
 import Items.Course;
 import static Persons.User.checkUsername;
 import static Persons.User.insertDoctor;
-import static Persons.User.insertTeacher;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -273,7 +271,6 @@ public class Doctor {
     }
 
     public static void signUp() throws IOException {
-
         var in = new BufferedReader(new InputStreamReader(System.in));
         String name, username, password;
 
@@ -326,8 +323,7 @@ public class Doctor {
             }
         }
 
-        var encrPassword = encryptPassword(password);
-        insertDoctor(username, encrPassword, name);
+        insertDoctor(username, password, name);
 
         out.println("-------------------------------------------------------------------SUCCESSFULLY SIGNED UP-------------------------------------------------------------------");;
 

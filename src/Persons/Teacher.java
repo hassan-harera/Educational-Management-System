@@ -180,8 +180,7 @@ public class Teacher {
             }
         }
 
-        var encrPassword = encryptPassword(password);
-        insertTeacher(username, encrPassword, name);
+        insertTeacher(username, password, name);
 
         out.println("-------------------------------------------------------------------SUCCESSFULLY SIGNED UP-------------------------------------------------------------------");;
 

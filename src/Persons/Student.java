@@ -1,11 +1,9 @@
 package Persons;
 
 import static DataBase.MyConnection.con;
-import static Encryption.MyEncryption.encryptPassword;
 import Items.Course;
 import static Persons.User.checkUsername;
 import static Persons.User.insertStudent;
-import static Persons.User.insertTeacher;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -328,8 +326,7 @@ public class Student {
             }
         }
 
-        var encrPassword = encryptPassword(password);
-        insertStudent(username, encrPassword, name);
+        insertStudent(username, password, name);
 
         out.println("-------------------------------------------------------------------SUCCESSFULLY SIGNED UP-------------------------------------------------------------------");;
 

@@ -4,13 +4,13 @@ public class MyEncryption {
 
     public static String encryptPassword(String str) {
 
-        String encrpted = "";
+        StringBuilder encrypted = new StringBuilder();
 
         for (var i = 0; i < str.length(); i++) {
-            encrpted += (int) str.charAt(i) % 26;
+            encrypted.append(((int) str.charAt(i)) % 26);
         }
         
-        return encrpted;
+        return encrypted.toString();
     }
 
 }

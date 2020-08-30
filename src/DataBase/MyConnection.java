@@ -1,11 +1,9 @@
 package DataBase;
 
-
 import static java.lang.System.out;
 import java.sql.Connection;
 import static java.sql.DriverManager.getConnection;
 import java.sql.SQLException;
-
 
 public class MyConnection {
 

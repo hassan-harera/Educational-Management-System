@@ -97,10 +97,9 @@ public class Main {
 
         while (true) {
             password = in.readLine();
-            var encrPassword = encryptPassword(password);
             if (password.equals("0")) {
                 return;
-            } else if (!checkPassword(username, encrPassword)) {
+            } else if (!checkPassword(username, password)) {
                 out.println("-------------------------------------------------------------------The password is not correct try another or enter 0 to cancel---------------");
             } else {
                 break;
