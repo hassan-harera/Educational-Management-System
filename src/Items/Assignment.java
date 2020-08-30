@@ -8,8 +8,8 @@ import java.io.InputStreamReader;
 import static java.lang.Integer.parseInt;
 import static java.lang.System.out;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 public class Assignment {
 
@@ -136,7 +136,7 @@ public class Assignment {
         out.println("-------------------------------------------------------------------Number of students that didn't solve the assignment :"
                 + (totalStudents - this.solutions) + " ---------------");
 
-        List<Student> studentsSolved = new ArrayList();
+        Map<Student, Boolean> studentsSolved = new HashMap();
         var query = "select S.name,A.sid,A.grade from student S JOIN assignment_student A ON A.sid = S.id where A.acode = ?;";
         try {
             PreparedStatement ps;
@@ -150,13 +150,13 @@ public class Assignment {
                 var s = new Student(sid);
                 s.setName(name);
                 s.setAssignmentGrade(studentGrade);
-                studentsSolved.add(s);
+                studentsSolved.put(s, true);
             }
         } catch (SQLException ex) {
             out.println(ex.getMessage());
         }
 
-        List<Student> studentsNotSolved = new ArrayList();
+        Map<Student, Boolean> studentsNotSolved = new HashMap();
         query = "select S.name, A.sid from student S JOIN student_course A ON A.sid = S.id JOIN assignment_student T On T.sid != A.sid where A.ccode = ?;";
         try {
             PreparedStatement ps;
@@ -168,7 +168,7 @@ public class Assignment {
                 var sid = rs.getInt("A.sid");
                 var s = new Student(sid);
                 s.setName(name);
-                studentsNotSolved.add(s);
+                studentsNotSolved.put(s, true);
             }
         } catch (SQLException ex) {
             out.println(ex.getMessage());
@@ -176,14 +176,14 @@ public class Assignment {
 
         out.println("-------------------------------------------------------------------------------------STUDENT LIST-------------------------------------------------------------------");
 
-        studentsSolved.forEach((student) -> {
+        studentsSolved.keySet().forEach((student) -> {
             out.println("-------------------------------------------------------------------student id : " + student.getId() + " , "
                     + " student name : " + student.getName() + " , "
                     + " student status : solve , " + " student mark : "
                     + (student.getAssignmentGrade() == -1 ? "unknown" : student.getAssignmentGrade()) + " ---------------");
         });
 
-        studentsNotSolved.forEach((student) -> {
+        studentsNotSolved.keySet().forEach((student) -> {
             out.println("-------------------------------------------------------------------student id : " + student.getId() + " , "
                     + " student name : " + student.getName() + " , " + " student status : not solve ---------------");
         });
@@ -226,7 +226,7 @@ public class Assignment {
     }
 
     public void viewSubmissions() throws IOException {
-        List<Student> studentsSolution = new ArrayList();
+        Map<Student, Boolean> studentsSolution = new HashMap();
         var query = "select S.name, A.sid, A.answer from assignment_student A JOIN student S ON A.sid = S.id where A.acode = ?;";
         try {
             PreparedStatement ps;
@@ -240,7 +240,7 @@ public class Assignment {
                 var s = new Student(sid);
                 s.setName(studentName);
                 s.setAssignmentAnswer(answer);
-                studentsSolution.add(s);
+                studentsSolution.put(s, true);
             }
         } catch (SQLException ex) {
             out.println(ex.getMessage());
@@ -249,7 +249,7 @@ public class Assignment {
         if (studentsSolution.isEmpty()) {
             out.println("-------------------------------------------------------------------There is no submissions to view-------------------------------------------------------------");
         } else {
-            for (var student : studentsSolution) {
+            for (var student : studentsSolution.keySet()) {
                 out.println("-------------------------------------------------------------------Student name : " + student.getName()
                         + " , " + "Student id : " + student.getId() + "-------------------------------------------------------------");
                 out.println("-------------------------------------------------------------------STUDENT SOLUTION-------------------------------------------------------------------");

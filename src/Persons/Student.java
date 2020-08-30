@@ -10,8 +10,9 @@ import java.io.InputStreamReader;
 import static java.lang.Integer.parseInt;
 import static java.lang.System.out;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.HashMap;
 
 public class Student {
 
@@ -176,7 +177,7 @@ public class Student {
                     var code = in.readLine();
                     if (code.equals("0")) {
                         return;
-                    } else if (!courses.contains(parseInt(code))) {
+                    } else if (!courses.containsKey(parseInt(code))) {
                         out.println("-------------------------------------------------------------------This code is not correct enter another or 0 to cancel---------------");
                     } else {
                         new Course(parseInt(code)).insertStudent(id);
@@ -190,8 +191,8 @@ public class Student {
         }
     }
 
-    private List<Integer> listMyCourses() {
-        List<Integer> courses = new ArrayList();
+    private Map<Integer, Boolean> listMyCourses() {
+        Map<Integer, Boolean> courses = new HashMap<>();
         var query = "select C.name,S.ccode from student_course S join course C on C.code = S.ccode where S.sid = ?;";
         try {
             PreparedStatement ps;
@@ -200,7 +201,7 @@ public class Student {
             var rs = ps.executeQuery();
             for (var i = 1; rs.next(); i++) {
                 var code = rs.getInt("S.ccode");
-                courses.add(code);
+                courses.put(code, true);
                 out.println("-------------------------------------------------------------------course code: " + code + " Course name: " + rs.getString("C.name") + " ---------------");
             }
         } catch (SQLException ex) {
@@ -223,7 +224,7 @@ public class Student {
                 if (code.matches("^\\d+$")) {
                     if (intCode == 0) {
                         return;
-                    } else if (courses.contains(intCode)) {
+                    } else if (courses.containsKey(intCode)) {
                         new Course(intCode).viewCourse();
                         courseMenu(intCode);
                         break;
@@ -237,8 +238,8 @@ public class Student {
         }
     }
 
-    private List<Integer> listAllCourses() {
-        List<Integer> courseList = new ArrayList();
+    private Map<Integer, Boolean> listAllCourses() {
+        Map<Integer, Boolean> courseList = new HashMap();
         var query = "select  C.name, C.code, D.name from course C JOIN doctor D ON C.did = D.id;";
         try {
             PreparedStatement ps;
@@ -247,7 +248,7 @@ public class Student {
             Boolean flag = false;
             while (rs.next()) {
                 var code = rs.getInt("code");
-                courseList.add(code);
+                courseList.put(code, true);
                 out.println("-------------------------------------------------------------------course code: " + code
                         + " , Course name: " + rs.getString("name")
                         + " , Course doctor: " + rs.getString("D.name") + " ---------------------------------");

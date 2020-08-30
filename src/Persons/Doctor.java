@@ -12,9 +12,10 @@ import static java.lang.Integer.parseInt;
 import static java.lang.System.err;
 import static java.lang.System.out;
 import java.sql.*;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.InputMismatchException;
 import java.util.List;
+import java.util.Map;
 
 public class Doctor {
 
@@ -108,7 +109,7 @@ public class Doctor {
             try {
                 var code = parseInt(in.readLine());
                 if (code != 0) {
-                    if (courses.contains(code)) {
+                    if (courses.containsKey(code)) {
                         new Course(code).viewCourse();
                         courseMenu(code);
                     } else {
@@ -123,8 +124,8 @@ public class Doctor {
         }
     }
 
-    private List<Integer> listMyCourses() {
-        List<Integer> courses = new ArrayList();
+    private Map<Integer, Boolean> listMyCourses() {
+        Map<Integer, Boolean> courses = new HashMap();
         var query = "select * from course where did = ?;";
         try {
             PreparedStatement ps;
@@ -135,12 +136,12 @@ public class Doctor {
                 var c = rs.getInt("code");
                 out.println("-------------------------------------------------------------------course code: " + c + " , "
                         + "  Course name: " + rs.getString("name") + " ---------------------------------");
-                courses.add(c);
+                courses.put(c, true);
                 while (rs.next()) {
                     c = rs.getInt("code");
                     out.println("-------------------------------------------------------------------course code: " + c + " , "
                             + "  Course name: " + rs.getString("name") + " ---------------------------------");
-                    courses.add(c);
+                    courses.put(c, true);
                 }
             } else {
                 err.println("-------------------------------------------------------------------There is no courses was created in the site ---------------");

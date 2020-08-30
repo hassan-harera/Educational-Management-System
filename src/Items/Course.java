@@ -11,7 +11,8 @@ import static java.lang.System.out;
 import java.sql.PreparedStatement;
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Course {
 
@@ -39,8 +40,8 @@ public class Course {
     }
 
     public void viewCourse() {
-        List<String> courseStudents = new ArrayList<>();
-        List<String> courseTAs = new ArrayList<>();
+        Map<String, Boolean> courseStudents = new HashMap();
+        Map<String, Boolean> courseTAs = new HashMap();
 
         var query = "select S.name from student_course C JOIN student S ON S.id = C.sid where C.ccode = ?;";
         try {
@@ -49,7 +50,8 @@ public class Course {
             ps.setInt(1, code);
             var rs = ps.executeQuery();
             while (rs.next()) {
-                courseStudents.add(rs.getString("S.name"));
+                String name = rs.getString("S.name");
+                courseStudents.put(name, true);
             }
         } catch (SQLException ex) {
             err.println(ex.getMessage());
@@ -75,7 +77,8 @@ public class Course {
             ps.setInt(1, code);
             var rs = ps.executeQuery();
             while (rs.next()) {
-                courseTAs.add(rs.getString("T.name"));
+                String name = rs.getString("T.name");
+                courseTAs.put(name, true);
             }
         } catch (SQLException ex) {
             err.println(ex.getMessage());
@@ -99,7 +102,7 @@ public class Course {
         out.println("-------------------------------------------------------------------Course doctor : " + doctorName + " ---------------");
         if (!courseTAs.isEmpty()) {
             out.print("-------------------------------------------------------------------Course TAs : ");
-            for (var ct : courseTAs) {
+            for (var ct : courseTAs.keySet()) {
                 out.print(ct + "  , ");
             }
             out.println("");
@@ -107,7 +110,7 @@ public class Course {
 
         if (!courseStudents.isEmpty()) {
             out.print("-------------------------------------------------------------------Course students : ");
-            for (var cs : courseStudents) {
+            for (var cs : courseStudents.keySet()) {
                 out.print(cs + ", ");
             }
             out.println("");
@@ -115,7 +118,7 @@ public class Course {
     }
 
     public void markReport() throws IOException {
-        List<Student> students = new ArrayList<>();
+        Map<Student, Boolean> students = new HashMap();
 
         var query = "SELECT  S.name, S.id, C.midmark, C.finalmark, C.totalmark , C.bonus, C.yearmark FROM student_course C JOIN student S ON S.id = C.sid where C.ccode = ?;";
         try {
@@ -138,20 +141,20 @@ public class Course {
                 s.setBonusGrade(bonus);
                 s.setTotalGrade(totalMark);
 
-                students.add(s);
+                students.put(s, true);
             }
         } catch (SQLException ex) {
             err.println(ex.getMessage());
         }
         if (!students.isEmpty()) {
-            for (var i = 0; i < students.size(); i++) {
-                out.println("Student name: " + students.get(i).getName() + " ------ "
-                        + "Student id: " + students.get(i).getId() + " ------ "
-                        + "Mid exame mark: " + (students.get(i).getMidGrade() == -1 ? "unknown" : students.get(i).getMidGrade()) + " ------ "
-                        + "coursework mark: " + (students.get(i).getYearDoingGrade() == -1 ? "unknown" : students.get(i).getYearDoingGrade()) + " ------ "
-                        + "bonus marks: " + (students.get(i).getBonusGrade() == -1 ? "unknown" : students.get(i).getBonusGrade()) + " ------ "
-                        + "Final exam mark: " + (students.get(i).getFinalGrade() == -1 ? "unknown" : students.get(i).getFinalGrade()) + " ------ "
-                        + "Total mark: " + (students.get(i).getTotalGrade() == -1 ? "unknown" : students.get(i).getTotalGrade()));
+            for (Student s : students.keySet()) {
+                out.println("Student name: " + (s.getName()) + " ------ "
+                        + "Student id: " + s.getId() + " ------ "
+                        + "Mid exame mark: " + (s.getMidGrade() == -1 ? "unknown" : s.getMidGrade()) + " ------ "
+                        + "coursework mark: " + ((s.getYearDoingGrade()) == -1 ? "unknown" : s.getYearDoingGrade()) + " ------ "
+                        + "bonus marks: " + (s.getBonusGrade() == -1 ? "unknown" : s.getBonusGrade()) + " ------ "
+                        + "Final exam mark: " + (s.getFinalGrade() == -1 ? "unknown" : s.getFinalGrade()) + " ------ "
+                        + "Total mark: " + (s.getTotalGrade() == -1 ? "unknown" : s.getTotalGrade()));
             }
             markActions();
         } else {
@@ -161,8 +164,8 @@ public class Course {
     }
 
     private void doctorAssignments() {
-        List<String> assignmentName = new ArrayList<>();
-        List<String> assignmentCode = new ArrayList<>();
+        Map<String, Boolean> assignmentName = new HashMap();
+        Map<String, Boolean> assignmentCode = new HashMap();
 
         var query = "select  A.acode, C.acode from assignments A JOIN course_assignment C ON A.acode = C.acode where ccode = ?;";
 
@@ -172,8 +175,10 @@ public class Course {
             ps.setString(1, code + "");
             var rs = ps.executeQuery();
             while (rs.next()) {
-                assignmentCode.add("acode");
-                assignmentName.add("aname");
+                String code = rs.getString("acode");
+                String name = rs.getString("aname");
+                assignmentCode.put(code, true);
+                assignmentName.put(name, true);
             }
         } catch (SQLException ex) {
             err.println(ex.getMessage());
@@ -341,8 +346,8 @@ public class Course {
 
     }
 
-    public List<Assignment> listAssignments() {
-        List<Assignment> assignments = new ArrayList();
+    public Map<Assignment, Boolean> listAssignments() {
+        Map<Assignment, Boolean> assignments = new HashMap();
 
         var query = "select * from assignment where ccode = ?;";
 
@@ -355,13 +360,13 @@ public class Course {
                 var assignment = new Assignment(rs.getInt("code"));
                 assignment.setName(rs.getString("name"));
                 assignment.setGrade(rs.getInt("grade"));
-                assignments.add(assignment);
+                assignments.put(assignment, true);
             }
         } catch (SQLException ex) {
             err.println(ex.getMessage());
         }
         if (!assignments.isEmpty()) {
-            for (var a : assignments) {
+            for (Assignment a : assignments.keySet()) {
                 out.println("-------------------------------------------------------------------Assignment name : " + a.getName() + " , "
                         + "Assignment code : " + a.getCode() + " , "
                         + "Assignment mark : " + a.getGrade());
@@ -404,10 +409,10 @@ public class Course {
                 out.println("-------------------------------------------------------------------Enter the student id-------------------------------------------------------------------");
                 var id = in.readLine();
                 if (id.matches("^\\d+$")) {
-                    var Id = parseInt(id);
+                    Integer Id = parseInt(id);
                     if (Id == 0) {
                         return;
-                    } else if (!students.contains(Id)) {
+                    } else if (!students.containsKey(Id)) {
                         err.println("-------------------------------------------------------------------this id is incorrect-------------------------------------------------------------------");
                     } else if (insertStudent(Id)) {
                         out.println("-------------------------------------------------------------------SUCCESSFULLY ADDED-------------------------------------------------------------------");
@@ -434,7 +439,7 @@ public class Course {
                     Id = parseInt(id);
                     if (Id == 0) {
                         return;
-                    } else if (!students.contains(Id)) {
+                    } else if (!students.containsKey(Id)) {
                         err.println("-------------------------------------------------------------------this id is incorrect-------------------------------------------------------------------");
                     } else {
                         removeStudent(Id);
@@ -460,7 +465,7 @@ public class Course {
                     var Id = parseInt(id);
                     if (Id == 0) {
                         return;
-                    } else if (!TAs.contains(Id)) {
+                    } else if (!TAs.containsKey(Id)) {
                         err.println("-------------------------------------------------------------------INCORRECT ID-------------------------------------------------------------------");
                     } else if (addTA(Id)) {
                         out.println("-------------------------------------------------------------------SUCCESSFULLY ADDED-------------------------------------------------------------------");
@@ -512,8 +517,8 @@ public class Course {
         return true;
     }
 
-    private List<Integer> listAllStudents() {
-        List<Integer> students = new ArrayList();
+    private Map<Integer, Boolean> listAllStudents() {
+        Map<Integer, Boolean> students = new HashMap();
 
         var query = "select name,id from student;";
         try {
@@ -524,7 +529,7 @@ public class Course {
                 var s = rs.getInt("id");
                 out.println("-------------------------------------------------------------------Student id: " + s
                         + " , Student name: " + rs.getString("name") + " ---------------");
-                students.add(s);
+                students.put(s, true);
             }
         } catch (SQLException ex) {
             out.println(ex.getMessage());
@@ -563,8 +568,8 @@ public class Course {
         return false;
     }
 
-    private List<Integer> listStudents() {
-        List<Integer> students = new ArrayList();
+    private Map<Integer, Boolean> listStudents() {
+        Map<Integer, Boolean> students = new HashMap();
 
         var query = "select S.id, S.name from student_course C join student S on C.sid = S.id where C.ccode = ?;";
         try {
@@ -576,7 +581,7 @@ public class Course {
                 var s = rs.getInt("id");
                 out.println("-------------------------------------------------------------------Student id: " + s
                         + " , Student name: " + rs.getString("name") + " ---------------");
-                students.add(s);
+                students.put(s, true);
             }
         } catch (SQLException ex) {
             err.println(ex.getMessage());
@@ -597,8 +602,8 @@ public class Course {
         }
     }
 
-    private List<Integer> listAllTAs() {
-        List<Integer> TAs = new ArrayList();
+    private Map<Integer, Boolean> listAllTAs() {
+        Map<Integer, Boolean> TAs = new HashMap();
         var query = "select name,id from TA;";
         try {
             PreparedStatement ps;
@@ -608,7 +613,7 @@ public class Course {
                 var t = rs.getInt("id");
                 out.println("-------------------------------------------------------------------TA id: " + t + " , "
                         + "TA name: " + rs.getString("name") + " ---------------");
-                TAs.add(t);
+                TAs.put(t, true);
             }
         } catch (SQLException ex) {
             err.println(ex.getMessage());
@@ -629,8 +634,8 @@ public class Course {
         }
     }
 
-    private List<Integer> listTAs() {
-        List<Integer> TAs = new ArrayList();
+    private Map<Integer, Boolean> listTAs() {
+        Map<Integer, Boolean> TAs = new HashMap();
 
         var query = "select T.id, T.name from TA_course C join TA T on C.tid = T.id where C.ccode = ?;";
         try {
@@ -642,7 +647,7 @@ public class Course {
                 var s = rs.getInt("id");
                 out.println("-------------------------------------------------------------------TA id: " + s
                         + " , TA name: " + rs.getString("name") + " ---------------");
-                TAs.add(s);
+                TAs.put(s, true);
             }
         } catch (SQLException ex) {
             err.println(ex.getMessage());
@@ -663,7 +668,7 @@ public class Course {
             err.println(ex.getMessage());
             return false;
         }
-        
+
     }
 
     private void removeTA(int id) {

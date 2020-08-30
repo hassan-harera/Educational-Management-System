@@ -10,8 +10,8 @@ import java.io.InputStreamReader;
 import static java.lang.Integer.parseInt;
 import static java.lang.System.out;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Teacher {
 
@@ -105,7 +105,7 @@ public class Teacher {
                     Code = parseInt(code);
                     if (Code == 0) {
                         return;
-                    } else if (css.contains(Code)) {
+                    } else if (css.containsKey(Code)) {
                         viewCourse(Code);
                         break;
                     } else {
@@ -199,8 +199,8 @@ public class Teacher {
         }
     }
 
-    private List<Integer> listMyCourses() {
-        List<Integer> courses = new ArrayList();
+    private Map<Integer, Boolean> listMyCourses() {
+        Map<Integer, Boolean> courses = new HashMap();
         var query = "select C.name, C.code from TA_course T join course C on C.code = T.ccode where T.tid = ?;";
         try {
             PreparedStatement ps;
@@ -211,7 +211,7 @@ public class Teacher {
                 var c = rs.getInt("code");
                 out.println("-------------------------------------------------------------------course code: " + c + " , "
                         + "  Course name: " + rs.getString("name") + " ---------------------------------");
-                courses.add(c);
+                courses.put(c, true);
             }
         } catch (SQLException ex) {
             out.println(ex.getMessage());
