@@ -9,6 +9,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import static java.lang.Integer.parseInt;
+import static java.lang.System.err;
 import static java.lang.System.out;
 import java.sql.*;
 import java.util.ArrayList;
@@ -68,7 +69,7 @@ public class Doctor {
                     break;
             }
         } catch (InputMismatchException e) {
-            out.println("-------------------------------------------------------------------Please enter a correct input---------------");
+            err.println("-------------------------------------------------------------------Please enter a correct input---------------");
         }
         showMainMenu();
     }
@@ -91,7 +92,7 @@ public class Doctor {
 
                 }
             } else {
-                out.println("-------------------------------------------------------------------There is no courses was created in the site ---------------");
+                err.println("-------------------------------------------------------------------There is no courses was created in the site ---------------");
             }
 
         } catch (SQLException ex) {
@@ -102,9 +103,7 @@ public class Doctor {
     private void viewCourse() throws IOException {
         var courses = listMyCourses();
 
-        if (courses.isEmpty()) {
-            out.println("-------------------------------------------------------------------There is no courses was created to view ---------------------------------");
-        } else {
+        if (!courses.isEmpty()) {
             out.println("-------------------------------------------------------------------Enter the course code to view or 0 to cancel ---------------------------------");
             try {
                 var code = parseInt(in.readLine());
@@ -113,12 +112,12 @@ public class Doctor {
                         new Course(code).viewCourse();
                         courseMenu(code);
                     } else {
-                        out.println("-------------------------------------------------------------------This course code is not found try again ---------------------------------");
+                        err.println("-------------------------------------------------------------------This course code is not found try again ---------------------------------");
                         viewCourse();
                     }
                 }
             } catch (NumberFormatException e) {
-                out.println("-------------------------------------------------------------------Please enter a correct input---------------");
+                err.println("-------------------------------------------------------------------Please enter a correct input---------------");
                 viewCourse();
             }
         }
@@ -144,10 +143,10 @@ public class Doctor {
                     courses.add(c);
                 }
             } else {
-                out.println("-------------------------------------------------------------------There is no courses was created in the site ---------------");
+                err.println("-------------------------------------------------------------------There is no courses was created in the site ---------------");
             }
         } catch (SQLException ex) {
-            out.println(ex.getMessage());
+            err.println(ex.getMessage());
         }
         return courses;
     }
@@ -161,7 +160,7 @@ public class Doctor {
             if (cname.equals("0")) {
                 return;
             } else if (!checkCourseName(cname)) {
-                out.println("-------------------------------------------------------------------This course name is already found enter another or enter 0 to cancel---------------");
+                err.println("-------------------------------------------------------------------This course name is already found enter another or enter 0 to cancel---------------");
             } else {
                 insertCourse(cname);
                 break;
@@ -181,7 +180,7 @@ public class Doctor {
                 return false;
             }
         } catch (SQLException ex) {
-            out.println(ex.getMessage());
+            err.println(ex.getMessage());
         }
         return true;
     }
@@ -197,7 +196,7 @@ public class Doctor {
                 return false;
             }
         } catch (SQLException ex) {
-            out.println(ex.getMessage());
+            err.println(ex.getMessage());
         }
         return true;
     }
@@ -211,7 +210,7 @@ public class Doctor {
             ps.setInt(2, id);
             return ps.execute();
         } catch (SQLException ex) {
-            out.println(ex.getMessage());
+            err.println(ex.getMessage());
         }
         return false;
     }
@@ -264,7 +263,7 @@ public class Doctor {
             case "9":
                 return;
             default:
-                out.println("-------------------------------------------------------------------Please enter a correct choice---------------");
+                err.println("-------------------------------------------------------------------Please enter a correct choice---------------");
                 break;
         }
         courseMenu(code);
@@ -281,13 +280,13 @@ public class Doctor {
                 return;
             } else if (username.matches("^([a-zA-Z])+([\\w@]{2,})+$")) {
                 if (checkUsername(username)) {
-                    out.println("-------------------------------------------------------------------This username is already found-------------------------------------------------------------------");;
+                    err.println("-------------------------------------------------------------------This username is already found-------------------------------------------------------------------");;
                 } else {
                     break;
                 }
             } else {
-                out.println("Username is invalid, username terms: ");
-                out.println("Must start with the alphabet\n"
+                err.println("Username is invalid, username terms: ");
+                err.println("Must start with the alphabet\n"
                         + "Only allow underscore\n"
                         + "Minimum 3 chars");
             }
@@ -319,7 +318,7 @@ public class Doctor {
             } else if (name.matches("^[a-zA-Z\\s]+")) {
                 break;
             } else {
-                out.println("-------------------------------------------------------------------INVALID NAME-------------------------------------------------------------------");
+                err.println("-------------------------------------------------------------------INVALID NAME-------------------------------------------------------------------");
             }
         }
 
@@ -340,7 +339,7 @@ public class Doctor {
                 id = rs.getInt("id");
             }
         } catch (SQLException ex) {
-            out.println(ex.getMessage());
+            err.println(ex.getMessage());
         }
     }
 
@@ -372,7 +371,7 @@ public class Doctor {
             case "5":
                 return;
             default:
-                out.println("-------------------------------------------------------------------Please enter a correct choice---------------");
+                err.println("-------------------------------------------------------------------Please enter a correct choice---------------");
                 break;
         }
         assignmentMenu(a);

@@ -1,7 +1,6 @@
 package Persons;
 
 import static DataBase.MyConnection.con;
-import static Encryption.MyEncryption.encryptPassword;
 import Items.Course;
 import static Persons.User.checkUsername;
 import static Persons.User.insertTeacher;
@@ -33,7 +32,6 @@ public class Teacher {
     }
 
     public void showMainMenu() throws IOException, IOException {
-
         while (true) {
             out.println("------------------------------------------------------------------------------------------------------------------------------");
             out.println("-------------------------------------------------------------------TEACHER MENU ---------------------------------------------");
@@ -120,10 +118,10 @@ public class Teacher {
         }
     }
 
-    private void viewCourse(int code) {
+    private void viewCourse(int code) throws IOException {
         Course course = new Course(code);
         course.viewCourse();
-
+        courseMenu(code);
     }
 
     public static void signUp() throws IOException {

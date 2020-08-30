@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import static java.lang.Integer.parseInt;
+import static java.lang.System.err;
 import static java.lang.System.out;
 import java.sql.PreparedStatement;
 import java.sql.*;
@@ -51,7 +52,7 @@ public class Course {
                 courseStudents.add(rs.getString("S.name"));
             }
         } catch (SQLException ex) {
-            out.println(ex.getMessage());
+            err.println(ex.getMessage());
         }
 
         query = "select  D.name from course C JOIN doctor D ON C.did = D.id where code = ?;";
@@ -64,7 +65,7 @@ public class Course {
                 doctorName = rs.getString("name");
             }
         } catch (SQLException ex) {
-            out.println(ex.getMessage());
+            err.println(ex.getMessage());
         }
 
         query = "select T.name from TA T JOIN TA_course C ON C.tid = T.id where ccode = ?;";
@@ -77,7 +78,7 @@ public class Course {
                 courseTAs.add(rs.getString("T.name"));
             }
         } catch (SQLException ex) {
-            out.println(ex.getMessage());
+            err.println(ex.getMessage());
         }
 
         query = "select name from course where code = ?;";
@@ -90,7 +91,7 @@ public class Course {
                 name = rs.getString("name");
             }
         } catch (SQLException ex) {
-            out.println(ex.getMessage());
+            err.println(ex.getMessage());
         }
 
         out.println("-------------------------------------------------------------------Course name : " + name + " ---------------");
@@ -140,7 +141,7 @@ public class Course {
                 students.add(s);
             }
         } catch (SQLException ex) {
-            out.println(ex.getMessage());
+            err.println(ex.getMessage());
         }
         if (!students.isEmpty()) {
             for (var i = 0; i < students.size(); i++) {
@@ -154,7 +155,7 @@ public class Course {
             }
             markActions();
         } else {
-            out.println("-------------------------------------------------------------------NO students was registerd in this course------------------------------");
+            err.println("-------------------------------------------------------------------NO students was registerd in this course------------------------------");
         }
 
     }
@@ -175,7 +176,7 @@ public class Course {
                 assignmentName.add("aname");
             }
         } catch (SQLException ex) {
-            out.println(ex.getMessage());
+            err.println(ex.getMessage());
         }
         for (var i = 0; !assignmentName.isEmpty() && !assignmentCode.isEmpty(); i++) {
             out.println("-------------------------------------------------------------------Assignment name : " + assignmentName.get(i) + " , " + "Assignment code : " + assignmentCode.get(i) + " ---------------");
@@ -194,12 +195,12 @@ public class Course {
                 if (Code == 0) {
                     return;
                 } else if (!checkAssignmentCode(Code)) {
-                    out.println("-------------------------------------------------------------------This Assignment code is already exists---------------");
+                    err.println("-------------------------------------------------------------------This Assignment code is already exists---------------");
                 } else {
                     break;
                 }
             } else {
-                out.println("-------------------------------------------------------------------INVALID CODE-------------------------------------------------------------------");
+                err.println("-------------------------------------------------------------------INVALID CODE-------------------------------------------------------------------");
             }
         }
 
@@ -220,12 +221,12 @@ public class Course {
                 if (Code == 0) {
                     return;
                 } else if (!checkAssignmentCode(Code)) {
-                    out.println("----------------This Assignment code is already exists enter another code or 0 to go back---------------");
+                    err.println("----------------This Assignment code is already exists enter another code or 0 to go back---------------");
                 } else {
                     break;
                 }
             } else {
-                out.println("-------------------------------------------------------------------INVALID CODE-------------------------------------------------------------------");
+                err.println("-------------------------------------------------------------------INVALID CODE-------------------------------------------------------------------");
             }
         }
 
@@ -242,7 +243,7 @@ public class Course {
             ps.execute();
             out.println("-------------------------------------------------------------------SUCCESSFULLY CREATED---------------");
         } catch (SQLException ex) {
-            out.println(ex.getMessage());
+            err.println(ex.getMessage());
         }
     }
 
@@ -264,7 +265,7 @@ public class Course {
                     putBonusForStudent();
                     break OUTER;
                 default:
-                    out.println("-------------------------------------------------------------------Please enter correct input---------------");
+                    err.println("-------------------------------------------------------------------Please enter correct input---------------");
                     break;
             }
         }
@@ -283,7 +284,7 @@ public class Course {
                     break;
                 }
             } else {
-                out.println("-------------------------------------------------------------------INVALID VALUE---------------");
+                err.println("-------------------------------------------------------------------INVALID VALUE---------------");
             }
         }
 
@@ -295,7 +296,7 @@ public class Course {
             ps.setInt(2, code);
             ps.executeUpdate();
         } catch (SQLException ex) {
-            out.println(ex);
+            err.println(ex);
         }
     }
 
@@ -312,7 +313,7 @@ public class Course {
                     break;
                 }
             } else {
-                out.println("-------------------------------------------------------------------INVALID ID---------------");
+                err.println("-------------------------------------------------------------------INVALID ID---------------");
             }
         }
 
@@ -323,7 +324,7 @@ public class Course {
             if (value.matches("^\\d+$")) {
                 break;
             } else {
-                out.println("-------------------------------------------------------------------INVALID VALUE---------------");
+                err.println("-------------------------------------------------------------------INVALID VALUE---------------");
             }
         }
 
@@ -335,7 +336,7 @@ public class Course {
             ps.setInt(2, code);
             ps.executeUpdate();
         } catch (SQLException ex) {
-            out.println(ex);
+            err.println(ex);
         }
 
     }
@@ -357,7 +358,7 @@ public class Course {
                 assignments.add(assignment);
             }
         } catch (SQLException ex) {
-            out.println(ex.getMessage());
+            err.println(ex.getMessage());
         }
         if (!assignments.isEmpty()) {
             for (var a : assignments) {
@@ -366,16 +367,14 @@ public class Course {
                         + "Assignment mark : " + a.getGrade());
             }
         } else {
-            out.println("-------------------------------------------------------------------There is no assignments to view ---------------");
+            err.println("-------------------------------------------------------------------There is no assignments to view ---------------");
         }
         return assignments;
     }
 
     public Assignment viewAssignment() throws IOException {
         var assignments = listAssignments();
-        if (assignments.isEmpty()) {
-            out.println("-------------------------------------------------------------------There is no assignments was created to view ---------------");
-        } else {
+        if (!assignments.isEmpty()) {
             while (true) {
                 out.println("-------------------------------------------------------------------Enter the assignment code---------------");
                 var code = in.readLine();
@@ -388,10 +387,10 @@ public class Course {
                         a.viewAssignment();
                         return a;
                     } else {
-                        out.println("-------------------------------------------------------------------This course code is not corrected---------------");
+                        err.println("-------------------------------------------------------------------This course code is not corrected---------------");
                     }
                 } else {
-                    out.println("-------------------------------------------------------------------INVALID code-------------------------------------------------------------------");
+                    err.println("-------------------------------------------------------------------INVALID code-------------------------------------------------------------------");
                 }
             }
         }
@@ -406,17 +405,16 @@ public class Course {
                 var id = in.readLine();
                 if (id.matches("^\\d+$")) {
                     var Id = parseInt(id);
-                    Id = parseInt(id);
                     if (Id == 0) {
                         return;
                     } else if (!students.contains(Id)) {
-                        out.println("-------------------------------------------------------------------this id is incorrect-------------------------------------------------------------------");
-                    } else {
-                        insertStudent(Id);
+                        err.println("-------------------------------------------------------------------this id is incorrect-------------------------------------------------------------------");
+                    } else if (insertStudent(Id)) {
+                        out.println("-------------------------------------------------------------------SUCCESSFULLY ADDED-------------------------------------------------------------------");
                         break;
                     }
                 } else {
-                    out.println("-------------------------------------------------------------------INVALID ID-------------------------------------------------------------------");
+                    err.println("-------------------------------------------------------------------INVALID ID-------------------------------------------------------------------");
                 }
             }
         }
@@ -426,7 +424,7 @@ public class Course {
         var students = listStudents();
 
         if (students.isEmpty()) {
-            out.println("-------------------------------------------------------------------There is no students registered in this course ---------------");
+            err.println("-------------------------------------------------------------------There is no students registered in this course ---------------");
         } else {
             while (true) {
                 out.println("-------------------------------------------------------------------Enter the student id-------------------------------------------------------------------");
@@ -437,13 +435,13 @@ public class Course {
                     if (Id == 0) {
                         return;
                     } else if (!students.contains(Id)) {
-                        out.println("-------------------------------------------------------------------this id is incorrect-------------------------------------------------------------------");
+                        err.println("-------------------------------------------------------------------this id is incorrect-------------------------------------------------------------------");
                     } else {
                         removeStudent(Id);
                         break;
                     }
                 } else {
-                    out.println("-------------------------------------------------------------------INVALID ID-------------------------------------------------------------------");
+                    err.println("-------------------------------------------------------------------INVALID ID-------------------------------------------------------------------");
                 }
             }
         }
@@ -453,22 +451,23 @@ public class Course {
         var TAs = listAllTAs();
 
         if (TAs.isEmpty()) {
-            out.println("-------------------------------------------------------------------There is no TAs in the site to add ---------------");
+            err.println("-------------------------------------------------------------------There is no TAs in the site to add ---------------");
         } else {
             while (true) {
                 out.println("-------------------------------------------------------------------Enter the TA id-------------------------------------------------------------------");
                 var id = in.readLine();
                 if (id.matches("^\\d+$")) {
                     var Id = parseInt(id);
-                    Id = parseInt(id);
                     if (Id == 0) {
                         return;
-                    } else {
-                        addTA(Id);
+                    } else if (!TAs.contains(Id)) {
+                        err.println("-------------------------------------------------------------------INCORRECT ID-------------------------------------------------------------------");
+                    } else if (addTA(Id)) {
+                        out.println("-------------------------------------------------------------------SUCCESSFULLY ADDED-------------------------------------------------------------------");
                         return;
                     }
                 } else {
-                    out.println("-------------------------------------------------------------------INVALID ID-------------------------------------------------------------------");
+                    err.println("-------------------------------------------------------------------INVALID ID-------------------------------------------------------------------");
                 }
             }
         }
@@ -478,14 +477,13 @@ public class Course {
         var TAs = listTAs();
 
         if (TAs.isEmpty()) {
-            out.println("-------------------------------------------------------------------There is no TAs are teaching in the course ---------------");
+            err.println("-------------------------------------------------------------------There is no TAs are teaching in the course ---------------");
         } else {
             while (true) {
                 out.println("-------------------------------------------------------------------Enter the TA id-------------------------------------------------------------------");
                 var id = in.readLine();
                 if (id.matches("^\\d+$")) {
                     var Id = parseInt(id);
-                    Id = parseInt(id);
                     if (Id == 0) {
                         return;
                     } else {
@@ -493,7 +491,7 @@ public class Course {
                         return;
                     }
                 } else {
-                    out.println("-------------------------------------------------------------------INVALID ID-------------------------------------------------------------------");
+                    err.println("-------------------------------------------------------------------INVALID ID-------------------------------------------------------------------");
                 }
             }
         }
@@ -509,7 +507,7 @@ public class Course {
                 return false;
             }
         } catch (SQLException e) {
-            out.println(e);
+            err.println(e);
         }
         return true;
     }
@@ -535,16 +533,17 @@ public class Course {
         return students;
     }
 
-    public void insertStudent(int id) {
+    public Boolean insertStudent(int id) {
         Boolean isInserted = false;
-        var query = "select sid from student_course where sid = ?;";
+        var query = "select sid from student_course where sid = ? and ccode = ?";
         try {
             PreparedStatement ps;
             ps = con.prepareStatement(query);
             ps.setInt(1, id);
+            ps.setInt(2, code);
             isInserted = ps.executeQuery().next();
         } catch (SQLException ex) {
-            out.println(ex.getMessage());
+            err.println(ex.getMessage());
 
         }
         if (!isInserted) {
@@ -555,10 +554,13 @@ public class Course {
                 ps.setInt(1, id);
                 ps.setInt(2, code);
                 ps.execute();
+                return true;
             } catch (SQLException ex) {
-                out.println(ex.getMessage());
+                err.println(ex.getMessage());
+                return false;
             }
         }
+        return false;
     }
 
     private List<Integer> listStudents() {
@@ -577,7 +579,7 @@ public class Course {
                 students.add(s);
             }
         } catch (SQLException ex) {
-            out.println(ex.getMessage());
+            err.println(ex.getMessage());
         }
         return students;
     }
@@ -591,7 +593,7 @@ public class Course {
             ps.setInt(2, id);
             ps.execute();
         } catch (SQLException ex) {
-            out.println(ex.getMessage());
+            err.println(ex.getMessage());
         }
     }
 
@@ -609,7 +611,7 @@ public class Course {
                 TAs.add(t);
             }
         } catch (SQLException ex) {
-            out.println(ex.getMessage());
+            err.println(ex.getMessage());
         }
         return TAs;
     }
@@ -623,7 +625,7 @@ public class Course {
             ps.setInt(2, code);
             ps.execute();
         } catch (SQLException ex) {
-            out.println(ex.getMessage());
+            err.println(ex.getMessage());
         }
     }
 
@@ -643,27 +645,25 @@ public class Course {
                 TAs.add(s);
             }
         } catch (SQLException ex) {
-            out.println(ex.getMessage());
+            err.println(ex.getMessage());
         }
         return TAs;
     }
 
-    private void addTA(int id) {
-        if (checkTAId(id)) {
-            var query = "insert into TA_course Values (?,?);";
-            try {
-                PreparedStatement ps;
-                ps = con.prepareStatement(query);
-                ps.setInt(1, id);
-                ps.setInt(2, code);
-                ps.execute();
-            } catch (SQLException ex) {
-                out.println(ex.getMessage());
-            }
-        } else {
-            out.println("-------------------------------------------------------------------INCORRECT ID-------------------------------------------------------------------");
-
+    private Boolean addTA(int id) {
+        var query = "insert into TA_course Values (?,?);";
+        try {
+            PreparedStatement ps;
+            ps = con.prepareStatement(query);
+            ps.setInt(1, id);
+            ps.setInt(2, code);
+            ps.execute();
+            return true;
+        } catch (SQLException ex) {
+            err.println(ex.getMessage());
+            return false;
         }
+        
     }
 
     private void removeTA(int id) {
@@ -675,7 +675,7 @@ public class Course {
             ps.setInt(2, id);
             ps.execute();
         } catch (SQLException ex) {
-            out.println(ex.getMessage());
+            err.println(ex.getMessage());
         }
     }
 
@@ -702,7 +702,7 @@ public class Course {
                 out.println("-------------------------------------------------------------------Total Mark : " + (totalMark == -1 ? "unknown" : totalMark) + "-------------------------------------------------------------------");
             }
         } catch (SQLException ex) {
-            out.println(ex.getMessage());
+            err.println(ex.getMessage());
         }
     }
 
@@ -714,16 +714,17 @@ public class Course {
             ps.setInt(1, id);
             result = ps.executeQuery().next();
         } catch (SQLException e) {
-            out.println(e);
+            err.println(e);
         }
 
-        query = "select tid from TA_course where tid = ?";
+        query = "select tid from TA_course where tid = ? and ccode = ?";
         try {
             var ps = con.prepareStatement(query);
             ps.setInt(1, id);
+            ps.setInt(2, code);
             return result && !ps.executeQuery().next();
         } catch (SQLException e) {
-            out.println(e);
+            err.println(e);
         }
         return false;
     }

@@ -11,6 +11,7 @@ import static Persons.User.isTA;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import static java.lang.System.err;
 import static java.lang.System.out;
 import java.util.InputMismatchException;
 
@@ -43,11 +44,11 @@ public class Main {
                 case "3":
                     return;
                 default:
-                    out.println("----------------------------------------------------------------Please enter a correct input--------------------------------------------------------");
+                    err.println("----------------------------------------------------------------Please enter a correct input--------------------------------------------------------");
                     break;
             }
         } catch (InputMismatchException e) {
-            out.println("-------------------------------------------------------------------Please enter a correct input---------------");
+            err.println("-------------------------------------------------------------------Please enter a correct input---------------");
         }
         main(args);
     }
@@ -72,7 +73,7 @@ public class Main {
             case "0":
                 return;
             default:
-                out.println("-------------------------------------------------------------------Invalid Choice---------------");
+                err.println("-------------------------------------------------------------------Invalid Choice---------------");
                 signUp();
                 break;
         }
@@ -87,7 +88,7 @@ public class Main {
             if (username.equals("0")) {
                 return;
             } else if (!checkUsername(username)) {
-                out.println("-------------------------------------------------------------------Username is not correct try another or enter 0 to cancel---------------");
+                err.println("-------------------------------------------------------------------Username is not correct try another or enter 0 to cancel---------------");
             } else {
                 break;
             }
@@ -100,7 +101,7 @@ public class Main {
             if (password.equals("0")) {
                 return;
             } else if (!checkPassword(username, password)) {
-                out.println("-------------------------------------------------------------------The password is not correct try another or enter 0 to cancel---------------");
+                err.println("-------------------------------------------------------------------The password is not correct try another or enter 0 to cancel---------------");
             } else {
                 break;
             }
