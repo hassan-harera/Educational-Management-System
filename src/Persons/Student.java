@@ -5,6 +5,7 @@ import static Encryption.MyEncryption.encryptPassword;
 import Items.Course;
 import static Persons.User.checkUsername;
 import static Persons.User.insertStudent;
+import static Persons.User.insertTeacher;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -273,32 +274,64 @@ public class Student {
 
     }
 
-    public static void signUp() throws IOException {
+ public static void signUp() throws IOException {
 
         var in = new BufferedReader(new InputStreamReader(System.in));
+        String name, username, password;
 
-        out.println("-------------------------------------------------------------------Please enter the username ---------------");
-        String username, password;
         while (true) {
+            out.println("-------------------------------------------------------------------Please enter the username-------------------------------------------------------------------");
             username = in.readLine();
             if (username.equals("0")) {
                 return;
-            } else if (checkUsername(username)) {
-                out.println("-------------------------------------------------------------------This username is already found enter another or enter 0 to cancel---------------");
+            } else if (username.matches("^([a-zA-Z])+([\\w@]{2,})+$")) {
+                if (checkUsername(username)) {
+                    out.println("-------------------------------------------------------------------This username is already found-------------------------------------------------------------------");;
+                } else {
+                    break;
+                }
             } else {
-                break;
+                out.println("Username is invalid, username terms: ");
+                out.println("Must start with the alphabet\n"
+                        + "Only allow underscore\n"
+                        + "Minimum 3 chars");
             }
         }
 
-        out.println("-------------------------------------------------------------------Please enter the password ---------------");
-        password = in.readLine();
+        while (true) {
+            out.println("-------------------------------------------------------------------Please enter the password-------------------------------------------------------------------");
+            password = in.readLine();
+            if (password.equals("0")) {
+                return;
+            } else if (password.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$")) {
+                break;
+            } else {
+                out.println("Username is invalid, username terms: ");
+                out.println("at least eight\n"
+                        + "at least one digit\n"
+                        + "at least one lower case letter\n"
+                        + "at least one upper case\n"
+                        + "at least one special character\n"
+                        + "whitespace is not allowed");
+            }
+        }
 
-        out.println("-------------------------------------------------------------------Please enter your name---------------");
-        var name = in.readLine();
+        while (true) {
+            out.println("-------------------------------------------------------------------Please enter your name-------------------------------------------------------------------");
+            name = in.readLine();
+            if (name.equals("0")) {
+                return;
+            } else if (name.matches("^[a-zA-Z\\s]+")) {
+                break;
+            } else {
+                out.println("-------------------------------------------------------------------INVALID NAME-------------------------------------------------------------------");
+            }
+        }
+
         var encrPassword = encryptPassword(password);
         insertStudent(username, encrPassword, name);
 
-        out.println("-------------------------------------------------------------------SUCCESSFULLY SIGNED UP---------------");
+        out.println("-------------------------------------------------------------------SUCCESSFULLY SIGNED UP-------------------------------------------------------------------");;
 
     }
 

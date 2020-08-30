@@ -99,7 +99,7 @@ public class Course {
         if (!courseTAs.isEmpty()) {
             out.print("-------------------------------------------------------------------Course TAs : ");
             for (var ct : courseTAs) {
-                out.print(ct + "-");
+                out.print(ct + "  , ");
             }
             out.println("");
         }
