@@ -352,7 +352,8 @@ public class Doctor {
                 + "2○ View the submissions\n"
                 + "3○ Edit the questions\n"
                 + "4○ View the assignment info\n"
-                + "5○ Back");
+                + "5○ Remove the assignment\n"
+                + "6○ Back");
 
         out.println("-------------------------------------------------------------------Please enter a choice------------------------------");
         var choice = in.readLine();
@@ -370,6 +371,9 @@ public class Doctor {
                 a.viewAssignment();
                 break;
             case "5":
+                removeAssignement(a.getCode());
+                return;
+            case "6":
                 return;
             default:
                 err.println("-------------------------------------------------------------------Please enter a correct choice---------------");
@@ -378,4 +382,25 @@ public class Doctor {
         assignmentMenu(a);
     }
 
+    public void removeAssignement(int code) {
+        String query = "delete from assignment_student where acode = ?";
+        try {
+            PreparedStatement ps;
+            ps = con.prepareStatement(query);
+            ps.setInt(1, code);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+        
+        query = "delete from assignment where code = ?";
+        try {
+            PreparedStatement ps;
+            ps = con.prepareStatement(query);
+            ps.setInt(1, code);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+    }
 }
