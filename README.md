@@ -1,5 +1,5 @@
 <h1>Educational Management System</h1>
-<h3>It is a software for managing the education process for open courses, that anyone can create an account to instruct a course or to be a teacher assistant or even to 
+<h3>It is a software for managing the education process, that anyone can create an account to instruct a course or to be a teacher assistant or even to 
 learn some courses</h3>
 
 <h2>Main Menu</h2>
@@ -156,5 +156,88 @@ All the passwords between the database and the program are hashed using a simple
 <h5>It shows list with the teacher assistants who are teaches the course with their names and IDs to choose from to remove</h5>
 <div>
 <img src="output/remove a teacher assistant.png">
+</div>
+<br><br>
+
+<h4>Log out</h4>
+<h5>The user can go to logout by following the process in the picture</h5>
+<div>
+<img src="output/logout.png">
+</div>
+<br><br>
+
+<h3>Student Menu</h3>
+<h4>The Menu contains many operations that the student can do in the site</h4>
+<div>
+<img src="output/student menu.png">
+</div>
+<br><br>
+
+<h4>Registering in a course</h4>
+<h5>The first operation, the student can view all the courses in the site and choose on of them to register in</h5>
+<div>
+<img src="output/regiistring in a course.png">
+</div>
+<br><br>
+
+<h4>Student's courses</h4>
+<h5>When the the user choose to view his courses that he registered in</h5>
+<div>
+<img src="output/student's course list.png">
+</div>
+<br><br>
+
+<h4>View some course</h4>
+<h5>The user can view the complete course information and perform operations by entering the course code and show a menu with the operations</h5>
+<div>
+<img src="output/view specific course.png">
+</div>
+<br><br>
+
+<h4>Student mark report in the choosen course</h4>
+<h5>This operation shows the student marks in different parts of the course that are saved in the database</h5>
+<div>
+<img src="output/view the student report in acourse.png">
+</div>
+<br><br>
+
+<h4>Course's assignments</h4>
+<h5>It shows a list wiht the assignments (code, title) in the course</h5>
+<div>
+<img src="output/list the assingments of the course.png">
+</div>
+<br><br>
+
+
+<h4>View assignments</h4>
+<h5>The student can choose to view a specific assignment by entering the assignment code to do many operations in that assignment</h5>
+<div>
+<img src="output/view specific assignment in a course .png">
+</div>
+<br><br>
+
+<h4>View the assignment questions</h4>
+<h5>The student see the assignment questions to solve the assignment</h5>
+<div>
+<img src="output/view the assignment questins.png">
+</div>
+<br><br>
+
+
+<h4>Submitting an answer</h4>
+<div>
+<img src="output/subbmitting an answer.png">
+</div>
+<br><br>
+
+<h4>Viewing the student answer</h4>
+<div>
+<img src="output/view the student answer.png">
+</div>
+<br><br>
+
+<h4>View the assignment mark</h4>
+<div>
+<img src="output/view the assignment mark.png">
 </div>
 <br><br>
